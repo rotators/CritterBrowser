@@ -98,12 +98,12 @@ namespace CritterBrowser.Forms
 
         void ResetAnimations()
         {
-            foreach (string ID in this.ValidAnimations)
+            foreach (string animName in this.ValidAnimations)
             {
-                CheckBox check = (CheckBox)this.GetControl(this.AnimCheck + ID);
+                CheckBox check = (CheckBox)this.GetControl(this.AnimCheck + animName);
                 check.CheckState = CheckState.Unchecked;
 
-                LinkLabel link = (LinkLabel)this.GetControl(this.AnimLink + ID);
+                LinkLabel link = (LinkLabel)this.GetControl(this.AnimLink + animName);
                 link.Enabled = false;
             }
         }
@@ -307,7 +307,6 @@ namespace CritterBrowser.Forms
             fpanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             fpanel.AutoSize = true;
             fpanel.Dock = DockStyle.Fill;
-            fpanel.Tag = animGroup;
 
             group.Controls.Add(fpanel);
             animations.Controls.Add(group);
@@ -345,23 +344,23 @@ namespace CritterBrowser.Forms
             check.Padding = new Padding(3);
             check.AutoSize = true;
 
-            LinkLabel label = new LinkLabel();
-            label.Name = this.AnimLink + animName;
+            LinkLabel link = new LinkLabel();
+            link.Name = this.AnimLink + animName;
 
-            label.Text = animName;
+            link.Text = animName;
             if (description.Length > 0)
-                label.Text += " (" + description.ToLower() + ")";
-            label.AutoSize = true;
-            label.Tag = animName;
-            label.LinkClicked += new LinkLabelLinkClickedEventHandler(animLink_LinkClicked);
+                link.Text += " (" + description.ToLower() + ")";
+            link.AutoSize = true;
+            link.Tag = animName;
+            link.LinkClicked += new LinkLabelLinkClickedEventHandler(animLink_LinkClicked);
 
-            check.Enabled = label.Enabled = false;
+            check.Enabled = link.Enabled = false;
 
             panel.Controls.Add(check);
-            label.Location = check.Location;
-            label.Top += 3;
-            label.Left = check.Right - 3;
-            panel.Controls.Add(label);
+            link.Location = check.Location;
+            link.Top += 3;
+            link.Left = check.Right - 3;
+            panel.Controls.Add(link);
             fpanel.Controls.Add(panel);
 
             fpanel.Invalidate(true);
@@ -538,16 +537,16 @@ namespace CritterBrowser.Forms
                 return;
 
             LinkLabel self = (LinkLabel)sender;
-            string id = (string)self.Tag;
+            string animName = (string)self.Tag;
 
             frmAnimation animWin = new frmAnimation();
-            animWin.Text = this.CurrentCritterType.Name + id;
+            animWin.Text = this.CurrentCritterType.Name + animName;
 
             if (this.LoadMode == LoadModeType.Directory)
             {
                 Bitmap[] frms = new Bitmap[6];
                 
-                string filename = openDirectory.SelectedPath + Path.DirectorySeparatorChar + this.CurrentCritterType.Name + id;
+                string filename = openDirectory.SelectedPath + Path.DirectorySeparatorChar + this.CurrentCritterType.Name + animName;
                 if (File.Exists(filename + ".FRM"))
                 {
                     byte[] bytes = File.ReadAllBytes(filename + ".FRM");
@@ -561,7 +560,7 @@ namespace CritterBrowser.Forms
 
                 for (int d = 0; d <= 5; d++)
                 {
-                    if (this.CurrentCritterType[id].Dir[d] && File.Exists(filename + ".FR" + d))
+                    if (this.CurrentCritterType[animName].Dir[d] && File.Exists(filename + ".FR" + d))
                     {
                         byte[] bytes = File.ReadAllBytes(filename + ".FR" + d);
                         FalloutFRM frm = FalloutFRMLoader.LoadFRM(bytes, this.TransparencyFRM);
