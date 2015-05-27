@@ -141,14 +141,14 @@
             this.menuFileOpenDatafile,
             this.menuFileOpenDirectory});
             this.menuFileOpen.Name = "menuFileOpen";
-            this.menuFileOpen.Size = new System.Drawing.Size(152, 22);
+            this.menuFileOpen.Size = new System.Drawing.Size(112, 22);
             this.menuFileOpen.Text = "Open...";
             // 
             // menuFileOpenDatafile
             // 
             this.menuFileOpenDatafile.Enabled = false;
             this.menuFileOpenDatafile.Name = "menuFileOpenDatafile";
-            this.menuFileOpenDatafile.Size = new System.Drawing.Size(152, 22);
+            this.menuFileOpenDatafile.Size = new System.Drawing.Size(131, 22);
             this.menuFileOpenDatafile.Text = "Datafile...";
             this.menuFileOpenDatafile.Click += new System.EventHandler(this.menuFileOpenDatafile_Click);
             // 
@@ -203,6 +203,7 @@
             // falloutCrittersLst
             // 
             this.falloutCrittersLst.Dock = System.Windows.Forms.DockStyle.Top;
+            this.falloutCrittersLst.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.falloutCrittersLst.Location = new System.Drawing.Point(3, 74);
             this.falloutCrittersLst.Name = "falloutCrittersLst";
             this.falloutCrittersLst.ReadOnly = true;
@@ -265,6 +266,7 @@
             this.falloutAlias.Name = "falloutAlias";
             this.falloutAlias.Size = new System.Drawing.Size(40, 20);
             this.falloutAlias.TabIndex = 1;
+            this.falloutAlias.ValueChanged += new System.EventHandler(this.falloutAlias_ValueChanged);
             // 
             // tabFOnline
             // 
@@ -282,10 +284,12 @@
             // fonlineCritterTypesCfg
             // 
             this.fonlineCritterTypesCfg.Dock = System.Windows.Forms.DockStyle.Top;
+            this.fonlineCritterTypesCfg.Font = new System.Drawing.Font("Courier New", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.fonlineCritterTypesCfg.Location = new System.Drawing.Point(3, 74);
+            this.fonlineCritterTypesCfg.Multiline = true;
             this.fonlineCritterTypesCfg.Name = "fonlineCritterTypesCfg";
             this.fonlineCritterTypesCfg.ReadOnly = true;
-            this.fonlineCritterTypesCfg.Size = new System.Drawing.Size(664, 20);
+            this.fonlineCritterTypesCfg.Size = new System.Drawing.Size(664, 38);
             this.fonlineCritterTypesCfg.TabIndex = 1;
             // 
             // txtFonlineCritterTypesCfg
@@ -486,6 +490,7 @@
             this.fonlineEnabled.Size = new System.Drawing.Size(15, 14);
             this.fonlineEnabled.TabIndex = 26;
             this.fonlineEnabled.UseVisualStyleBackColor = true;
+            this.fonlineEnabled.CheckedChanged += new System.EventHandler(this.fonlineEnabled_CheckedChanged);
             // 
             // fonlineID
             // 
@@ -501,6 +506,7 @@
             this.fonlineID.Size = new System.Drawing.Size(40, 20);
             this.fonlineID.TabIndex = 2;
             this.fonlineID.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.fonlineID.ValueChanged += new System.EventHandler(this.fonlineID_ValueChanged);
             // 
             // fonlineAlias
             // 
@@ -515,6 +521,7 @@
             this.fonlineAlias.Size = new System.Drawing.Size(40, 20);
             this.fonlineAlias.TabIndex = 5;
             this.fonlineAlias.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.fonlineAlias.ValueChanged += new System.EventHandler(this.fonlineAlias_ValueChanged);
             // 
             // fonlineMultihex
             // 
@@ -528,6 +535,7 @@
             this.fonlineMultihex.Name = "fonlineMultihex";
             this.fonlineMultihex.Size = new System.Drawing.Size(40, 20);
             this.fonlineMultihex.TabIndex = 8;
+            this.fonlineMultihex.ValueChanged += new System.EventHandler(this.fonlineMultihex_ValueChanged);
             // 
             // fonlineAim
             // 
@@ -538,6 +546,7 @@
             this.fonlineAim.Size = new System.Drawing.Size(15, 14);
             this.fonlineAim.TabIndex = 0;
             this.fonlineAim.UseVisualStyleBackColor = true;
+            this.fonlineAim.CheckedChanged += new System.EventHandler(this.fonlineAim_CheckedChanged);
             // 
             // fonlineArmor
             // 
@@ -548,6 +557,7 @@
             this.fonlineArmor.Size = new System.Drawing.Size(15, 14);
             this.fonlineArmor.TabIndex = 1;
             this.fonlineArmor.UseVisualStyleBackColor = true;
+            this.fonlineArmor.CheckedChanged += new System.EventHandler(this.fonlineArmor_CheckedChanged);
             // 
             // fonlineRotate
             // 
@@ -558,6 +568,7 @@
             this.fonlineRotate.Size = new System.Drawing.Size(15, 14);
             this.fonlineRotate.TabIndex = 2;
             this.fonlineRotate.UseVisualStyleBackColor = true;
+            this.fonlineRotate.CheckedChanged += new System.EventHandler(this.fonlineRotate_CheckedChanged);
             // 
             // fonlineWalk
             // 
@@ -566,6 +577,7 @@
             this.fonlineWalk.Name = "fonlineWalk";
             this.fonlineWalk.Size = new System.Drawing.Size(40, 20);
             this.fonlineWalk.TabIndex = 15;
+            this.fonlineWalk.ValueChanged += new System.EventHandler(this.fonlineWalk_ValueChanged);
             // 
             // fonlineRun
             // 
@@ -574,6 +586,7 @@
             this.fonlineRun.Name = "fonlineRun";
             this.fonlineRun.Size = new System.Drawing.Size(40, 20);
             this.fonlineRun.TabIndex = 16;
+            this.fonlineRun.ValueChanged += new System.EventHandler(this.fonlineRun_ValueChanged);
             // 
             // fonlineSteps1
             // 
@@ -582,6 +595,7 @@
             this.fonlineSteps1.Name = "fonlineSteps1";
             this.fonlineSteps1.Size = new System.Drawing.Size(41, 20);
             this.fonlineSteps1.TabIndex = 17;
+            this.fonlineSteps1.ValueChanged += new System.EventHandler(this.fonlineSteps1_ValueChanged);
             // 
             // fonlineSteps2
             // 
@@ -590,6 +604,7 @@
             this.fonlineSteps2.Name = "fonlineSteps2";
             this.fonlineSteps2.Size = new System.Drawing.Size(40, 20);
             this.fonlineSteps2.TabIndex = 18;
+            this.fonlineSteps2.ValueChanged += new System.EventHandler(this.fonlineSteps2_ValueChanged);
             // 
             // fonlineSteps3
             // 
@@ -598,6 +613,7 @@
             this.fonlineSteps3.Name = "fonlineSteps3";
             this.fonlineSteps3.Size = new System.Drawing.Size(40, 20);
             this.fonlineSteps3.TabIndex = 19;
+            this.fonlineSteps3.ValueChanged += new System.EventHandler(this.fonlineSteps3_ValueChanged);
             // 
             // fonlineSteps4
             // 
@@ -606,6 +622,7 @@
             this.fonlineSteps4.Name = "fonlineSteps4";
             this.fonlineSteps4.Size = new System.Drawing.Size(40, 20);
             this.fonlineSteps4.TabIndex = 20;
+            this.fonlineSteps4.ValueChanged += new System.EventHandler(this.fonlineSteps4_ValueChanged);
             // 
             // fonlineSound
             // 
@@ -613,6 +630,7 @@
             this.fonlineSound.Name = "fonlineSound";
             this.fonlineSound.Size = new System.Drawing.Size(100, 20);
             this.fonlineSound.TabIndex = 23;
+            this.fonlineSound.TextChanged += new System.EventHandler(this.fonlineSound_TextChanged);
             // 
             // fonlineComment
             // 
@@ -620,6 +638,7 @@
             this.fonlineComment.Name = "fonlineComment";
             this.fonlineComment.Size = new System.Drawing.Size(100, 20);
             this.fonlineComment.TabIndex = 24;
+            this.fonlineComment.TextChanged += new System.EventHandler(this.fonlineComment_TextChanged);
             // 
             // animations
             // 
@@ -695,7 +714,6 @@
             this.Padding = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "CritterBrowser";
-            this.Load += new System.EventHandler(this.frmMain_Load);
             this.menu.ResumeLayout(false);
             this.menu.PerformLayout();
             this.tabGame.ResumeLayout(false);

@@ -1,4 +1,4 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -36,16 +36,12 @@ namespace CritterBrowser.Forms
         CritterType CurrentCritterType = null;
         int PrevSelectedCritterIndex = -1;
 
-        const int ProgressCritter = -1;
 
         LoadModeType LoadMode = LoadModeType.None;
 
-        List<GroupBox> Groups = new List<GroupBox>();
-        List<FlowLayoutPanel> Flows = new List<FlowLayoutPanel>();
-        List<CheckBox> Checks = new List<CheckBox>();
-
         Color TransparencyFRM = Color.FromArgb(255, 11, 0, 11);
 
+        readonly int ProgressCritter = -1;
         private bool frmCheckerCompleted = true;
         private bool ClosePending = false;
 
@@ -87,11 +83,6 @@ namespace CritterBrowser.Forms
             base.OnFormClosing(e);
         }
 
-        private void frmMain_Load(object sender, EventArgs e)
-        {
-
-        }
-
         void EnableControls(bool enable)
         {
             lstCritters.Enabled =
@@ -100,6 +91,21 @@ namespace CritterBrowser.Forms
             grpFonlineConfiguration.Enabled =
             fonlineCritterTypesCfg.Enabled =
             enable;
+
+            if (!enable)
+                this.ResetAnimations();
+        }
+
+        void ResetAnimations()
+        {
+            foreach (string ID in this.ValidAnimations)
+            {
+                CheckBox check = (CheckBox)this.GetControl(this.AnimCheck + ID);
+                check.CheckState = CheckState.Unchecked;
+
+                LinkLabel link = (LinkLabel)this.GetControl(this.AnimLink + ID);
+                link.Enabled = false;
+            }
         }
 
         void InitAnimations()
@@ -269,21 +275,21 @@ namespace CritterBrowser.Forms
         //         CheckBox (AnimCheckXY)
         //         LinkLabel (AnimLinkXY)
 
-        void AddAnimationGroup(string GID, string description = "" )
+        void AddAnimationGroup(string animGroup, string description = "" )
         {
-            GID = GID.ToUpper();
+            animGroup = animGroup.ToUpper();
 
-            if (GID.Length != 1)
+            if (animGroup.Length != 1)
                 return;
-            else if (this.ValidAnimationsGroups.Contains(GID))
+            else if (this.ValidAnimationsGroups.Contains(animGroup))
                 return;
 
-            this.ValidAnimationsGroups.Add(GID);
+            this.ValidAnimationsGroups.Add(animGroup);
 
             GroupBox group = new GroupBox();
-            group.Name = this.AnimGroup + GID;
+            group.Name = this.AnimGroup + animGroup;
 
-            group.Text = GID + "*";
+            group.Text = animGroup + "*";
             if (description.Length > 0)
                 group.Text += " (" + description + ")";
 
@@ -293,7 +299,7 @@ namespace CritterBrowser.Forms
             group.AutoSize = true;
 
             FlowLayoutPanel fpanel = new FlowLayoutPanel();
-            fpanel.Name = this.AnimFlow + GID;
+            fpanel.Name = this.AnimFlow + animGroup;
 
             fpanel.FlowDirection = FlowDirection.TopDown;
             fpanel.Padding = new Padding(0);
@@ -301,41 +307,38 @@ namespace CritterBrowser.Forms
             fpanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             fpanel.AutoSize = true;
             fpanel.Dock = DockStyle.Fill;
-            fpanel.Tag = GID;
+            fpanel.Tag = animGroup;
 
             group.Controls.Add(fpanel);
             animations.Controls.Add(group);
-
-            this.Groups.Add(group);
-            this.Flows.Add(fpanel);
         }
 
-        void AddAnimation(string ID, string description = "")
+        void AddAnimation(string animName, string description = "")
         {
-            ID = ID.ToUpper();
+            animName = animName.ToUpper();
 
-            if (ID.Length != 2)
+            if (animName.Length != 2)
                 return;
 
-            string GID = ID.Substring(0, 1);
+            string animGroup = animName.Substring(0, 1);
 
-            if (!this.ValidAnimationsGroups.Contains(GID))
+            if (!this.ValidAnimationsGroups.Contains(animGroup))
                 return;
             
-            if(this.ValidAnimations.Contains(ID))
+            if(this.ValidAnimations.Contains(animName))
                 return;
 
-            this.ValidAnimations.Add(ID);
+            this.ValidAnimations.Add(animName);
 
-            FlowLayoutPanel fpanel = (FlowLayoutPanel)this.FindControl(AnimFlow + GID);
+            FlowLayoutPanel fpanel = (FlowLayoutPanel)this.GetControl(AnimFlow + animGroup);
 
             Panel panel = new Panel();
-            panel.Name = this.AnimPanel + ID;
+            panel.Name = this.AnimPanel + animName;
             panel.Margin = panel.Padding = new Padding(0);
             panel.AutoSize = true;
 
             CheckBox check = new CheckBox();
-            check.Name = this.AnimCheck + ID;
+            check.Name = this.AnimCheck + animName;
 
             check.Font = new Font(check.Font.FontFamily, 7, FontStyle.Underline);
             check.Margin = new Padding(0);
@@ -343,13 +346,13 @@ namespace CritterBrowser.Forms
             check.AutoSize = true;
 
             LinkLabel label = new LinkLabel();
-            label.Name = this.AnimLink + ID;
+            label.Name = this.AnimLink + animName;
 
-            label.Text = ID;
+            label.Text = animName;
             if (description.Length > 0)
                 label.Text += " (" + description.ToLower() + ")";
             label.AutoSize = true;
-            label.Tag = ID;
+            label.Tag = animName;
             label.LinkClicked += new LinkLabelLinkClickedEventHandler(animLink_LinkClicked);
 
             check.Enabled = label.Enabled = false;
@@ -362,14 +365,19 @@ namespace CritterBrowser.Forms
             fpanel.Controls.Add(panel);
 
             fpanel.Invalidate(true);
-            this.Checks.Add(check);
         }
 
         public void AutoPlacement()
         {
+            List<GroupBox> groups = new List<GroupBox>();
+            foreach (string animGroup in this.ValidAnimationsGroups)
+            {
+                groups.Add( (GroupBox)this.GetControl(this.AnimGroup + animGroup));
+            }
+
             const int bonusX = 115;
             int maxH = -1;
-            foreach (GroupBox group in this.Groups)
+            foreach (GroupBox group in groups)
             {
                 if (group.Height > maxH)
                     maxH = group.Height;
@@ -396,10 +404,8 @@ namespace CritterBrowser.Forms
                 }
             );
 
-            for (int i = 0, iLen = this.Groups.Count; i < iLen; i++)
+            foreach (GroupBox group in groups)
             {
-                GroupBox group = this.Groups[i];
-
                 int currH = group.Height;
                 if (currH + h < maxH)
                 {
@@ -422,7 +428,6 @@ namespace CritterBrowser.Forms
                     w = group.Width;
                     h = group.Height;
                 }
-
             }
 
             fixColumnWidth(w);
@@ -434,7 +439,7 @@ namespace CritterBrowser.Forms
         /// <param name="name"></param>
         /// <throws>aaa</throws>
         /// <returns></returns>
-        private Control FindControl(string name)
+        private Control GetControl(string name)
         {
             Control[] controls = this.Controls.Find(name, true);
             if (controls != null && controls.Length == 1)
@@ -443,11 +448,13 @@ namespace CritterBrowser.Forms
             throw new NotSupportedException(); // :)
         }
 
-        List<GroupBox> GetAnimGroupBoxes()
+        private void RefreshFalloutFOnline()
         {
-            List<GroupBox> result = new List<GroupBox>();
+            this.falloutCrittersLst.Text = this.CurrentCritterType.ToFalloutString();
 
-            return (result);
+            this.fonlineCritterTypesCfg.Clear();
+
+            this.fonlineCritterTypesCfg.AppendText(this.CurrentCritterType.ToFOnlineString(this.fonlineCritterTypesCfg.Multiline));
         }
 
         private void menuFileOpenDatafile_Click(object sender, EventArgs e)
@@ -468,11 +475,14 @@ namespace CritterBrowser.Forms
             lstCritters.SelectedIndex = this.PrevSelectedCritterIndex = -1;
             lstCritters.Items.Clear();
 
-            lstCritters.Enabled =
-            menuFileOpen.Enabled =
-            false;
+            this.EnableControls(false);
+            menuFileOpen.Enabled = false;
 
             statusLabel.Text = "Opening " + openDirectory.SelectedPath + "...";
+
+            frmChecker.DoWork -= this.frmChecker_DoWork;
+
+            frmChecker.DoWork +=new DoWorkEventHandler(frmChecker_DoWork);
             frmChecker.RunWorkerAsync(openDirectory.SelectedPath);
         }
 
@@ -488,45 +498,36 @@ namespace CritterBrowser.Forms
             else
                 this.PrevSelectedCritterIndex = self.SelectedIndex;
 
+            this.ResetAnimations();
+
             string baseName = (string)self.SelectedItem;
+            this.CurrentCritterType = this.CritterTypes.Find(cr => cr.Name == baseName);
 
-            foreach(string anim in this.ValidAnimations)
+            this.falloutAlias.Value = this.CurrentCritterType.Alias;
+
+            this.fonlineEnabled.Checked = this.CurrentCritterType.Enabled;
+            this.fonlineID.Value = this.CurrentCritterType.ID;
+            this.fonlineAlias.Value = this.CurrentCritterType.Alias;
+            this.fonlineMultihex.Value = this.CurrentCritterType.Multihex;
+            this.fonlineAim.Checked = this.CurrentCritterType.Aim;
+            this.fonlineRotate.Checked = this.CurrentCritterType.Rotate;
+            this.fonlineWalk.Value = this.CurrentCritterType.Walk;
+            this.fonlineRun.Value = this.CurrentCritterType.Run;
+            this.fonlineSteps1.Value = this.CurrentCritterType.Step1;
+            this.fonlineSteps2.Value = this.CurrentCritterType.Step2;
+            this.fonlineSteps3.Value = this.CurrentCritterType.Step3;
+            this.fonlineSteps4.Value = this.CurrentCritterType.Step4;
+            this.fonlineSound.Text = this.CurrentCritterType.Sound;
+            this.fonlineComment.Text = this.CurrentCritterType.Comment;
+
+            this.RefreshFalloutFOnline();
+
+            foreach (CritterAnimation crAnim in this.CurrentCritterType.Animations)
             {
-                CheckBox check = (CheckBox)this.FindControl(this.AnimCheck + anim);
-                check.CheckState = CheckState.Unchecked;
-
-                LinkLabel link = (LinkLabel)this.FindControl(this.AnimLink + anim);
-                link.Enabled = false;
-            }
-
-            CritterType crType = this.CritterTypes.Find(cr => cr.Name == baseName);
-            this.falloutAlias.Value = crType.Alias;
-
-            this.fonlineEnabled.Checked = crType.Enabled;
-            this.fonlineID.Value = crType.ID;
-            this.fonlineAlias.Value = crType.Alias;
-            this.fonlineMultihex.Value = crType.Multihex;
-            this.fonlineAim.Checked = crType.Aim;
-            this.fonlineRotate.Checked = crType.Rotate;
-            this.fonlineWalk.Value = crType.Walk;
-            this.fonlineRun.Value = crType.Run;
-            this.fonlineSteps1.Value = crType.Step1;
-            this.fonlineSteps2.Value = crType.Step2;
-            this.fonlineSteps3.Value = crType.Step3;
-            this.fonlineSteps4.Value = crType.Step4;
-            this.fonlineSound.Text = crType.Sound;
-            this.fonlineComment.Text = crType.Comment;
-
-            this.CurrentCritterType = crType;
-            this.falloutCrittersLst.Text = crType.ToFalloutString();
-            this.fonlineCritterTypesCfg.Text = crType.ToFOnlineString();
-
-            foreach (CritterAnimation crAnim in crType.Animations)
-            {
-                CheckBox check = (CheckBox)this.FindControl(this.AnimCheck+ crAnim.Name);
+                CheckBox check = (CheckBox)this.GetControl(this.AnimCheck+ crAnim.Name);
                 check.CheckState = (crAnim.AllDirs ? CheckState.Checked : CheckState.Indeterminate);
 
-                LinkLabel link = (LinkLabel)this.FindControl(this.AnimLink + crAnim.Name);
+                LinkLabel link = (LinkLabel)this.GetControl(this.AnimLink + crAnim.Name);
                 link.Enabled = true;
             }
         }
@@ -611,6 +612,7 @@ namespace CritterBrowser.Forms
                 if (!this.ValidAnimations.Contains(animName))
                     continue;
 
+                // TODO: should be outside
                 CritterType crType = this.CritterTypes.Find(cr => cr.Name == baseName);
                 if (crType == null)
                 {
@@ -619,8 +621,8 @@ namespace CritterBrowser.Forms
                 }
 
                 self.ReportProgress(ProgressCritter, crType.Name);
-                    
 
+                // TODO: should be outside
                 if (crType[animName] == null)
                 {
                     CritterAnimation crAnim = new CritterAnimation(animName);
@@ -684,6 +686,141 @@ namespace CritterBrowser.Forms
 
             if (this.ClosePending)
                 this.Close();
+        }
+
+        private void falloutAlias_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown self = (NumericUpDown)sender;
+            this.CurrentCritterType.Alias = decimal.ToUInt16(self.Value);
+
+            this.fonlineAlias.Value = self.Value;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineEnabled_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox self = (CheckBox)sender;
+            this.CurrentCritterType.Enabled = self.Checked;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineID_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown self = (NumericUpDown)sender;
+
+            this.CurrentCritterType.ID = (UInt16)self.Value;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineAlias_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown self = (NumericUpDown)sender;
+            this.CurrentCritterType.Alias = (UInt16)self.Value;
+
+            this.falloutAlias.Value = self.Value;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineMultihex_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown self = (NumericUpDown)sender;
+            this.CurrentCritterType.Multihex = (byte)self.Value;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineAim_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox self = (CheckBox)sender;
+            this.CurrentCritterType.Aim = self.Checked;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineArmor_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox self = (CheckBox)sender;
+            this.CurrentCritterType.Armor = self.Checked;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineRotate_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox self = (CheckBox)sender;
+            this.CurrentCritterType.Rotate = self.Checked;
+
+            this.RefreshFalloutFOnline();
+
+        }
+
+        private void fonlineWalk_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown self = (NumericUpDown)sender;
+            this.CurrentCritterType.Walk = (UInt16)self.Value;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineRun_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown self = (NumericUpDown)sender;
+            this.CurrentCritterType.Run = (UInt16)self.Value;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineSteps1_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown self = (NumericUpDown)sender;
+            this.CurrentCritterType.Step1 = (UInt16)self.Value;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineSteps2_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown self = (NumericUpDown)sender;
+            this.CurrentCritterType.Step2 = (UInt16)self.Value;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineSteps3_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown self = (NumericUpDown)sender;
+            this.CurrentCritterType.Step3 = (UInt16)self.Value;
+
+            this.RefreshFalloutFOnline();
+
+        }
+
+        private void fonlineSteps4_ValueChanged(object sender, EventArgs e)
+        {
+            NumericUpDown self = (NumericUpDown)sender;
+            this.CurrentCritterType.Step4 = (UInt16)self.Value;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineSound_TextChanged(object sender, EventArgs e)
+        {
+            TextBox self = (TextBox)sender;
+            this.CurrentCritterType.Sound = self.Text;
+
+            this.RefreshFalloutFOnline();
+        }
+
+        private void fonlineComment_TextChanged(object sender, EventArgs e)
+        {
+            TextBox self = (TextBox)sender;
+            this.CurrentCritterType.Comment = self.Text;
+
+            this.RefreshFalloutFOnline();
         }
     }
 }

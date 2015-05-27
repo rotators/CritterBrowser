@@ -89,53 +89,100 @@ namespace CritterBrowser
             return (result);
         }
 
-        public string ToFOnlineString()
+        public string ToFOnlineString( bool verbose = false )
         {
-            string result = (this.Enabled ? "@" : "#");
-            result += " " + this.ID;
-            result += " " + this.Name.ToLower();
-            result += " " + this.Alias;
-            result += " " + this.Multihex;
-            result += " " + (this["AB"] != null ? "1" : "0");
-            result += " " + (this["AT"] != null ? "1" : "0");
-            result += " " + (this.Aim ? "1" : "0");
-            result += " " + (this.Armor ? "1" : "0");
-            result += " " + (this['A'] != null ? "1" : "0");
-            result += " " + (this['B'] != null ? "1" : "0");
-            result += " " + (this['C'] != null ? "1" : "0");
-            result += " " + (this['D'] != null ? "1" : "0");
-            result += " " + (this['E'] != null ? "1" : "0");
-            result += " " + (this['F'] != null ? "1" : "0");
-            result += " " + (this['G'] != null ? "1" : "0");
-            result += " " + (this['H'] != null ? "1" : "0");
-            result += " " + (this['I'] != null ? "1" : "0");
-            result += " " + (this['J'] != null ? "1" : "0");
-            result += " " + (this["KJ"] != null ? "1" : "0");
-            result += " " + (this['L'] != null ? "1" : "0");
-            result += " " + (this["KL"] != null ? "1" : "0"); // M
-            result += " " + (this['N'] != null ? "1" : "0");
-            result += " " + (this['J'] != null ? "1" : "0"); // J -> O
-            result += " " + (this['P'] != null ? "1" : "0");
-            result += " " + (this['Q'] != null ? "1" : "0");
-            result += " " + (this['R'] != null ? "1" : "0");
-            result += " " + (this['S'] != null ? "1" : "0");
-            result += " " + (this['T'] != null ? "1" : "0");
-            result += " " + (this['U'] != null ? "1" : "0");
-            result += " " + (this['V'] != null ? "1" : "0");
-            result += " " + (this['W'] != null ? "1" : "0");
-            result += " " + (this['X'] != null ? "1" : "0");
-            result += " " + (this['Y'] != null ? "1" : "0");
-            result += " " + (this['Z'] != null ? "1" : "0");
-            result += " " + this.Walk;
-            result += " " + this.Run;
-            result += " " + this.Step1;
-            result += " " + this.Step2;
-            result += " " + this.Step3;
-            result += " " + this.Step4;
-            result += " " + (this.Sound.Length == 0 ? "-" : this.Sound);
-            if (this.Comment.Length > 0)
-                result += " # " + this.Comment;
+            string result = "";
 
+            List<string> args = new List<string>();
+
+            args.Add((this.Enabled ? "@" : "#"));
+            args.Add(this.ID.ToString());
+            args.Add(this.Name.ToLower());
+            args.Add(this.Alias.ToString());
+            args.Add(this.Multihex.ToString());
+            args.Add("0"); // 3D
+            args.Add((this["AB"] != null ? "1" : "0"));
+            args.Add((this["AT"] != null ? "1" : "0"));
+            args.Add((this.Aim ? "1" : "0"));
+            args.Add((this.Armor ? "1" : "0"));
+            args.Add((this.Rotate ? "1" : "0"));
+            args.Add((this['A'] != null ? "1" : "0"));
+            args.Add((this['B'] != null ? "1" : "0"));
+            args.Add((this['C'] != null ? "1" : "0"));
+            args.Add((this['D'] != null ? "1" : "0"));
+            args.Add((this['E'] != null ? "1" : "0"));
+            args.Add((this['F'] != null ? "1" : "0"));
+            args.Add((this['G'] != null ? "1" : "0"));
+            args.Add((this['H'] != null ? "1" : "0"));
+            args.Add((this['I'] != null ? "1" : "0"));
+            args.Add((this['J'] != null ? "1" : "0"));
+            args.Add((this["KJ"] != null ? "1" : "0"));
+            args.Add((this['L'] != null ? "1" : "0"));
+            args.Add((this["KL"] != null ? "1" : "0")); // M
+            args.Add((this['N'] != null ? "1" : "0"));
+            args.Add((this['J'] != null ? "1" : "0")); // J -> O
+            args.Add((this['P'] != null ? "1" : "0"));
+            args.Add((this['Q'] != null ? "1" : "0"));
+            args.Add((this['R'] != null ? "1" : "0"));
+            args.Add((this['S'] != null ? "1" : "0"));
+            args.Add((this['T'] != null ? "1" : "0"));
+            args.Add((this['U'] != null ? "1" : "0"));
+            args.Add((this['V'] != null ? "1" : "0"));
+            args.Add((this['W'] != null ? "1" : "0"));
+            args.Add((this['X'] != null ? "1" : "0"));
+            args.Add((this['Y'] != null ? "1" : "0"));
+            args.Add((this['Z'] != null ? "1" : "0"));
+            args.Add(this.Walk.ToString());
+            args.Add(this.Run.ToString());
+            args.Add(this.Step1.ToString());
+            args.Add(this.Step2.ToString());
+            args.Add(this.Step3.ToString());
+            args.Add(this.Step4.ToString());
+            args.Add( (this.Sound.Length == 0 ? "-" : this.Sound));
+            args.Add( (this.Comment.Length > 0) ? "# "+this.Comment:"");
+
+            if (!verbose)
+            {
+                bool first = true;
+                foreach (string str in args)
+                {
+                    if (!first)
+                    {
+                        result += " ";
+                        first = false;
+                    }
+                    result += str;
+                }
+            }
+            else
+            {
+                int len = this.Name.Length+1;
+                args.Insert(0, "Name");
+                string format =
+                    "# ID  {0,-" + len + "}Alias MH 3D Walk Run Aim Armor Rotate  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z  Walk Run Walk steps Sound"
+                    + Environment.NewLine
+                    + "{1,-2}{2,-4}{3,-" + len + "}{4,-6}{5,-3}{6,-3}{7,-5}{8,-4}{9,-4}{10,-6}{11,-8}";
+
+                // A-Z
+                for (int a = 12; a <= 37; a++)
+                {
+                    format += "{" + a + ",-2}";
+                }
+                
+                // walk, run
+                format += " {38,-5}{39,-4}";
+
+                // walk steps
+                for (int s = 40; s <= 43; s++)
+                {
+                    format += "{" + s + ",-3}";
+                }
+
+                format += "{44} {45}";
+                //System.Windows.Forms.MessageBox.Show(format);
+
+                result += string.Format( format, args.ToArray());
+            }
             return (result);
         }
     }
