@@ -90,10 +90,10 @@ namespace CritterBrowser.Forms
         {
             if (!this.frmCheckerCompleted)
             {
-                this.Enabled = false;
-                e.Cancel = true;
                 this.ClosePending = true;
                 frmChecker.CancelAsync();
+                this.Enabled = false;
+                e.Cancel = true;
                 return;
             }
 
@@ -538,6 +538,7 @@ namespace CritterBrowser.Forms
             statusLabel.Text = "Opening " + target + "...";
 
             frmChecker.DoWork -= this.frmChecker_DoWork;
+            this.frmCheckerCompleted = false;
 
             return (config);
         }
@@ -669,6 +670,9 @@ namespace CritterBrowser.Forms
             int currFile = 0;
             foreach (string file in files)
             {
+                if( self.CancellationPending )
+                    return;
+
                 currFile++;
                 int percent = (currFile * 100) / files.Count;
 
