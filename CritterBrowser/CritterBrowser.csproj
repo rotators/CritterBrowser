@@ -51,6 +51,12 @@
     <Compile Include="CritterType.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FOCommon\FalloutFrm.cs" />
+    <Compile Include="Forms\frmAbout.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmAbout.Designer.cs">
+      <DependentUpon>frmAbout.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\frmOptionsGeneral.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -72,6 +78,9 @@
     </Compile>
     <Compile Include="CritterBrowser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Forms\frmAbout.resx">
+      <DependentUpon>frmAbout.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmAnimation.resx">
       <DependentUpon>frmAnimation.cs</DependentUpon>
     </EmbeddedResource>

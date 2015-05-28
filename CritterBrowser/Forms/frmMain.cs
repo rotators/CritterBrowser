@@ -6,6 +6,7 @@ using System.IO;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 using FOCommon.Graphic;
 
@@ -84,6 +85,8 @@ namespace CritterBrowser.Forms
                     this.CenterToScreen();
                     break;
             }
+
+            menuAboutSelf.Text = new frmAbout().AssemblyProduct;
         }
 
         /// <summary>
@@ -633,6 +636,17 @@ namespace CritterBrowser.Forms
                 return;
 
             // TODO: apply new options
+        }
+
+        private void menuAboutSelf_Click( object sender, EventArgs e )
+        {
+            frmAbout about = new frmAbout();
+            about.ShowDialog( this );
+        }
+
+        private void menuAboutRepo_Click( object sender, EventArgs e )
+        {
+            Process.Start( "https://github.com/rotators/CritterBrowser/" );
         }
 
         private void lstCritters_SelectedValueChanged( object sender, EventArgs e )
