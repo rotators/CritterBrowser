@@ -85,6 +85,9 @@
             this.statusProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.frmChecker = new System.ComponentModel.BackgroundWorker();
+            this.menuOptions = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuOptionsGeneral = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuOptionsTarget = new System.Windows.Forms.ToolStripMenuItem();
             this.menu.SuspendLayout();
             this.tabGame.SuspendLayout();
             this.tabFallout.SuspendLayout();
@@ -115,7 +118,8 @@
             // 
             this.menu.Items.AddRange( new System.Windows.Forms.ToolStripItem[] {
             this.menuAbout,
-            this.menuFile} );
+            this.menuFile,
+            this.menuOptions} );
             this.menu.Location = new System.Drawing.Point( 5, 0 );
             this.menu.Name = "menu";
             this.menu.Size = new System.Drawing.Size( 678, 24 );
@@ -712,6 +716,29 @@
             this.frmChecker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler( this.frmChecker_ProgressChanged );
             this.frmChecker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler( this.frmChecker_RunWorkerCompleted );
             // 
+            // menuOptions
+            // 
+            this.menuOptions.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
+            this.menuOptionsGeneral,
+            this.menuOptionsTarget} );
+            this.menuOptions.Name = "menuOptions";
+            this.menuOptions.Size = new System.Drawing.Size( 61, 20 );
+            this.menuOptions.Text = "Options";
+            // 
+            // menuOptionsGeneral
+            // 
+            this.menuOptionsGeneral.Name = "menuOptionsGeneral";
+            this.menuOptionsGeneral.Size = new System.Drawing.Size( 152, 22 );
+            this.menuOptionsGeneral.Text = "General";
+            this.menuOptionsGeneral.Click += new System.EventHandler( this.menuOptionsGeneral_Click );
+            // 
+            // menuOptionsTarget
+            // 
+            this.menuOptionsTarget.Enabled = false;
+            this.menuOptionsTarget.Name = "menuOptionsTarget";
+            this.menuOptionsTarget.Size = new System.Drawing.Size( 152, 22 );
+            this.menuOptionsTarget.Text = "Current target";
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
@@ -821,6 +848,9 @@
         private System.ComponentModel.BackgroundWorker frmChecker;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem menuFileExit;
+        private System.Windows.Forms.ToolStripMenuItem menuOptions;
+        private System.Windows.Forms.ToolStripMenuItem menuOptionsGeneral;
+        private System.Windows.Forms.ToolStripMenuItem menuOptionsTarget;
     }
 }
 

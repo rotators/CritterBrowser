@@ -45,11 +45,18 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CritterType.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="FOCommon\FalloutFrm.cs" />
+    <Compile Include="Forms\frmOptionsGeneral.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmOptionsGeneral.Designer.cs">
+      <DependentUpon>frmOptionsGeneral.cs</DependentUpon>
+    </Compile>
     <Compile Include="IniParser.cs" />
     <Compile Include="Forms\frmAnimation.cs">
       <SubType>Form</SubType>
@@ -70,6 +77,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmOptionsGeneral.resx">
+      <DependentUpon>frmOptionsGeneral.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

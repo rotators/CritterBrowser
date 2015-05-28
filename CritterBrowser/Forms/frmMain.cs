@@ -86,10 +86,13 @@ namespace CritterBrowser.Forms
             }
         }
 
-        // http://stackoverflow.com/a/1732361
+        /// <summary>
+        /// Preprare form to be closed even if any BackgroundWorker is running.
+        /// </summary>
+        /// <remarks>http://stackoverflow.com/a/1732361</remarks>
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (!this.frmCheckerCompleted)
+            if( !this.frmCheckerCompleted )
             {
                 this.ClosePending = true;
                 frmChecker.CancelAsync();
@@ -98,7 +101,7 @@ namespace CritterBrowser.Forms
                 return;
             }
 
-            base.OnFormClosing(e);
+            base.OnFormClosing( e );
         }
 
         void EnableControls(bool enable)
@@ -108,12 +111,15 @@ namespace CritterBrowser.Forms
             falloutCrittersLst.Enabled =
             grpFonlineConfiguration.Enabled =
             fonlineCritterTypesCfg.Enabled =
-            enable;
+                enable;
 
             if (!enable)
                 this.ResetAnimations();
         }
 
+        /// <summary>
+        /// Reset all animation-related controls to initial state.
+        /// </summary>
         void ResetAnimations()
         {
             foreach (string animName in this.ValidAnimations)
@@ -289,18 +295,25 @@ namespace CritterBrowser.Forms
             this.ValidAnimations.Sort();
         }
 
+        //
+        // Animations panel structure; use string Anim* when searching for specific control.
+        //
+        // X  - animation group identifier
+        // XY - animation type identifier
+        //
         // Panel ("animations")
-        //   GroupBox (AnimGroupX)
-        //     FlowLayoutPanel (AnimFlowX)
-        //       Panel (AnimPanelXY)
-        //         CheckBox (AnimCheckXY)
-        //         LinkLabel (AnimLinkXY)
+        //   GroupBox (AnimGroup+X)
+        //     FlowLayoutPanel (AnimFlow+X)
+        //       Panel (AnimPanel+XY)
+        //         CheckBox (AnimCheck+XY)
+        //         LinkLabel (AnimLink+XY)
+        //
 
         /// <summary>
-        /// Adds animation group
+        /// Adds animation group to supported list.
         /// </summary>
-        /// <param name="animGroup">required length: 1</param>
-        /// <param name="description"></param>
+        /// <param name="animGroup">(required length: 1)</param>
+        /// <param name="description">Short information about animation group.</param>
         void AddAnimationGroup(string animGroup, string description = "" )
         {
             if( !animGroup.IsAlpha() )
@@ -342,7 +355,7 @@ namespace CritterBrowser.Forms
         }
 
         /// <summary>
-        /// Adds animation with specified name
+        /// Adds animation with specified name to supported list.
         /// </summary>
         /// <param name="animName">Animation identifier (required length: 2).</param>
         /// <param name="description">Short information about animation type</param>
@@ -403,6 +416,9 @@ namespace CritterBrowser.Forms
             fpanel.Invalidate(true);
         }
 
+        /// <summary>
+        /// Updates positions of animation-related controls.
+        /// </summary>
         public void AutoPlacement()
         {
             List<GroupBox> groups = new List<GroupBox>();
@@ -524,6 +540,12 @@ namespace CritterBrowser.Forms
             this.fonlineCritterTypesCfg.Text = crType.ToFOnlineString( this.fonlineCritterTypesCfg.Multiline );
         }
 
+        /// <summary>
+        /// Prepares form to open a new target.
+        /// </summary>
+        /// <param name="loadMode">Target type.</param>
+        /// <param name="target">Target name.</param>
+        /// <returns>Configuration for frmChecker</returns>
         private frmCheckerConfig frmCheckerPrepare( LoadModeType loadMode, string target )
         {
             frmCheckerConfig config = new frmCheckerConfig( loadMode, target );
@@ -537,7 +559,9 @@ namespace CritterBrowser.Forms
 
             Text = this.BaseText + " : " + target;
 
-            menuFileOpen.Enabled = false;
+            menuFileOpen.Enabled =
+            menuOptionsTarget.Enabled =
+                false;
             lstCritters.SelectedIndex = this.PrevSelectedCritterIndex = -1;
             lstCritters.Items.Clear();
             this.RefreshFalloutFOnline( new CritterType( "" ), true );
@@ -549,6 +573,9 @@ namespace CritterBrowser.Forms
             return (config);
         }
 
+        /// <summary>
+        /// File->Open->Datafile event.
+        /// </summary>
         private void menuFileOpenDatafile_Click(object sender, EventArgs e)
         {
             DialogResult result = openFile.ShowDialog(this);
@@ -571,6 +598,9 @@ namespace CritterBrowser.Forms
             //frmChecker.RunWorkerAsync( config );
         }
 
+        /// <summary>
+        /// File->Open->Directory event.
+        /// </summary>
         private void menuFileOpenDirectory_Click(object sender, EventArgs e)
         {
             DialogResult result = openDirectory.ShowDialog(this);
@@ -583,9 +613,26 @@ namespace CritterBrowser.Forms
             frmChecker.RunWorkerAsync(config);
         }
 
+        /// <summary>
+        /// File->Close event.
+        /// </summary>
         private void menuFileExit_Click( object sender, EventArgs e )
         {
             Close();
+        }
+
+        /// <summary>
+        /// Options->General event.
+        /// </summary>
+        private void menuOptionsGeneral_Click( object sender, EventArgs e )
+        {
+            frmOptionsGeneral optionsGeneral = new frmOptionsGeneral();
+            DialogResult result = optionsGeneral.ShowDialog( this );
+
+            if( result != DialogResult.OK )
+                return;
+
+            // TODO: apply new options
         }
 
         private void lstCritters_SelectedValueChanged( object sender, EventArgs e )
@@ -792,7 +839,9 @@ namespace CritterBrowser.Forms
             this.frmCheckerCompleted = true;
 
             this.EnableControls(true);
-            menuFileOpen.Enabled = true;
+            menuFileOpen.Enabled =
+            //menuOptionsTarget.Enabled =
+            true;
 
             statusProgress.Visible = false;
             statusLabel.Text = "";
