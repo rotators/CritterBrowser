@@ -583,7 +583,12 @@ namespace CritterBrowser.Forms
             frmChecker.RunWorkerAsync(config);
         }
 
-        private void lstCritters_SelectedValueChanged(object sender, EventArgs e)
+        private void menuFileExit_Click( object sender, EventArgs e )
+        {
+            Close();
+        }
+
+        private void lstCritters_SelectedValueChanged( object sender, EventArgs e )
         {
             ListBox self = (ListBox)sender;
 

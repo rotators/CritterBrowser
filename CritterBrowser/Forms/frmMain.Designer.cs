@@ -35,6 +35,8 @@
             this.menuFileOpen = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFileOpenDatafile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFileOpenDirectory = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuFileExit = new System.Windows.Forms.ToolStripMenuItem();
             this.openFile = new System.Windows.Forms.OpenFileDialog();
             this.tabGame = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
@@ -131,7 +133,9 @@
             // menuFile
             // 
             this.menuFile.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
-            this.menuFileOpen} );
+            this.menuFileOpen,
+            this.toolStripSeparator1,
+            this.menuFileExit} );
             this.menuFile.Name = "menuFile";
             this.menuFile.Size = new System.Drawing.Size( 37, 20 );
             this.menuFile.Text = "File";
@@ -142,7 +146,7 @@
             this.menuFileOpenDatafile,
             this.menuFileOpenDirectory} );
             this.menuFileOpen.Name = "menuFileOpen";
-            this.menuFileOpen.Size = new System.Drawing.Size( 112, 22 );
+            this.menuFileOpen.Size = new System.Drawing.Size( 152, 22 );
             this.menuFileOpen.Text = "Open...";
             // 
             // menuFileOpenDatafile
@@ -159,6 +163,18 @@
             this.menuFileOpenDirectory.Size = new System.Drawing.Size( 131, 22 );
             this.menuFileOpenDirectory.Text = "Directory...";
             this.menuFileOpenDirectory.Click += new System.EventHandler( this.menuFileOpenDirectory_Click );
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size( 149, 6 );
+            // 
+            // menuFileExit
+            // 
+            this.menuFileExit.Name = "menuFileExit";
+            this.menuFileExit.Size = new System.Drawing.Size( 152, 22 );
+            this.menuFileExit.Text = "Exit";
+            this.menuFileExit.Click += new System.EventHandler( this.menuFileExit_Click );
             // 
             // openFile
             // 
@@ -803,6 +819,8 @@
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
         private System.Windows.Forms.ToolStripProgressBar statusProgress;
         private System.ComponentModel.BackgroundWorker frmChecker;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem menuFileExit;
     }
 }
 
