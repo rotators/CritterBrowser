@@ -50,6 +50,7 @@ namespace CritterBrowser.Forms
 
         List<string> ValidAnimations = new List<string>();
         List<string> ValidAnimationsGroups = new List<string>();
+        List<frmAnimation> AnimationWindows = new List<frmAnimation>();
 
         List<CritterType> CritterTypes = new List<CritterType>();
         CritterType CurrentCritterType = null;
@@ -528,6 +529,11 @@ namespace CritterBrowser.Forms
             frmCheckerConfig config = new frmCheckerConfig( loadMode, target );
             this.LoadMode = loadMode;
             this.EnableControls( false );
+            foreach( frmAnimation animWin in this.AnimationWindows )
+            {
+                animWin.Close();
+            }
+            this.AnimationWindows.Clear();
 
             Text = this.BaseText + " : " + target;
 
@@ -614,6 +620,15 @@ namespace CritterBrowser.Forms
             LinkLabel self = (LinkLabel)sender;
             string animName = (string)self.Tag;
 
+            foreach( frmAnimation prevAnimWin in this.AnimationWindows)
+            {
+                if( prevAnimWin.Text == this.CurrentCritterType.Name + animName )
+                {
+                    prevAnimWin.BringToFront();
+                    return;
+                }
+            }
+
             frmAnimation animWin = new frmAnimation();
             animWin.Text = this.CurrentCritterType.Name + animName;
 
@@ -651,6 +666,7 @@ namespace CritterBrowser.Forms
                 animWin.anim5.Image = frms[5];
             }
 
+            this.AnimationWindows.Add( animWin );
             animWin.Show();
         }
 
