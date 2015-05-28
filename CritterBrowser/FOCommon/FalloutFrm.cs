@@ -25,7 +25,7 @@ namespace FOCommon.Graphic
                 return (null);
 
             int result = (FramesPerDir * dir) + (frame - 1);
-            if (result < 0 || result >= this.Frames.Count)
+            if (result < 0 || result >= Frames.Count)
                 return (null);
             else
                 return Frames[result];

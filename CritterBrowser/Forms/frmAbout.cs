@@ -13,12 +13,12 @@ namespace CritterBrowser.Forms
         {
             InitializeComponent();
 
-            this.Text = String.Format( "About {0}", AssemblyTitle );
-            this.txtProductName.Text = AssemblyProduct;
-            this.txtVersion.Text = String.Format( "Version {0}", AssemblyVersion );
-            this.txtCopyright.Text = AssemblyCopyright;
-            this.txtCompanyName.Text = AssemblyCompany;
-            this.textDescription.Text = AssemblyDescription;
+            Text = String.Format( "About {0}", AssemblyTitle );
+            txtProductName.Text = AssemblyProduct;
+            txtVersion.Text = String.Format( "Version {0}", AssemblyVersion );
+            txtCopyright.Text = AssemblyCopyright;
+            txtCompanyName.Text = AssemblyCompany;
+            textDescription.Text = AssemblyDescription;
         }
 
         #region Assembly Attribute Accessors

@@ -13,9 +13,9 @@ namespace CritterBrowser
         {
             get
             {
-                foreach (bool d in this.Dir)
+                foreach( bool d in Dir )
                 {
-                    if (!d)
+                    if( !d )
                         return (false);
                 }
 
@@ -27,9 +27,9 @@ namespace CritterBrowser
         {
             get
             {
-                foreach (bool d in this.Dir)
+                foreach( bool d in Dir )
                 {
-                    if (d)
+                    if( d )
                         return (true);
                 }
                 return (false);
@@ -41,7 +41,7 @@ namespace CritterBrowser
             if (name.Length != 2)
                 throw new ArgumentException("wrong length", name.ToString());
 
-            this.Name = name.ToUpper();
+            Name = name.ToUpper();
         }
     }
 
@@ -58,14 +58,14 @@ namespace CritterBrowser
 
         public CritterType(string name)
         {
-            this.Name = name.ToUpper();
+            Name = name.ToUpper();
         }
 
         public CritterAnimation this[char name]
         {
             get
             {
-                return (this.Animations.Find(anim => anim.Name.StartsWith(name.ToString().ToUpper())));
+                return (Animations.Find(anim => anim.Name.StartsWith(name.ToString().ToUpper())));
             }
         }
 
@@ -73,17 +73,17 @@ namespace CritterBrowser
         {
             get
             {
-                return (this.Animations.Find(anim => anim.Name == name));
+                return (Animations.Find(anim => anim.Name == name));
             }
         }
 
         public string ToFalloutString() // is it actually correct?
         {
-            string result = this.Name.ToLower();
+            string result = Name.ToLower();
 
-            if( this.Alias > 0 )
+            if( Alias > 0 )
             {
-                result += "," + this.Alias;
+                result += "," + Alias;
 
                 if( this["AB"] != null || this["AT"] != null )
                     result += ",1";
@@ -98,51 +98,51 @@ namespace CritterBrowser
 
             List<string> args = new List<string>();
 
-            args.Add((this.Enabled ? "@" : "#"));
-            args.Add(this.ID.ToString());
-            args.Add(this.Name.ToLower());
-            args.Add(this.Alias.ToString());
-            args.Add(this.Multihex.ToString());
-            args.Add("0"); // 3D
-            args.Add((this["AB"] != null ? "1" : "0"));
-            args.Add((this["AT"] != null ? "1" : "0"));
-            args.Add((this.Aim ? "1" : "0"));
-            args.Add((this.Armor ? "1" : "0"));
-            args.Add((this.Rotate ? "1" : "0"));
-            args.Add((this['A'] != null ? "1" : "0"));
-            args.Add((this['B'] != null ? "1" : "0"));
-            args.Add((this['C'] != null ? "1" : "0"));
-            args.Add((this['D'] != null ? "1" : "0"));
-            args.Add((this['E'] != null ? "1" : "0"));
-            args.Add((this['F'] != null ? "1" : "0"));
-            args.Add((this['G'] != null ? "1" : "0"));
-            args.Add((this['H'] != null ? "1" : "0"));
-            args.Add((this['I'] != null ? "1" : "0"));
-            args.Add((this['J'] != null ? "1" : "0"));
-            args.Add((this["KJ"] != null ? "1" : "0"));
-            args.Add((this['L'] != null ? "1" : "0"));
-            args.Add((this["KL"] != null ? "1" : "0")); // M
-            args.Add((this['N'] != null ? "1" : "0"));
-            args.Add((this['J'] != null ? "1" : "0")); // J -> O
-            args.Add((this['P'] != null ? "1" : "0"));
-            args.Add((this['Q'] != null ? "1" : "0"));
-            args.Add((this['R'] != null ? "1" : "0"));
-            args.Add((this['S'] != null ? "1" : "0"));
-            args.Add((this['T'] != null ? "1" : "0"));
-            args.Add((this['U'] != null ? "1" : "0"));
-            args.Add((this['V'] != null ? "1" : "0"));
-            args.Add((this['W'] != null ? "1" : "0"));
-            args.Add((this['X'] != null ? "1" : "0"));
-            args.Add((this['Y'] != null ? "1" : "0"));
-            args.Add((this['Z'] != null ? "1" : "0"));
-            args.Add(this.Walk.ToString());
-            args.Add(this.Run.ToString());
-            args.Add(this.Step1.ToString());
-            args.Add(this.Step2.ToString());
-            args.Add(this.Step3.ToString());
-            args.Add(this.Step4.ToString());
-            args.Add( (this.Sound.Length == 0 ? "-" : this.Sound));
-            args.Add( (this.Comment.Length > 0) ? " # "+this.Comment:"");
+            args.Add( (Enabled ? "@" : "#") );
+            args.Add( ID.ToString() );
+            args.Add( Name.ToLower() );
+            args.Add( Alias.ToString() );
+            args.Add( Multihex.ToString() );
+            args.Add( "0" ); // 3D
+            args.Add( (this["AB"] != null ? "1" : "0") );
+            args.Add( (this["AT"] != null ? "1" : "0") );
+            args.Add( (Aim ? "1" : "0") );
+            args.Add( (Armor ? "1" : "0") );
+            args.Add( (Rotate ? "1" : "0") );
+            args.Add( (this['A'] != null ? "1" : "0") );
+            args.Add( (this['B'] != null ? "1" : "0") );
+            args.Add( (this['C'] != null ? "1" : "0") );
+            args.Add( (this['D'] != null ? "1" : "0") );
+            args.Add( (this['E'] != null ? "1" : "0") );
+            args.Add( (this['F'] != null ? "1" : "0") );
+            args.Add( (this['G'] != null ? "1" : "0") );
+            args.Add( (this['H'] != null ? "1" : "0") );
+            args.Add( (this['I'] != null ? "1" : "0") );
+            args.Add( (this['J'] != null ? "1" : "0") );
+            args.Add( (this["KJ"] != null ? "1" : "0") );
+            args.Add( (this['L'] != null ? "1" : "0") );
+            args.Add( (this["KL"] != null ? "1" : "0") ); // M
+            args.Add( (this['N'] != null ? "1" : "0") );
+            args.Add( (this['J'] != null ? "1" : "0") ); // J -> O
+            args.Add( (this['P'] != null ? "1" : "0") );
+            args.Add( (this['Q'] != null ? "1" : "0") );
+            args.Add( (this['R'] != null ? "1" : "0") );
+            args.Add( (this['S'] != null ? "1" : "0") );
+            args.Add( (this['T'] != null ? "1" : "0") );
+            args.Add( (this['U'] != null ? "1" : "0") );
+            args.Add( (this['V'] != null ? "1" : "0") );
+            args.Add( (this['W'] != null ? "1" : "0") );
+            args.Add( (this['X'] != null ? "1" : "0") );
+            args.Add( (this['Y'] != null ? "1" : "0") );
+            args.Add( (this['Z'] != null ? "1" : "0") );
+            args.Add( Walk.ToString() );
+            args.Add( Run.ToString() );
+            args.Add( Step1.ToString() );
+            args.Add( Step2.ToString() );
+            args.Add( Step3.ToString() );
+            args.Add( Step4.ToString() );
+            args.Add( (Sound.Length == 0 ? "-" : Sound) );
+            args.Add( (Comment.Length > 0) ? " # " + Comment : "" );
 
             if (!verbose)
             {
@@ -160,8 +160,8 @@ namespace CritterBrowser
             else
             {
                 int len = 5;
-                if( this.Name.Length > len - 1 )
-                    len = this.Name.Length + 1;
+                if( Name.Length > len - 1 )
+                    len = Name.Length + 1;
                 args.Insert(0, "Name");
                 string format =
                     "# ID  {0," + -len + "}Alias MH 3D Walk Run Aim Armor Rotate  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z  Walk Run Walk steps Sound"
