@@ -11,13 +11,32 @@ using FOCommon.Graphic;
 
 namespace CritterBrowser.Forms
 {
+
     public partial class frmMain : Form
     {
         enum LoadModeType
         {
             None,
-            Datafile,
-            Directory
+            Directory,
+            Zip,
+            Dat
+        }
+
+        struct frmCheckerConfig
+        {
+            public readonly LoadModeType LoadMode;
+            public readonly string Target;
+
+            public frmCheckerConfig( LoadModeType loadMode, string target )
+            {
+                this.LoadMode = loadMode;
+                this.Target = target;
+            }
+        }
+
+        enum ProgressData : int
+        {
+            CritterTypeName = -1
         }
 
         readonly string BaseText;
@@ -36,12 +55,10 @@ namespace CritterBrowser.Forms
         CritterType CurrentCritterType = null;
         int PrevSelectedCritterIndex = -1;
 
-
         LoadModeType LoadMode = LoadModeType.None;
 
         Color TransparencyFRM = Color.FromArgb(255, 11, 0, 11);
 
-        readonly int ProgressCritter = -1;
         private bool frmCheckerCompleted = true;
         private bool ClosePending = false;
 
@@ -108,6 +125,9 @@ namespace CritterBrowser.Forms
             }
         }
 
+        /// <summary>
+        /// Initialize animations config
+        /// </summary>
         void InitAnimations()
         {
             AddAnimationGroup("A", "unarmed");
@@ -275,8 +295,16 @@ namespace CritterBrowser.Forms
         //         CheckBox (AnimCheckXY)
         //         LinkLabel (AnimLinkXY)
 
+        /// <summary>
+        /// Adds animation group
+        /// </summary>
+        /// <param name="animGroup">required length: 1</param>
+        /// <param name="description"></param>
         void AddAnimationGroup(string animGroup, string description = "" )
         {
+            if( !animGroup.IsAlpha() )
+                return;
+
             animGroup = animGroup.ToUpper();
 
             if (animGroup.Length != 1)
@@ -312,8 +340,16 @@ namespace CritterBrowser.Forms
             animations.Controls.Add(group);
         }
 
+        /// <summary>
+        /// Adds animation with specified name
+        /// </summary>
+        /// <param name="animName">Animation identifier (required length: 2).</param>
+        /// <param name="description">Short information about animation type</param>
         void AddAnimation(string animName, string description = "")
         {
+            if( !animName.IsAlpha() )
+                return;
+
             animName = animName.ToUpper();
 
             if (animName.Length != 2)
@@ -435,9 +471,10 @@ namespace CritterBrowser.Forms
         /// <summary>
         /// Deep search for Control with given name
         /// </summary>
-        /// <param name="name"></param>
-        /// <throws>aaa</throws>
-        /// <returns></returns>
+        /// <param name="name">Name of Control (unique)</param>
+        /// <returns>Control object</returns>
+        /// <exception cref="NotSupportedException">Thrown when control has not been found, or there is more than one with given name</exception>
+        /// <example>Label lbl = (Label)GetControl( "labelName" );</example>
         private Control GetControl(string name)
         {
             Control[] controls = this.Controls.Find(name, true);
@@ -447,18 +484,84 @@ namespace CritterBrowser.Forms
             throw new NotSupportedException(); // :)
         }
 
-        private void RefreshFalloutFOnline()
+        /// <summary>
+        /// Refreshs text for falloutCrittersLst and fonlineCritterTypesCfg
+        /// </summary>
+        private void RefreshFalloutFOnline( CritterType crType = null, bool controls = false )
         {
-            this.falloutCrittersLst.Text = this.CurrentCritterType.ToFalloutString();
+            if( crType == null )
+            {
+                if( this.CurrentCritterType != null )
+                    crType = this.CurrentCritterType;
+                else
+                    return;
+            }
 
-            this.fonlineCritterTypesCfg.Clear();
+            if( controls )
+            {
+                this.falloutAlias.Value = crType.Alias;
 
-            this.fonlineCritterTypesCfg.AppendText(this.CurrentCritterType.ToFOnlineString(this.fonlineCritterTypesCfg.Multiline));
+                this.fonlineEnabled.CheckState = (crType.Enabled ? CheckState.Checked : CheckState.Unchecked);
+                this.fonlineID.Value = crType.ID;
+                this.fonlineAlias.Value = crType.Alias;
+                this.fonlineMultihex.Value = crType.Multihex;
+                this.fonlineAim.CheckState = (crType.Aim ? CheckState.Checked : CheckState.Unchecked);
+                this.fonlineAim.CheckState = (crType.Armor? CheckState.Checked : CheckState.Unchecked);
+                this.fonlineRotate.CheckState = (crType.Rotate ? CheckState.Checked : CheckState.Unchecked);
+                this.fonlineWalk.Value = crType.Walk;
+                this.fonlineRun.Value = crType.Run;
+                this.fonlineSteps1.Value = crType.Step1;
+                this.fonlineSteps2.Value = crType.Step2;
+                this.fonlineSteps3.Value = crType.Step3;
+                this.fonlineSteps4.Value = crType.Step4;
+                this.fonlineSound.Text = crType.Sound;
+                this.fonlineComment.Text = crType.Comment;
+            }
+
+            this.falloutCrittersLst.Text = crType.ToFalloutString();
+
+            this.fonlineCritterTypesCfg.Text = crType.ToFOnlineString( this.fonlineCritterTypesCfg.Multiline );
+        }
+
+        private frmCheckerConfig frmCheckerPrepare( LoadModeType loadMode, string target )
+        {
+            frmCheckerConfig config = new frmCheckerConfig( loadMode, target );
+            this.LoadMode = loadMode;
+            this.EnableControls( false );
+
+            Text = this.BaseText + " : " + target;
+
+            menuFileOpen.Enabled = false;
+            lstCritters.SelectedIndex = this.PrevSelectedCritterIndex = -1;
+            lstCritters.Items.Clear();
+            this.RefreshFalloutFOnline( new CritterType( "" ), true );
+            statusLabel.Text = "Opening " + target + "...";
+
+            frmChecker.DoWork -= this.frmChecker_DoWork;
+
+            return (config);
         }
 
         private void menuFileOpenDatafile_Click(object sender, EventArgs e)
         {
             DialogResult result = openFile.ShowDialog(this);
+
+            if( result != DialogResult.OK )
+                return;
+
+            string ext = Path.GetExtension( openFile.SafeFileName ).Substring(1).ToUpper();
+
+            LoadModeType loadMode = LoadModeType.None;
+            if( ext == "ZIP" )
+                loadMode = LoadModeType.Zip;
+            else if( ext == "DAT")
+                loadMode = LoadModeType.Dat;
+            else
+                return;
+
+            frmCheckerConfig config = this.frmCheckerPrepare( loadMode, openFile.FileName );
+            //frmChecker.DoWork +=new DoWorkEventHandler(frmChecker_DoWork);
+            //frmChecker.RunWorkerAsync( config );
         }
 
         private void menuFileOpenDirectory_Click(object sender, EventArgs e)
@@ -468,21 +571,9 @@ namespace CritterBrowser.Forms
             if (result != DialogResult.OK)
                 return;
 
-            this.LoadMode = LoadModeType.Directory;
-            this.Text = this.BaseText + " : " + openDirectory.SelectedPath;
-
-            lstCritters.SelectedIndex = this.PrevSelectedCritterIndex = -1;
-            lstCritters.Items.Clear();
-
-            this.EnableControls(false);
-            menuFileOpen.Enabled = false;
-
-            statusLabel.Text = "Opening " + openDirectory.SelectedPath + "...";
-
-            frmChecker.DoWork -= this.frmChecker_DoWork;
-
+            frmCheckerConfig config = this.frmCheckerPrepare( LoadModeType.Directory, openDirectory.SelectedPath );
             frmChecker.DoWork +=new DoWorkEventHandler(frmChecker_DoWork);
-            frmChecker.RunWorkerAsync(openDirectory.SelectedPath);
+            frmChecker.RunWorkerAsync(config);
         }
 
         private void lstCritters_SelectedValueChanged(object sender, EventArgs e)
@@ -502,24 +593,7 @@ namespace CritterBrowser.Forms
             string baseName = (string)self.SelectedItem;
             this.CurrentCritterType = this.CritterTypes.Find(cr => cr.Name == baseName);
 
-            this.falloutAlias.Value = this.CurrentCritterType.Alias;
-
-            this.fonlineEnabled.Checked = this.CurrentCritterType.Enabled;
-            this.fonlineID.Value = this.CurrentCritterType.ID;
-            this.fonlineAlias.Value = this.CurrentCritterType.Alias;
-            this.fonlineMultihex.Value = this.CurrentCritterType.Multihex;
-            this.fonlineAim.Checked = this.CurrentCritterType.Aim;
-            this.fonlineRotate.Checked = this.CurrentCritterType.Rotate;
-            this.fonlineWalk.Value = this.CurrentCritterType.Walk;
-            this.fonlineRun.Value = this.CurrentCritterType.Run;
-            this.fonlineSteps1.Value = this.CurrentCritterType.Step1;
-            this.fonlineSteps2.Value = this.CurrentCritterType.Step2;
-            this.fonlineSteps3.Value = this.CurrentCritterType.Step3;
-            this.fonlineSteps4.Value = this.CurrentCritterType.Step4;
-            this.fonlineSound.Text = this.CurrentCritterType.Sound;
-            this.fonlineComment.Text = this.CurrentCritterType.Comment;
-
-            this.RefreshFalloutFOnline();
+            this.RefreshFalloutFOnline( this.CurrentCritterType, true );
 
             foreach (CritterAnimation crAnim in this.CurrentCritterType.Animations)
             {
@@ -582,13 +656,13 @@ namespace CritterBrowser.Forms
         private void frmChecker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker self = (BackgroundWorker)sender;
-            string directory = (string)e.Argument;
+            frmCheckerConfig config = (frmCheckerConfig)e.Argument;
 
             List<string> files = new List<string>();
-            files.AddRange(Directory.GetFiles(directory, "*.FRM", SearchOption.TopDirectoryOnly));
+            files.AddRange(Directory.GetFiles(config.Target, "*.FRM", SearchOption.TopDirectoryOnly));
             for (int i = 0; i <= 5; i++)
             {
-                files.AddRange(Directory.GetFiles(directory, "*.FR" + i, SearchOption.TopDirectoryOnly));
+                files.AddRange(Directory.GetFiles(config.Target, "*.FR" + i, SearchOption.TopDirectoryOnly));
             }
             files.Sort();
 
@@ -602,9 +676,23 @@ namespace CritterBrowser.Forms
 
                 string name = Path.GetFileName(file).ToUpper(); // HFJMPSAB.FRM
                 string nameNoExt = Path.GetFileNameWithoutExtension(name); // HFJMPSAB
+
+                if (nameNoExt.Length < 3)
+                    continue;
+
                 string baseName = nameNoExt.Substring(0, nameNoExt.Length - 2); // HFJMPS
                 string animName = nameNoExt.Substring(nameNoExt.Length - 2); // AB
+
+                if( !animName.IsAlpha() )
+                    continue;
+
+                if (!this.ValidAnimationsGroups.Contains(animName.Substring(0, 1)))
+                    continue;
+
                 string ext = Path.GetExtension(name).Substring(1); // FRM
+
+                if (ext.Substring(0, 2) != "FR")
+                    continue;
 
                 self.ReportProgress(percent, "Checking " + name + "...");
 
@@ -619,7 +707,7 @@ namespace CritterBrowser.Forms
                     this.CritterTypes.Add(crType);
                 }
 
-                self.ReportProgress(ProgressCritter, crType.Name);
+                self.ReportProgress( (int)ProgressData.CritterTypeName, crType.Name );
 
                 // TODO: should be outside
                 if (crType[animName] == null)
@@ -653,23 +741,24 @@ namespace CritterBrowser.Forms
 
         private void frmChecker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            string text = (string)e.UserState;
-
-            if (e.ProgressPercentage == ProgressCritter && text != null)
+            if( e.ProgressPercentage == (int)ProgressData.CritterTypeName )
             {
-                if (!lstCritters.Items.Contains(text))
-                    lstCritters.Items.Add(text);
+                string text = (string)e.UserState;
+                if( text != null && !lstCritters.Items.Contains( text ) )
+                    lstCritters.Items.Add( text );
             }
-            else if (e.ProgressPercentage >= 0)
+            else if( e.ProgressPercentage >= 0 )
             {
-                if (!statusProgress.Visible)
+                if( !statusProgress.Visible )
                     statusProgress.Visible = true;
 
                 statusProgress.Value = e.ProgressPercentage;
                 statusProgress.ToolTipText = e.ProgressPercentage + "%";
+                statusLabel.Text = "[" + e.ProgressPercentage + "%]";
 
-                if (text != null)
-                    statusLabel.Text = "[" + e.ProgressPercentage + "%] " + text;
+                string text = (string)e.UserState;
+                if( text != null )
+                    statusLabel.Text += " " + text;
             }
         }
 

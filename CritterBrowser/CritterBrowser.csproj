@@ -48,7 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CritterType.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="FOCommon\FalloutFrm.cs" />
+    <Compile Include="IniParser.cs" />
     <Compile Include="Forms\frmAnimation.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -79,6 +81,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="FOCommon\README.md" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

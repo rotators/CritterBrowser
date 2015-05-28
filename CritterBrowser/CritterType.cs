@@ -77,14 +77,17 @@ namespace CritterBrowser
             }
         }
 
-        public string ToFalloutString()
+        public string ToFalloutString() // is it actually correct?
         {
             string result = this.Name.ToLower();
 
-            if (this.Alias > 0)
+            if( this.Alias > 0 )
+            {
                 result += "," + this.Alias;
-            if (this["AB"] != null || this["AT"] != null) // is it actually correct?
-                result += ",1";
+
+                if( this["AB"] != null || this["AT"] != null )
+                    result += ",1";
+            }
 
             return (result);
         }
@@ -139,7 +142,7 @@ namespace CritterBrowser
             args.Add(this.Step3.ToString());
             args.Add(this.Step4.ToString());
             args.Add( (this.Sound.Length == 0 ? "-" : this.Sound));
-            args.Add( (this.Comment.Length > 0) ? "# "+this.Comment:"");
+            args.Add( (this.Comment.Length > 0) ? " # "+this.Comment:"");
 
             if (!verbose)
             {
@@ -156,12 +159,14 @@ namespace CritterBrowser
             }
             else
             {
-                int len = this.Name.Length+1;
+                int len = 5;
+                if( this.Name.Length > len - 1 )
+                    len = this.Name.Length + 1;
                 args.Insert(0, "Name");
                 string format =
-                    "# ID  {0,-" + len + "}Alias MH 3D Walk Run Aim Armor Rotate  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z  Walk Run Walk steps Sound"
+                    "# ID  {0," + -len + "}Alias MH 3D Walk Run Aim Armor Rotate  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z  Walk Run Walk steps Sound"
                     + Environment.NewLine
-                    + "{1,-2}{2,-4}{3,-" + len + "}{4,-6}{5,-3}{6,-3}{7,-5}{8,-4}{9,-4}{10,-6}{11,-8}";
+                    + "{1,-2}{2,-4}{3," + -len + "}{4,-6}{5,-3}{6,-3}{7,-5}{8,-4}{9,-4}{10,-6}{11,-8}";
 
                 // A-Z
                 for (int a = 12; a <= 37; a++)
@@ -178,11 +183,11 @@ namespace CritterBrowser
                     format += "{" + s + ",-3}";
                 }
 
-                format += "{44} {45}";
-                //System.Windows.Forms.MessageBox.Show(format);
+                format += "{44}{45}";
 
                 result += string.Format( format, args.ToArray());
             }
+
             return (result);
         }
     }
