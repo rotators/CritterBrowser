@@ -27,7 +27,7 @@ public class IniParser
 
     public readonly bool Loaded = false;
 
-    public readonly static String RootString = "ROOT";
+    public readonly static String RootSection = "ROOT";
     public readonly static Char[] CommentChars = { '#', ';' };
     public readonly static String[] FalseStrings = { "false", "disabled", "no", "0" };
     public readonly static String[] TrueStrings = { "true", "enabled", "yes", "1" };
@@ -78,7 +78,7 @@ public class IniParser
                             String value = "";
 
                             if( currentRoot == null )
-                                currentRoot = RootString;
+                                currentRoot = RootSection;
 
                             sectionPair.Section = currentRoot;
                             sectionPair.Key = keyPair[0];
@@ -250,17 +250,35 @@ public class IniParser
     /// <param name="newFilePath">New file path.</param>
     public void SaveSettings( String newFilePath )
     {
+        ArrayList rootSection = new ArrayList();
         ArrayList sections = new ArrayList();
         String tmpValue = "";
         String strToSave = "";
 
         foreach( SectionPair sectionPair in keyPairs.Keys )
         {
-            if( !sections.Contains( sectionPair.Section ) )
+            if( sectionPair.Section == RootSection )
+                rootSection.Add( sectionPair );
+            else if( !sections.Contains( sectionPair.Section ) )
                 sections.Add( sectionPair.Section );
         }
 
         sections.Sort();
+
+        if( rootSection.Count > 0 )
+        {
+            foreach( SectionPair sectionPair in rootSection )
+            {
+                tmpValue = (String)keyPairs[sectionPair];
+
+                if( tmpValue != null )
+                    tmpValue = "=" + tmpValue;
+
+                strToSave += (sectionPair.Key + tmpValue + Environment.NewLine);
+            }
+
+            strToSave += Environment.NewLine;
+        }
 
         foreach( String section in sections )
         {
