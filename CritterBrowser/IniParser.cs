@@ -1,9 +1,18 @@
-﻿using System;
+﻿#define INIPARSER_CONTROLS
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
+#if INIPARSER_FORMS
+using System.Drawing;
+using System.Windows.Forms;
+#endif
+
+//
 // based on https://github.com/rotators/fo2238/Tools/FO2238Config/ by Atom/Rotators
+//
 
 public class IniParser
 {
@@ -15,6 +24,16 @@ public class IniParser
         public String Section;
         public String Key;
     }
+
+    public readonly bool Loaded = false;
+
+    public readonly static String RootString = "ROOT";
+    public readonly static Char[] CommentChars = { '#', ';' };
+    public readonly static String[] FalseStrings = { "false", "disabled", "no", "0" };
+    public readonly static String[] TrueStrings = { "true", "enabled", "yes", "1" };
+
+    public static String FalseString { get { return (FalseStrings[0]); } }
+    public static String TrueString { get { return (TrueStrings[0]); } }
 
     /// <summary>
     /// Opens the INI file at the given path and enumerates the values in the IniParser.
@@ -39,7 +58,7 @@ public class IniParser
 
                 while( strLine != null )
                 {
-                    strLine = strLine.Trim();
+                    strLine = strLine.Trim().TrimStart( new char[] { '\t' } );
 
                     if( strLine != "" )
                     {
@@ -47,7 +66,7 @@ public class IniParser
                         {
                             currentRoot = strLine.Substring( 1, strLine.Length - 2 );
                         }
-                        else if( strLine.StartsWith( "#" ) || strLine.StartsWith( ";" ) )
+                        else if( CommentChars.Length > 0 && strLine.IndexOfAny( CommentChars ) == 0 )
                         {
                             // comment
                         }
@@ -59,7 +78,7 @@ public class IniParser
                             String value = "";
 
                             if( currentRoot == null )
-                                currentRoot = "ROOT";
+                                currentRoot = RootString;
 
                             sectionPair.Section = currentRoot;
                             sectionPair.Key = keyPair[0];
@@ -81,15 +100,12 @@ public class IniParser
             finally
             {
                 if( iniFile != null )
+                {
                     iniFile.Close();
-                //MakeDefaultConfig();
+                    Loaded = true;
+                }
             }
         }
-        //else
-        //{
-        //    MakeDefaultConfig();
-        //    SaveSettings();
-        //}
     }
 
     /// <summary>
@@ -106,6 +122,20 @@ public class IniParser
         if( (ret == null) || ret.Length == 0 || !keyPairs.Contains( sectionPair ) ) return "0";
 
         return ret;
+    }
+
+    /// <summary>
+    /// Returns the value of the given section, key pair.
+    /// </summary>
+    /// <param name="sectionName">Section name.</param>
+    /// <param name="settingName">Key name.</param>
+    public Boolean GetSettingBool( String sectionName, String settingName )
+    {
+        String result = GetSetting( sectionName, settingName ).ToLower();
+        if( ContainsNoCase( TrueStrings, result ) )
+            return (true);
+
+        return (false);
     }
 
     /// <summary>
@@ -156,6 +186,11 @@ public class IniParser
         keyPairs.Add( sectionPair, settingValue );
     }
 
+    public void AddSetting( String sectionName, String settingName, Boolean settingValue )
+    {
+        AddSetting( sectionName, settingName, settingValue ? TrueString : FalseString );
+    }
+
     /// <summary>
     /// Adds or replaces a setting to the table to be saved with a null value.
     /// </summary>
@@ -192,8 +227,13 @@ public class IniParser
 
     public void AddNewSetting( String sectionName, String settingName, String settingValue )
     {
-        if( IsSetting( sectionName, settingName ) ) return;
-        AddSetting( sectionName, settingName, settingValue );
+        if( !IsSetting( sectionName, settingName ) )
+            AddSetting( sectionName, settingName, settingValue );
+    }
+
+    public void AddNewSetting( String sectionName, String settingName, Boolean settingValue )
+    {
+        AddNewSetting( sectionName, settingName, settingValue ? TrueString : FalseString );
     }
 
     public void DeleteSection( String sectionName )
@@ -224,7 +264,7 @@ public class IniParser
 
         foreach( String section in sections )
         {
-            strToSave += ("[" + section + "]\r\n");
+            strToSave += ("[" + section + "]" + Environment.NewLine);
 
             foreach( SectionPair sectionPair in keyPairs.Keys )
             {
@@ -235,11 +275,11 @@ public class IniParser
                     if( tmpValue != null )
                         tmpValue = "=" + tmpValue;
 
-                    strToSave += (sectionPair.Key + tmpValue + "\r\n");
+                    strToSave += (sectionPair.Key + tmpValue + Environment.NewLine);
                 }
             }
 
-            strToSave += "\r\n";
+            strToSave += Environment.NewLine;
         }
 
         try
@@ -261,4 +301,139 @@ public class IniParser
     {
         SaveSettings( iniFilePath );
     }
+
+    private bool ContainsNoCase( string[] list, string value )
+    {
+        value = value.ToLower();
+        foreach( string search in list )
+        {
+            if( search.ToLower() == value )
+                return (true);
+        }
+
+        return (false);
+    }
+
+#if INIPARSER_CONTROLS
+    /// <summary>
+    /// Update control state basing on current settings.
+    /// </summary>
+    /// <param name="box">Target control.</param>
+    /// <param name="section">Section name.</param>
+    /// <param name="key">Key name.</param>
+    public void ToControl( CheckBox box, String section, String key )
+    {
+        box.Checked = GetSettingBool( section, key );
+    }
+
+    /// <summary>
+    /// Update control state basing on current settings.
+    /// </summary>
+    /// <param name="num">Target control.</param>
+    /// <param name="section">Section name.</param>
+    /// <param name="key">Key name.</param>
+    public void ToControl( NumericUpDown num, String section, String key )
+    {
+        num.Value = Clamp( ParseInt( GetSetting( section, key ) ), (int)num.Minimum, (int)num.Maximum );
+    }
+
+    /// <summary>
+    /// Update control state basing on current settings.
+    /// </summary>
+    /// <param name="box">Target control.</param>
+    /// <param name="section">Section name.</param>
+    /// <param name="key">Key name.</param>
+    public void ToControl( ComboBox box, String section, String key )
+    {
+        box.SelectedIndex = Clamp( ParseInt( GetSetting( section, key ) ), 0, box.Items.Count - 1 );
+    }
+
+    /// <summary>
+    /// Update control state basing on current settings.
+    /// </summary>
+    /// <param name="button">Target control.</param>
+    /// <param name="section">Section name.</param>
+    /// <param name="key">Key name.</param>
+    public void ToControl( Button button, String section, String key )
+    {
+        String[] spl = GetSetting( section, key ).Split( ' ' );
+        int r = 0, g = 0, b = 0;
+        if( spl.Length > 2 ) b = Clamp( ParseInt( spl[2] ), 0, 255 );
+        if( spl.Length > 1 ) b = Clamp( ParseInt( spl[1] ), 0, 255 );
+        if( spl.Length > 0 ) b = Clamp( ParseInt( spl[0] ), 0, 255 );
+        button.ForeColor = Color.FromArgb( r, g, b );
+    }
+
+    /// <summary>
+    /// Update curent settings basing on control state.
+    /// </summary>
+    /// <param name="box">Source control.</param>
+    /// <param name="section">Section name.</param>
+    /// <param name="key">Key name.</param>
+    public void FromControl( CheckBox box, String section, String key )
+    {
+        AddSetting( section, key, box.Checked ? TrueString : FalseString );
+    }
+
+    /// <summary>
+    /// Update curent settings basing on control state.
+    /// </summary>
+    /// <param name="num">Source control.</param>
+    /// <param name="section">Section name.</param>
+    /// <param name="key">Key name.</param>
+    public void FromControl( NumericUpDown num, String section, String key )
+    {
+        AddSetting( section, key, num.Value.ToString() );
+    }
+
+    /// <summary>
+    /// Update curent settings basing on control state.
+    /// </summary>
+    /// <param name="box">Source control.</param>
+    /// <param name="section">Section name.</param>
+    /// <param name="key">Key name.</param>
+    public void FromControl( ComboBox box, String section, String key )
+    {
+        AddSetting( section, key, box.SelectedIndex.ToString() );
+    }
+
+    /// <summary>
+    /// Update curent settings basing on control state.
+    /// </summary>
+    /// <param name="button">Source control.</param>
+    /// <param name="section">Section name.</param>
+    /// <param name="key">Key name.</param>
+    public void FromControl( Button button, String section, String key )
+    {
+        Color color = button.ForeColor;
+        AddSetting( section, key, color.R.ToString() + " " + color.G.ToString() + " " + color.B.ToString() );
+    }
+
+    private int Clamp( int n, int min, int max )
+    {
+        if( n > max )
+            return max;
+
+        if( n < min )
+            return min;
+
+        return n;
+    }
+
+    private int ParseInt( String s )
+    {
+        if( s == null )
+            return 0;
+
+        try
+        {
+            int ret = Int32.Parse( s );
+            return ret;
+        }
+        catch( Exception )
+        {
+            return 0;
+        }
+    }
+#endif // INIPARSER_CONTROLS
 }
