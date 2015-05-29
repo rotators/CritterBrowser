@@ -148,7 +148,7 @@
             // menuAboutRepo
             // 
             this.menuAboutRepo.Name = "menuAboutRepo";
-            this.menuAboutRepo.Size = new System.Drawing.Size( 152, 22 );
+            this.menuAboutRepo.Size = new System.Drawing.Size( 162, 22 );
             this.menuAboutRepo.Text = "Repository";
             this.menuAboutRepo.Click += new System.EventHandler( this.menuAboutRepo_Click );
             // 
@@ -721,7 +721,6 @@
             this.lstCritters.FormattingEnabled = true;
             this.lstCritters.Location = new System.Drawing.Point( 5, 24 );
             this.lstCritters.Name = "lstCritters";
-            this.lstCritters.ScrollAlwaysVisible = true;
             this.lstCritters.Size = new System.Drawing.Size( 89, 274 );
             this.lstCritters.Sorted = true;
             this.lstCritters.TabIndex = 0;

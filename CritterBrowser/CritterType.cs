@@ -38,8 +38,8 @@ namespace CritterBrowser
 
         public CritterAnimation(string name)
         {
-            if (name.Length != 2)
-                throw new ArgumentException("wrong length", name.ToString());
+            if( name.Length != 2 )
+                throw new ArgumentException( "wrong length", "name" );
 
             Name = name.ToUpper();
         }

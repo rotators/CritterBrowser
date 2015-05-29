@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.autosaveTarget = new System.Windows.Forms.CheckBox();
+            this.fastFRM = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -40,27 +40,28 @@
             this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // checkBox1
+            // autosaveTarget
             // 
-            this.checkBox1.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point( 3, 48 );
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size( 204, 17 );
-            this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "Autosave target-specific configuration";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.autosaveTarget.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.autosaveTarget.AutoSize = true;
+            this.autosaveTarget.Enabled = false;
+            this.autosaveTarget.Location = new System.Drawing.Point( 8, 53 );
+            this.autosaveTarget.Name = "autosaveTarget";
+            this.autosaveTarget.Size = new System.Drawing.Size( 204, 17 );
+            this.autosaveTarget.TabIndex = 0;
+            this.autosaveTarget.Text = "Autosave target-specific configuration";
+            this.autosaveTarget.UseVisualStyleBackColor = true;
             // 
-            // checkBox2
+            // fastFRM
             // 
-            this.checkBox2.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point( 3, 161 );
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size( 134, 17 );
-            this.checkBox2.TabIndex = 1;
-            this.checkBox2.Text = "Quick FRM verification";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.fastFRM.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.fastFRM.AutoSize = true;
+            this.fastFRM.Location = new System.Drawing.Point( 8, 156 );
+            this.fastFRM.Name = "fastFRM";
+            this.fastFRM.Size = new System.Drawing.Size( 159, 17 );
+            this.fastFRM.TabIndex = 1;
+            this.fastFRM.Text = "Simple animation verification";
+            this.fastFRM.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel1
             // 
@@ -69,13 +70,14 @@
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 50F ) );
             this.tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 50F ) );
-            this.tableLayoutPanel1.Controls.Add( this.checkBox2, 0, 1 );
-            this.tableLayoutPanel1.Controls.Add( this.checkBox1, 0, 0 );
+            this.tableLayoutPanel1.Controls.Add( this.fastFRM, 0, 1 );
+            this.tableLayoutPanel1.Controls.Add( this.autosaveTarget, 0, 0 );
             this.tableLayoutPanel1.Controls.Add( this.label1, 1, 0 );
             this.tableLayoutPanel1.Controls.Add( this.label2, 1, 1 );
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point( 0, 0 );
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding( 5, 10, 5, 10 );
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 50F ) );
             this.tableLayoutPanel1.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 50F ) );
@@ -86,7 +88,7 @@
             // 
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point( 221, 37 );
+            this.label1.Location = new System.Drawing.Point( 221, 42 );
             this.label1.MaximumSize = new System.Drawing.Size( 200, 0 );
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size( 170, 39 );
@@ -97,13 +99,13 @@
             // 
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point( 221, 143 );
+            this.label2.Location = new System.Drawing.Point( 221, 145 );
             this.label2.MaximumSize = new System.Drawing.Size( 200, 0 );
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size( 189, 52 );
+            this.label2.Size = new System.Drawing.Size( 193, 39 );
             this.label2.TabIndex = 3;
-            this.label2.Text = "Skip loading of animations files when processing datafile/directory. Initial anim" +
-                "ation info will be set basing on file existence.";
+            this.label2.Text = "Skip loading of animations files when processing datafile/directory. Initial info" +
+                " will be set basing on file existence.";
             // 
             // flowLayoutPanel1
             // 
@@ -131,7 +133,6 @@
             // 
             // btnOK
             // 
-            this.btnOK.Enabled = false;
             this.btnOK.Location = new System.Drawing.Point( 278, 13 );
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size( 75, 23 );
@@ -164,8 +165,8 @@
 
         #endregion
 
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.CheckBox checkBox2;
+        private System.Windows.Forms.CheckBox autosaveTarget;
+        private System.Windows.Forms.CheckBox fastFRM;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;

@@ -13,12 +13,17 @@ namespace CritterBrowser.Forms
         public frmOptionsGeneral()
         {
             InitializeComponent();
+
+            Settings.Config.ToControl( autosaveTarget, IniParser.RootSection, "AutoSaveTarget" );
+            Settings.Config.ToControl( fastFRM, IniParser.RootSection, "FastCheckFRM" );
         }
 
         private void btnOK_Click( object sender, EventArgs e )
         {
-            // TODO
-            // DialogResult = DialogResult.OK;
+            Settings.Config.FromControl( autosaveTarget, IniParser.RootSection, "AutoSaveTarget" );
+            Settings.Config.FromControl( fastFRM, IniParser.RootSection, "FastCheckFRM" );
+
+            DialogResult = DialogResult.OK;
             Close();
         }
 

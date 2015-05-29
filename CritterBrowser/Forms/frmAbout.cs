@@ -70,6 +70,7 @@ namespace CritterBrowser.Forms
 
         public string AssemblyProduct
         {
+            
             get
             {
                 object[] attributes = Assembly.GetExecutingAssembly().GetCustomAttributes( typeof( AssemblyProductAttribute ), false );

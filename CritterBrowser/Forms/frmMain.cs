@@ -12,7 +12,6 @@ using FOCommon.Graphic;
 
 namespace CritterBrowser.Forms
 {
-
     public partial class frmMain : Form
     {
         enum LoadModeType
@@ -27,11 +26,13 @@ namespace CritterBrowser.Forms
         {
             public readonly LoadModeType LoadMode;
             public readonly string Target;
+            public readonly bool FastCheck;
 
             public frmCheckerConfig( LoadModeType loadMode, string target )
             {
                 LoadMode = loadMode;
                 Target = target;
+                FastCheck = Settings.GetBool( "FastCheckFRM" );
             }
         }
 
@@ -59,10 +60,10 @@ namespace CritterBrowser.Forms
 
         LoadModeType LoadMode = LoadModeType.None;
 
-        Color TransparencyFRM = Color.FromArgb(255, 11, 0, 11);
+        Color TransparencyFRM = Color.FromArgb( 255, 11, 0, 11 );
 
-        private bool frmCheckerCompleted = true;
-        private bool ClosePending = false;
+        bool frmCheckerCompleted = true;
+        bool ClosePending = false;
 
         public frmMain()
         {
@@ -630,12 +631,13 @@ namespace CritterBrowser.Forms
         private void menuOptionsGeneral_Click( object sender, EventArgs e )
         {
             frmOptionsGeneral optionsGeneral = new frmOptionsGeneral();
+
             DialogResult result = optionsGeneral.ShowDialog( this );
 
             if( result != DialogResult.OK )
                 return;
 
-            // TODO: apply new options
+            Settings.Config.SaveSettings();
         }
 
         private void menuAboutSelf_Click( object sender, EventArgs e )
@@ -747,7 +749,6 @@ namespace CritterBrowser.Forms
             {
                 files.AddRange(Directory.GetFiles(config.Target, "*.FR" + i, SearchOption.TopDirectoryOnly));
             }
-            files.Sort();
 
             int currFile = 0;
             foreach (string file in files)
@@ -802,24 +803,39 @@ namespace CritterBrowser.Forms
                     crType.Animations.Add(crAnim);
                 }
 
-                if (ext == "FRM")
+                if( ext == "FRM" )
                 {
-                    byte[] bytes = File.ReadAllBytes(file);
-                    FalloutFRM frm = FalloutFRMLoader.LoadFRM( bytes, TransparencyFRM );
-
-                    for (int d = 0; d <= 5; d++)
+                    if( config.FastCheck )
                     {
-                        if (frm.GetAnimFrameByDirN(d, 1) != null)
+                        for( int d = 0; d <= 5; d++ )
+                        {
                             crType[animName].Dir[d] = true;
+                        }
+                    }
+                    else
+                    {
+                        byte[] bytes = File.ReadAllBytes( file );
+                        FalloutFRM frm = FalloutFRMLoader.LoadFRM( bytes, TransparencyFRM );
+
+                        for( int d = 0; d <= 5; d++ )
+                        {
+                            if( frm.GetAnimFrameByDirN( d, 1 ) != null )
+                                crType[animName].Dir[d] = true;
+                        }
                     }
                 }
-
-                for (int d = 0; d <= 5; d++)
+                else
                 {
-                    if (ext == "FR" + d)
+                    int dir = -1;
+                    if( int.TryParse( ext.Substring( 2, 1 ), out dir ) && dir >= 0 && dir <= 5 )
                     {
-                        if( FalloutFRMLoader.Load( file, 1, TransparencyFRM ) != null )
-                            crType[animName].Dir[d] = true;
+                        if( config.FastCheck )
+                            crType[animName].Dir[dir] = true;
+                        else
+                        {
+                            if( FalloutFRMLoader.Load( file, 1, TransparencyFRM ) != null )
+                                crType[animName].Dir[dir] = true;
+                        }
                     }
                 }
             }
@@ -831,7 +847,10 @@ namespace CritterBrowser.Forms
             {
                 string text = (string)e.UserState;
                 if( text != null && !lstCritters.Items.Contains( text ) )
+                {
                     lstCritters.Items.Add( text );
+                    lstCritters.Update();
+                }
             }
             else if( e.ProgressPercentage >= 0 )
             {
@@ -845,6 +864,8 @@ namespace CritterBrowser.Forms
                 string text = (string)e.UserState;
                 if( text != null )
                     statusLabel.Text += " " + text;
+
+                status.Update();
             }
         }
 
@@ -867,8 +888,8 @@ namespace CritterBrowser.Forms
         private void falloutAlias_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown self = (NumericUpDown)sender;
-            CurrentCritterType.Alias = decimal.ToUInt16( self.Value );
 
+            CurrentCritterType.Alias = decimal.ToUInt16( self.Value );
             fonlineAlias.Value = self.Value;
 
             RefreshFalloutFOnline();
@@ -877,6 +898,7 @@ namespace CritterBrowser.Forms
         private void fonlineEnabled_CheckedChanged(object sender, EventArgs e)
         {
             CheckBox self = (CheckBox)sender;
+
             CurrentCritterType.Enabled = self.Checked;
 
             RefreshFalloutFOnline();
@@ -894,8 +916,8 @@ namespace CritterBrowser.Forms
         private void fonlineAlias_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown self = (NumericUpDown)sender;
-            CurrentCritterType.Alias = (UInt16)self.Value;
 
+            CurrentCritterType.Alias = (UInt16)self.Value;
             falloutAlias.Value = self.Value;
 
             RefreshFalloutFOnline();
@@ -904,6 +926,7 @@ namespace CritterBrowser.Forms
         private void fonlineMultihex_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown self = (NumericUpDown)sender;
+
             CurrentCritterType.Multihex = (byte)self.Value;
 
             RefreshFalloutFOnline();
@@ -912,6 +935,7 @@ namespace CritterBrowser.Forms
         private void fonlineAim_CheckedChanged(object sender, EventArgs e)
         {
             CheckBox self = (CheckBox)sender;
+
             CurrentCritterType.Aim = self.Checked;
 
             RefreshFalloutFOnline();
@@ -920,6 +944,7 @@ namespace CritterBrowser.Forms
         private void fonlineArmor_CheckedChanged(object sender, EventArgs e)
         {
             CheckBox self = (CheckBox)sender;
+
             CurrentCritterType.Armor = self.Checked;
 
             RefreshFalloutFOnline();
@@ -928,6 +953,7 @@ namespace CritterBrowser.Forms
         private void fonlineRotate_CheckedChanged(object sender, EventArgs e)
         {
             CheckBox self = (CheckBox)sender;
+
             CurrentCritterType.Rotate = self.Checked;
 
             RefreshFalloutFOnline();
@@ -937,6 +963,7 @@ namespace CritterBrowser.Forms
         private void fonlineWalk_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown self = (NumericUpDown)sender;
+
             CurrentCritterType.Walk = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
@@ -945,6 +972,7 @@ namespace CritterBrowser.Forms
         private void fonlineRun_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown self = (NumericUpDown)sender;
+
             CurrentCritterType.Run = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
@@ -953,6 +981,7 @@ namespace CritterBrowser.Forms
         private void fonlineSteps1_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown self = (NumericUpDown)sender;
+
             CurrentCritterType.Step1 = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
@@ -961,6 +990,7 @@ namespace CritterBrowser.Forms
         private void fonlineSteps2_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown self = (NumericUpDown)sender;
+
             CurrentCritterType.Step2 = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
@@ -969,6 +999,7 @@ namespace CritterBrowser.Forms
         private void fonlineSteps3_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown self = (NumericUpDown)sender;
+
             CurrentCritterType.Step3 = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
@@ -978,6 +1009,7 @@ namespace CritterBrowser.Forms
         private void fonlineSteps4_ValueChanged(object sender, EventArgs e)
         {
             NumericUpDown self = (NumericUpDown)sender;
+
             CurrentCritterType.Step4 = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
@@ -986,6 +1018,7 @@ namespace CritterBrowser.Forms
         private void fonlineSound_TextChanged(object sender, EventArgs e)
         {
             TextBox self = (TextBox)sender;
+
             CurrentCritterType.Sound = self.Text;
 
             RefreshFalloutFOnline();
@@ -994,6 +1027,7 @@ namespace CritterBrowser.Forms
         private void fonlineComment_TextChanged(object sender, EventArgs e)
         {
             TextBox self = (TextBox)sender;
+
             CurrentCritterType.Comment = self.Text;
 
             RefreshFalloutFOnline();
