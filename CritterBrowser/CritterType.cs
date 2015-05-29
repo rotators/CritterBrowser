@@ -98,43 +98,63 @@ namespace CritterBrowser
 
             List<string> args = new List<string>();
 
+            var sbool = new Func<bool, string>( b =>
+                {
+                    return (b ? "1" : "0");
+                }
+            );
+
+            var anim = new Func<string, string>( name =>
+                {
+                    return (this[name] != null ? "1" : "0");
+                }
+            );
+
+            var animGroup = new Func<char, string>( name =>
+                {
+                    return (this[name] != null ? "1" : "0");
+                }
+            );
+
+            // cvet plz, no format changes ;_;
+
             args.Add( (Enabled ? "@" : "#") );
             args.Add( ID.ToString() );
             args.Add( Name.ToLower() );
             args.Add( Alias.ToString() );
             args.Add( Multihex.ToString() );
-            args.Add( "0" ); // 3D
-            args.Add( (this["AB"] != null ? "1" : "0") );
-            args.Add( (this["AT"] != null ? "1" : "0") );
-            args.Add( (Aim ? "1" : "0") );
-            args.Add( (Armor ? "1" : "0") );
-            args.Add( (Rotate ? "1" : "0") );
-            args.Add( (this['A'] != null ? "1" : "0") );
-            args.Add( (this['B'] != null ? "1" : "0") );
-            args.Add( (this['C'] != null ? "1" : "0") );
-            args.Add( (this['D'] != null ? "1" : "0") );
-            args.Add( (this['E'] != null ? "1" : "0") );
-            args.Add( (this['F'] != null ? "1" : "0") );
-            args.Add( (this['G'] != null ? "1" : "0") );
-            args.Add( (this['H'] != null ? "1" : "0") );
-            args.Add( (this['I'] != null ? "1" : "0") );
-            args.Add( (this['J'] != null ? "1" : "0") );
-            args.Add( (this["KJ"] != null ? "1" : "0") );
-            args.Add( (this['L'] != null ? "1" : "0") );
-            args.Add( (this["KL"] != null ? "1" : "0") ); // M
-            args.Add( (this['N'] != null ? "1" : "0") );
-            args.Add( (this['J'] != null ? "1" : "0") ); // J -> O
-            args.Add( (this['P'] != null ? "1" : "0") );
-            args.Add( (this['Q'] != null ? "1" : "0") );
-            args.Add( (this['R'] != null ? "1" : "0") );
-            args.Add( (this['S'] != null ? "1" : "0") );
-            args.Add( (this['T'] != null ? "1" : "0") );
-            args.Add( (this['U'] != null ? "1" : "0") );
-            args.Add( (this['V'] != null ? "1" : "0") );
-            args.Add( (this['W'] != null ? "1" : "0") );
-            args.Add( (this['X'] != null ? "1" : "0") );
-            args.Add( (this['Y'] != null ? "1" : "0") );
-            args.Add( (this['Z'] != null ? "1" : "0") );
+            args.Add( "0" ); // Type
+            args.Add( anim( "AB" ) ); // Walk
+            args.Add( anim( "AT" ) ); // Run
+            args.Add( sbool( Aim ) );
+            args.Add( sbool( Armor ) );
+            args.Add( sbool( Rotate ) );
+            args.Add( animGroup( 'A' ) );
+            args.Add( animGroup( 'B' ) );
+            args.Add( animGroup( 'C' ) );
+            args.Add( animGroup( 'D' ) );
+            args.Add( animGroup( 'E' ) );
+            args.Add( animGroup( 'F' ) );
+            args.Add( animGroup( 'G' ) );
+            args.Add( animGroup( 'H' ) );
+            args.Add( animGroup( 'I' ) );
+            args.Add( animGroup( 'J' ) );
+            args.Add( anim( "KJ" ) ); // K
+            args.Add( animGroup( 'L' ) );
+            args.Add( anim( "KL" ) ); // M
+            args.Add( animGroup( 'N' ) );
+            args.Add( animGroup( 'J' ) ); // O
+            args.Add( animGroup( 'P' ) );
+            args.Add( animGroup( 'Q' ) );
+            args.Add( animGroup( 'R' ) );
+            args.Add( animGroup( 'S' ) );
+            args.Add( animGroup( 'T' ) );
+            args.Add( animGroup( 'U' ) );
+            args.Add( animGroup( 'V' ) );
+            args.Add( animGroup( 'W' ) );
+            args.Add( animGroup( 'X' ) );
+            args.Add( animGroup( 'Y' ) );
+            args.Add( animGroup( 'Z' ) );
             args.Add( Walk.ToString() );
             args.Add( Run.ToString() );
             args.Add( Step1.ToString() );
@@ -149,11 +169,11 @@ namespace CritterBrowser
                 bool first = true;
                 foreach (string str in args)
                 {
-                    if (!first)
-                    {
-                        result += " ";
+                    if( first )
                         first = false;
-                    }
+                    else
+                        result += " ";
+
                     result += str;
                 }
             }
@@ -164,9 +184,9 @@ namespace CritterBrowser
                     len = Name.Length + 1;
                 args.Insert(0, "Name");
                 string format =
-                    "# ID  {0," + -len + "}Alias MH 3D Walk Run Aim Armor Rotate  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z  Walk Run Walk steps Sound"
+                    "# ID  {0," + -len + "}Alias MH Type Walk Run Aim Armor Rotate  A B C D E F G H I J K L M N O P Q R S T U V W X Y Z  Walk Run Walk steps Sound"
                     + Environment.NewLine
-                    + "{1,-2}{2,-4}{3," + -len + "}{4,-6}{5,-3}{6,-3}{7,-5}{8,-4}{9,-4}{10,-6}{11,-8}";
+                    + "{1,-2}{2,-4}{3," + -len + "}{4,-6}{5,-3}{6,-5}{7,-5}{8,-4}{9,-4}{10,-6}{11,-8}";
 
                 // A-Z
                 for (int a = 12; a <= 37; a++)
@@ -185,7 +205,7 @@ namespace CritterBrowser
 
                 format += "{44}{45}";
 
-                result += string.Format( format, args.ToArray());
+                result += string.Format( format, args.ToArray() );
             }
 
             return (result);

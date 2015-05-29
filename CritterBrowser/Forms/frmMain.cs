@@ -444,8 +444,7 @@ namespace CritterBrowser.Forms
             int x = 0, w = 0, h = 0;
             List<GroupBox> column = new List<GroupBox>();
 
-            // 2.0 does not support argument-less Action
-            var fixColumnWidth = new Action<int>(width =>
+            var fixColumnWidth = new Action( () =>
                 {
                     foreach (GroupBox group in column)
                     {
@@ -455,7 +454,7 @@ namespace CritterBrowser.Forms
                         Size oldSize = group.Size;
                         group.AutoSize = false;
                         group.Size = oldSize;
-                        group.Width = width;
+                        group.Width = w;
                     }
                 }
             );
@@ -475,7 +474,7 @@ namespace CritterBrowser.Forms
                 }
                 else
                 {
-                    fixColumnWidth(w);
+                    fixColumnWidth();
                     column.Clear();
                     column.Add(group);
 
@@ -486,7 +485,7 @@ namespace CritterBrowser.Forms
                 }
             }
 
-            fixColumnWidth(w);
+            fixColumnWidth();
         }
 
         /// <summary>
