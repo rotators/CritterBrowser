@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-#if INIPARSER_FORMS
+#if INIPARSER_CONTROLS
 using System.Drawing;
 using System.Windows.Forms;
 #endif
