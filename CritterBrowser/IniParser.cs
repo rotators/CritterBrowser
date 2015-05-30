@@ -333,6 +333,7 @@ public class IniParser
     }
 
 #if INIPARSER_CONTROLS
+
     /// <summary>
     /// Update control state basing on current settings.
     /// </summary>

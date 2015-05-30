@@ -60,7 +60,7 @@ namespace CritterBrowser.Forms
 
         LoadModeType LoadMode = LoadModeType.None;
 
-        Color TransparencyFRM = Color.FromArgb( 255, 11, 0, 11 );
+        Color TransparencyFRM = Color.FromArgb( 11, 0, 11 );
 
         bool frmCheckerCompleted = true;
         bool ClosePending = false;
@@ -561,6 +561,8 @@ namespace CritterBrowser.Forms
             }
             AnimationWindows.Clear();
 
+            CritterTypes.Clear();
+
             Text = BaseText + " : " + target;
 
             menuFileOpen.Enabled =
@@ -744,20 +746,21 @@ namespace CritterBrowser.Forms
             frmCheckerConfig config = (frmCheckerConfig)e.Argument;
 
             List<string> files = new List<string>();
-            files.AddRange(Directory.GetFiles(config.Target, "*.FRM", SearchOption.TopDirectoryOnly));
-            for (int i = 0; i <= 5; i++)
-            {
-                files.AddRange(Directory.GetFiles(config.Target, "*.FR" + i, SearchOption.TopDirectoryOnly));
-            }
 
-            int currFile = 0;
+            int currFile = 0, lastPercent = -1;
+            files.AddRange( Directory.GetFiles( config.Target, "*.FR?", SearchOption.TopDirectoryOnly ) );
+
             foreach (string file in files)
             {
                 if( self.CancellationPending )
                     return;
 
-                currFile++;
-                int percent = (currFile * 100) / files.Count;
+                int percent = (++currFile * 100) / files.Count;
+                if( percent != lastPercent )
+                {
+                    lastPercent = percent;
+                    self.ReportProgress( percent, "Checking "+config.Target );
+                }
 
                 // if file == C:\Fallout\data\art\critters\HFJMPSAB.FRM
 
@@ -776,14 +779,19 @@ namespace CritterBrowser.Forms
                 if( !ValidAnimationsGroups.Contains( animName.Substring( 0, 1 ) ) )
                     continue;
 
-                string ext = Path.GetExtension(name).Substring(1); // FRM
+                if( !ValidAnimations.Contains( animName ) )
+                    continue;
+
+                string ext = Path.GetExtension( name ).Substring( 1 ); // FRM
+
+                if( ext.Length != 3 )
+                    continue;
 
                 if (ext.Substring(0, 2) != "FR")
                     continue;
 
-                self.ReportProgress(percent, "Checking " + name + "...");
-
-                if (!ValidAnimations.Contains(animName))
+                int dir = -1;
+                if( ext.Substring( 2, 1 ) != "M" && !(int.TryParse( ext.Substring( 2, 1 ), out dir ) && dir >= 0 && dir <= 5) )
                     continue;
 
                 // TODO: should be outside
@@ -792,9 +800,9 @@ namespace CritterBrowser.Forms
                 {
                     crType = new CritterType(baseName);
                     CritterTypes.Add(crType);
+                    self.ReportProgress( (int)ProgressData.CritterTypeName, crType.Name );
                 }
-
-                self.ReportProgress( (int)ProgressData.CritterTypeName, crType.Name );
+                
 
                 // TODO: should be outside
                 if (crType[animName] == null)
@@ -826,16 +834,12 @@ namespace CritterBrowser.Forms
                 }
                 else
                 {
-                    int dir = -1;
-                    if( int.TryParse( ext.Substring( 2, 1 ), out dir ) && dir >= 0 && dir <= 5 )
+                    if( config.FastCheck )
+                        crType[animName].Dir[dir] = true;
+                    else
                     {
-                        if( config.FastCheck )
+                        if( FalloutFRMLoader.Load( file, 1, TransparencyFRM ) != null )
                             crType[animName].Dir[dir] = true;
-                        else
-                        {
-                            if( FalloutFRMLoader.Load( file, 1, TransparencyFRM ) != null )
-                                crType[animName].Dir[dir] = true;
-                        }
                     }
                 }
             }
