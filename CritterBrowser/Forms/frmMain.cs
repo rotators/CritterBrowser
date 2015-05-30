@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.IO;
+using System.IO.Compression;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
@@ -59,6 +60,7 @@ namespace CritterBrowser.Forms
         int PrevSelectedCritterIndex = -1;
 
         LoadModeType LoadMode = LoadModeType.None;
+        string TargetName;
 
         Color TransparencyFRM = Color.FromArgb( 11, 0, 11 );
 
@@ -554,6 +556,7 @@ namespace CritterBrowser.Forms
         {
             frmCheckerConfig config = new frmCheckerConfig( loadMode, target );
             LoadMode = loadMode;
+            TargetName = target;
             EnableControls( false );
             foreach( frmAnimation animWin in AnimationWindows )
             {
@@ -589,7 +592,7 @@ namespace CritterBrowser.Forms
             if( result != DialogResult.OK )
                 return;
 
-            string ext = Path.GetExtension( openFile.SafeFileName ).Substring(1).ToUpper();
+            string ext = Path.GetExtension( openFile.SafeFileName ).Substring( 1 ).ToUpper();
 
             LoadModeType loadMode = LoadModeType.None;
             if( ext == "ZIP" )
@@ -600,8 +603,8 @@ namespace CritterBrowser.Forms
                 return;
 
             frmCheckerConfig config = frmCheckerPrepare( loadMode, openFile.FileName );
-            //frmChecker.DoWork +=new DoWorkEventHandler(frmChecker_DoWork);
-            //frmChecker.RunWorkerAsync( config );
+            frmChecker.DoWork += new DoWorkEventHandler( frmChecker_DoWork );
+            frmChecker.RunWorkerAsync( config );
         }
 
         /// <summary>
@@ -702,6 +705,8 @@ namespace CritterBrowser.Forms
             frmAnimation animWin = new frmAnimation();
             animWin.Text = CurrentCritterType.Name + animName;
 
+            ZipStorer zip;
+
             if( LoadMode == LoadModeType.Directory )
             {
                 Bitmap[] frms = new Bitmap[6];
@@ -740,58 +745,144 @@ namespace CritterBrowser.Forms
             animWin.Show();
         }
 
+        private bool ValidNameFRM( string filename, ref string baseName, ref string animName, ref int dir, ref string ext )
+        {
+            // if file == C:\Fallout\data\art\critters\HFJMPSAB.FRM
+
+            string name = Path.GetFileName( filename ).ToUpper(); // HFJMPSAB.FRM
+            string nameNoExt = Path.GetFileNameWithoutExtension( name ); // HFJMPSAB
+
+            if( nameNoExt.Length < 3 )
+                return (false);
+
+            baseName = nameNoExt.Substring( 0, nameNoExt.Length - 2 ); // HFJMPS
+            animName = nameNoExt.Substring( nameNoExt.Length - 2 ); // AB
+
+            if( !animName.IsAlpha() )
+                return (false);
+
+            if( !ValidAnimationsGroups.Contains( animName.Substring( 0, 1 ) ) )
+                return (false);
+
+            if( !ValidAnimations.Contains( animName ) )
+                return (false);
+
+            ext = Path.GetExtension( name ).Substring( 1 ); // FRM
+
+            if( ext.Length != 3 )
+                return (false);
+
+            if( ext.Substring( 0, 2 ) != "FR" )
+                return (false);
+
+            dir = -1;
+            if( ext.Substring( 2, 1 ) != "M" && !(int.TryParse( ext.Substring( 2, 1 ), out dir ) && dir >= 0 && dir <= 5) )
+                return (false);
+
+            return (true);
+        }
+
         private void frmChecker_DoWork(object sender, DoWorkEventArgs e)
         {
             BackgroundWorker self = (BackgroundWorker)sender;
             frmCheckerConfig config = (frmCheckerConfig)e.Argument;
 
-            List<string> files = new List<string>();
+            List<object> files = new List<object>();
+            string artCritters = "ART" + Path.DirectorySeparatorChar + "CRITTERS";
+            object datafile = null;
 
-            int currFile = 0, lastPercent = -1;
-            files.AddRange( Directory.GetFiles( config.Target, "*.FR?", SearchOption.TopDirectoryOnly ) );
+            switch( config.LoadMode )
+            {
+                case LoadModeType.Directory:
+                    files.AddRange( Directory.GetFiles( config.Target, "*.FR?", SearchOption.TopDirectoryOnly ) );
+                    break;
+                case LoadModeType.Zip:
+                    ZipStorer zip = ZipStorer.Open( config.Target, FileAccess.Read );
+                    if( zip == null )
+                        return;
 
-            foreach (string file in files)
+                    datafile = zip;
+                    foreach( ZipStorer.ZipFileEntry entry in zip.ReadCentralDir() )
+                    {
+                        if( entry.CompressedSize == 0 )
+                            continue;
+
+                        string filename = entry.FilenameInZip.ToUpper()
+                            .Replace( '\\', Path.DirectorySeparatorChar )
+                            .Replace( '/', Path.DirectorySeparatorChar );
+
+                        if( !filename.StartsWith( artCritters ) )
+                            continue;
+
+                        string ext_ = Path.GetExtension( filename );
+                        if( ext_.Length != 4 || ext_.Substring( 1, 2 ) != "FR" )
+                            continue;
+
+                        files.Add( entry );
+                    }
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
+
+            string baseName = null, animName = null, ext = null;
+            int dir = -1;
+
+            var loadFRM = new Func<object, object, LoadModeType, FalloutFRM>( ( dobj, obj, loadMode ) =>
+                {
+                    byte[] bytes = null;
+                    switch( loadMode )
+                    {
+                        case LoadModeType.Directory:
+                            bytes = File.ReadAllBytes( (string)obj );
+                            break;
+                        case LoadModeType.Zip:
+                            using( MemoryStream stream = new MemoryStream() )
+                            {
+                                ZipStorer zip = (ZipStorer)dobj;
+                                ZipStorer.ZipFileEntry zipEntry = (ZipStorer.ZipFileEntry)obj;
+                                zip.ExtractFile( zipEntry, stream );
+                                bytes = stream.ToArray();
+                            }
+                            break;
+                        default:
+                            throw new NotSupportedException();
+                    }
+
+                    return (FalloutFRMLoader.LoadFRM( bytes, TransparencyFRM ));
+                }
+            );
+
+            int currFile = 0, lastPercent = -1, filesCount = files.Count;
+            foreach (object file in files)
             {
                 if( self.CancellationPending )
                     return;
 
-                int percent = (++currFile * 100) / files.Count;
+                int percent = (++currFile * 100) / filesCount;
                 if( percent != lastPercent )
                 {
                     lastPercent = percent;
                     self.ReportProgress( percent, "Checking "+config.Target );
                 }
 
-                // if file == C:\Fallout\data\art\critters\HFJMPSAB.FRM
+                string filename = null;
 
-                string name = Path.GetFileName(file).ToUpper(); // HFJMPSAB.FRM
-                string nameNoExt = Path.GetFileNameWithoutExtension(name); // HFJMPSAB
+                switch( config.LoadMode )
+                {
+                    case LoadModeType.Directory:
+                        filename = (string)file;
+                        break;
+                    case LoadModeType.Zip:
+                        ZipStorer.ZipFileEntry zipEntry = (ZipStorer.ZipFileEntry)file;
+                        filename = zipEntry.FilenameInZip;
+                        break;
+                    default:
+                        throw new NotSupportedException();
+                }
+                
 
-                if (nameNoExt.Length < 3)
-                    continue;
-
-                string baseName = nameNoExt.Substring(0, nameNoExt.Length - 2); // HFJMPS
-                string animName = nameNoExt.Substring(nameNoExt.Length - 2); // AB
-
-                if( !animName.IsAlpha() )
-                    continue;
-
-                if( !ValidAnimationsGroups.Contains( animName.Substring( 0, 1 ) ) )
-                    continue;
-
-                if( !ValidAnimations.Contains( animName ) )
-                    continue;
-
-                string ext = Path.GetExtension( name ).Substring( 1 ); // FRM
-
-                if( ext.Length != 3 )
-                    continue;
-
-                if (ext.Substring(0, 2) != "FR")
-                    continue;
-
-                int dir = -1;
-                if( ext.Substring( 2, 1 ) != "M" && !(int.TryParse( ext.Substring( 2, 1 ), out dir ) && dir >= 0 && dir <= 5) )
+                if( !ValidNameFRM( filename, ref baseName, ref animName, ref dir, ref ext ) )
                     continue;
 
                 // TODO: should be outside
@@ -822,8 +913,7 @@ namespace CritterBrowser.Forms
                     }
                     else
                     {
-                        byte[] bytes = File.ReadAllBytes( file );
-                        FalloutFRM frm = FalloutFRMLoader.LoadFRM( bytes, TransparencyFRM );
+                        FalloutFRM frm = loadFRM( datafile, file, config.LoadMode );
 
                         for( int d = 0; d <= 5; d++ )
                         {
@@ -838,9 +928,21 @@ namespace CritterBrowser.Forms
                         crType[animName].Dir[dir] = true;
                     else
                     {
-                        if( FalloutFRMLoader.Load( file, 1, TransparencyFRM ) != null )
+                        FalloutFRM frm = loadFRM( datafile, file, config.LoadMode );
+                        if( frm.GetAnimFrameByDirN( 0, 1 ) != null )
                             crType[animName].Dir[dir] = true;
                     }
+                }
+            }
+
+            if( datafile != null )
+            {
+                switch( config.LoadMode )
+                {
+                    case LoadModeType.Zip:
+                        ZipStorer zip = (ZipStorer)datafile;
+                        zip.Close();
+                        break;
                 }
             }
         }
