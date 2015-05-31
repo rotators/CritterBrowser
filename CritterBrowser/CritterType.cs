@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO.Compression;
 
 namespace CritterBrowser
 {
@@ -8,6 +9,8 @@ namespace CritterBrowser
     {
         public readonly string Name;
         public bool[] Dir = new bool[6];
+        public ZipStorer.ZipFileEntry[] ZipEntry = new ZipStorer.ZipFileEntry[6];
+        public bool Splitted;
 
         public bool AllDirs
         {

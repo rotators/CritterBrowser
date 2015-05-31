@@ -39,7 +39,9 @@ namespace CritterBrowser.Forms
 
         enum ProgressData : int
         {
-            CritterTypeName = -1
+            CritterTypeName = -1,
+            CritterAnimation = -2,
+            ZipEntry = -3
         }
 
         readonly string BaseText;
@@ -50,6 +52,9 @@ namespace CritterBrowser.Forms
         readonly string AnimGroup = "animGroup";
         readonly string AnimLink = "animLink";
         readonly string AnimPanel = "animPanel";
+
+        // other
+        readonly string ArtCritters = "ART" + Path.DirectorySeparatorChar + "CRITTERS" + Path.DirectorySeparatorChar;
 
         List<string> ValidAnimations = new List<string>();
         List<string> ValidAnimationsGroups = new List<string>();
@@ -704,42 +709,76 @@ namespace CritterBrowser.Forms
 
             frmAnimation animWin = new frmAnimation();
             animWin.Text = CurrentCritterType.Name + animName;
+            string filename = null;
+            
+            Bitmap[] frms = new Bitmap[6];
 
-            ZipStorer zip;
-
-            if( LoadMode == LoadModeType.Directory )
+            switch( LoadMode )
             {
-                Bitmap[] frms = new Bitmap[6];
+                case LoadModeType.Directory:
+                    filename = openDirectory.SelectedPath + Path.DirectorySeparatorChar + CurrentCritterType.Name + animName;
+                    if( File.Exists( filename + ".FRM" ) )
+                    {
+                        byte[] bytes = File.ReadAllBytes( filename + ".FRM" );
+                        FalloutFRM frm = FalloutFRMLoader.LoadFRM( bytes, TransparencyFRM );
 
-                string filename = openDirectory.SelectedPath + Path.DirectorySeparatorChar + CurrentCritterType.Name + animName;
-                if( File.Exists( filename + ".FRM" ) )
-                {
-                    byte[] bytes = File.ReadAllBytes( filename + ".FRM" );
-                    FalloutFRM frm = FalloutFRMLoader.LoadFRM( bytes, TransparencyFRM );
+                        for( int d = 0; d <= 5; d++ )
+                        {
+                            frms[d] = frm.GetAnimFrameByDirN( d, 1 );
+                        }
+                    }
 
                     for( int d = 0; d <= 5; d++ )
                     {
-                        frms[d] = frm.GetAnimFrameByDirN( d, 1 );
+                        if( CurrentCritterType[animName].Dir[d] && File.Exists( filename + ".FR" + d ) )
+                        {
+                            byte[] bytes = File.ReadAllBytes( filename + ".FR" + d );
+                            FalloutFRM frm = FalloutFRMLoader.LoadFRM( bytes, TransparencyFRM );
+                            frms[d] = frm.Frames[0];
+                        }
                     }
-                }
+                    break;
 
-                for( int d = 0; d <= 5; d++ )
-                {
-                    if( CurrentCritterType[animName].Dir[d] && File.Exists( filename + ".FR" + d ) )
+                case LoadModeType.Zip:
+                    ZipStorer zip = ZipStorer.Open( TargetName, FileAccess.Read );
+                    if( zip == null )
+                        return;
+
+                    CritterAnimation crAnim = CurrentCritterType[animName];
+
+                    if( !crAnim.Splitted )
                     {
-                        byte[] bytes = File.ReadAllBytes( filename + ".FR" + d );
-                        FalloutFRM frm = FalloutFRMLoader.LoadFRM( bytes, TransparencyFRM );
-                        frms[d] = frm.Frames[0];
+                        FalloutFRM frm = LoadFRM( zip, crAnim.ZipEntry[0], LoadModeType.Zip );
+                        for( int dir = 0; dir <= 5; dir++ )
+                        {
+                            if( crAnim.Dir[dir] )
+                                frms[dir] = frm.GetAnimFrameByDirN( dir, 1 );
+                        }
                     }
-                }
+                    else
+                    {
+                        for( int dir = 0; dir <= 5; dir++ )
+                        {
+                            if( crAnim.Dir[dir] )
+                            {
+                                FalloutFRM frm = LoadFRM( zip, crAnim.ZipEntry[dir], LoadModeType.Zip );
+                                frms[dir] = frm.Frames[0];
+                            }
+                        }
+                    }
+                    
 
-                animWin.anim0.Image = frms[0];
-                animWin.anim1.Image = frms[1];
-                animWin.anim2.Image = frms[2];
-                animWin.anim3.Image = frms[3];
-                animWin.anim4.Image = frms[4];
-                animWin.anim5.Image = frms[5];
+                    zip.Close();
+                    
+                    break;
             }
+
+            animWin.anim0.Image = frms[0];
+            animWin.anim1.Image = frms[1];
+            animWin.anim2.Image = frms[2];
+            animWin.anim3.Image = frms[3];
+            animWin.anim4.Image = frms[4];
+            animWin.anim5.Image = frms[5];
 
             AnimationWindows.Add( animWin );
             animWin.Show();
@@ -755,40 +794,74 @@ namespace CritterBrowser.Forms
             if( nameNoExt.Length < 3 )
                 return (false);
 
-            baseName = nameNoExt.Substring( 0, nameNoExt.Length - 2 ); // HFJMPS
-            animName = nameNoExt.Substring( nameNoExt.Length - 2 ); // AB
+            string baseName_ = nameNoExt.Substring( 0, nameNoExt.Length - 2 ); // HFJMPS
+            string animName_ = nameNoExt.Substring( nameNoExt.Length - 2 ); // AB
 
-            if( !animName.IsAlpha() )
+            if( !animName_.IsAlpha() )
                 return (false);
 
-            if( !ValidAnimationsGroups.Contains( animName.Substring( 0, 1 ) ) )
+            if( !ValidAnimationsGroups.Contains( animName_.Substring( 0, 1 ) ) )
                 return (false);
 
-            if( !ValidAnimations.Contains( animName ) )
+            if( !ValidAnimations.Contains( animName_ ) )
                 return (false);
 
-            ext = Path.GetExtension( name ).Substring( 1 ); // FRM
+            string ext_ = Path.GetExtension( name ).Substring( 1 ); // FRM
 
-            if( ext.Length != 3 )
+            if( ext_.Length != 3 )
                 return (false);
 
-            if( ext.Substring( 0, 2 ) != "FR" )
+            if( ext_.Substring( 0, 2 ) != "FR" )
                 return (false);
 
-            dir = -1;
-            if( ext.Substring( 2, 1 ) != "M" && !(int.TryParse( ext.Substring( 2, 1 ), out dir ) && dir >= 0 && dir <= 5) )
+            int dir_ = -1;
+            if( ext_.Substring( 2, 1 ) != "M" && !(int.TryParse( ext_.Substring( 2, 1 ), out dir_ ) && dir_ >= 0 && dir_ <= 5) )
                 return (false);
+
+            baseName = baseName_;
+            animName = animName_;
+            ext = ext_;
+            if( dir_ >= 0 )
+                dir = dir_;
 
             return (true);
         }
 
-        private void frmChecker_DoWork(object sender, DoWorkEventArgs e)
+        FalloutFRM LoadFRM( object datafile, object file, LoadModeType loadMode )
+        {
+            byte[] bytes = null;
+            switch( loadMode )
+            {
+                case LoadModeType.Directory:
+                    string filename = (string)file;
+                    if( File.Exists( filename ) )
+                        bytes = File.ReadAllBytes( filename );
+                    break;
+                case LoadModeType.Zip:
+                    using( MemoryStream stream = new MemoryStream() )
+                    {
+                        ZipStorer zip = (ZipStorer)datafile;
+                        ZipStorer.ZipFileEntry zipEntry = (ZipStorer.ZipFileEntry)file;
+                        zip.ExtractFile( zipEntry, stream );
+                        bytes = stream.ToArray();
+                    }
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
+
+            if( bytes.Length > 0 )
+                return (FalloutFRMLoader.LoadFRM( bytes, TransparencyFRM ));
+
+            return (null);
+        }
+
+        private void frmChecker_DoWork( object sender, DoWorkEventArgs e )
         {
             BackgroundWorker self = (BackgroundWorker)sender;
             frmCheckerConfig config = (frmCheckerConfig)e.Argument;
 
             List<object> files = new List<object>();
-            string artCritters = "ART" + Path.DirectorySeparatorChar + "CRITTERS";
             object datafile = null;
 
             switch( config.LoadMode )
@@ -811,7 +884,7 @@ namespace CritterBrowser.Forms
                             .Replace( '\\', Path.DirectorySeparatorChar )
                             .Replace( '/', Path.DirectorySeparatorChar );
 
-                        if( !filename.StartsWith( artCritters ) )
+                        if( !filename.StartsWith( ArtCritters ) )
                             continue;
 
                         string ext_ = Path.GetExtension( filename );
@@ -828,31 +901,7 @@ namespace CritterBrowser.Forms
             string baseName = null, animName = null, ext = null;
             int dir = -1;
 
-            var loadFRM = new Func<object, object, LoadModeType, FalloutFRM>( ( dobj, obj, loadMode ) =>
-                {
-                    byte[] bytes = null;
-                    switch( loadMode )
-                    {
-                        case LoadModeType.Directory:
-                            bytes = File.ReadAllBytes( (string)obj );
-                            break;
-                        case LoadModeType.Zip:
-                            using( MemoryStream stream = new MemoryStream() )
-                            {
-                                ZipStorer zip = (ZipStorer)dobj;
-                                ZipStorer.ZipFileEntry zipEntry = (ZipStorer.ZipFileEntry)obj;
-                                zip.ExtractFile( zipEntry, stream );
-                                bytes = stream.ToArray();
-                            }
-                            break;
-                        default:
-                            throw new NotSupportedException();
-                    }
-
-                    return (FalloutFRMLoader.LoadFRM( bytes, TransparencyFRM ));
-                }
-            );
-
+            List<CritterType> crTypesFound = new List<CritterType>();
             int currFile = 0, lastPercent = -1, filesCount = files.Count;
             foreach (object file in files)
             {
@@ -867,7 +916,7 @@ namespace CritterBrowser.Forms
                 }
 
                 string filename = null;
-
+                
                 switch( config.LoadMode )
                 {
                     case LoadModeType.Directory:
@@ -885,17 +934,14 @@ namespace CritterBrowser.Forms
                 if( !ValidNameFRM( filename, ref baseName, ref animName, ref dir, ref ext ) )
                     continue;
 
-                // TODO: should be outside
-                CritterType crType = CritterTypes.Find(cr => cr.Name == baseName);
+                CritterType crType = crTypesFound.Find( cr => cr.Name == baseName );
                 if (crType == null)
                 {
                     crType = new CritterType(baseName);
-                    CritterTypes.Add(crType);
+                    crTypesFound.Add(crType);
                     self.ReportProgress( (int)ProgressData.CritterTypeName, crType.Name );
                 }
                 
-
-                // TODO: should be outside
                 if (crType[animName] == null)
                 {
                     CritterAnimation crAnim = new CritterAnimation(animName);
@@ -908,31 +954,51 @@ namespace CritterBrowser.Forms
                     {
                         for( int d = 0; d <= 5; d++ )
                         {
-                            crType[animName].Dir[d] = true;
+                            CritterAnimation crAnim = crType[animName];
+                            crAnim.Dir[d] = true;
+                            if( config.LoadMode == LoadModeType.Zip )
+                                crAnim.ZipEntry[d] = (ZipStorer.ZipFileEntry)file;
                         }
                     }
                     else
                     {
-                        FalloutFRM frm = loadFRM( datafile, file, config.LoadMode );
+                        FalloutFRM frm = LoadFRM( datafile, file, config.LoadMode );
 
                         for( int d = 0; d <= 5; d++ )
                         {
                             if( frm.GetAnimFrameByDirN( d, 1 ) != null )
+                            {
                                 crType[animName].Dir[d] = true;
+                                if( config.LoadMode == LoadModeType.Zip )
+                                    crType[animName].ZipEntry[d] = (ZipStorer.ZipFileEntry)file;
+                            }
                         }
                     }
                 }
                 else
                 {
+                    CritterAnimation crAnim = crType[animName];
+
                     if( config.FastCheck )
-                        crType[animName].Dir[dir] = true;
+                    {
+                        crAnim.Dir[dir] = crAnim.Splitted = true;
+                        if( config.LoadMode == LoadModeType.Zip )
+                            crAnim.ZipEntry[dir] = (ZipStorer.ZipFileEntry)file;
+                    }
                     else
                     {
-                        FalloutFRM frm = loadFRM( datafile, file, config.LoadMode );
+                        FalloutFRM frm = LoadFRM( datafile, file, config.LoadMode );
                         if( frm.GetAnimFrameByDirN( 0, 1 ) != null )
-                            crType[animName].Dir[dir] = true;
+                        {
+                            crAnim.Dir[dir] = crAnim.Splitted = true;
+                            if( config.LoadMode == LoadModeType.Zip )
+                                crAnim.ZipEntry[dir] = (ZipStorer.ZipFileEntry)file;
+                        }
                     }
                 }
+
+                object[] data = { baseName, animName, crType[animName] };
+                self.ReportProgress( (int)ProgressData.CritterAnimation, data );
             }
 
             if( datafile != null )
@@ -952,11 +1018,34 @@ namespace CritterBrowser.Forms
             if( e.ProgressPercentage == (int)ProgressData.CritterTypeName )
             {
                 string text = (string)e.UserState;
-                if( text != null && !lstCritters.Items.Contains( text ) )
+                if( text != null )
                 {
-                    lstCritters.Items.Add( text );
-                    lstCritters.Update();
+                    CritterType crType = CritterTypes.Find( cr => cr.Name == text );
+                    if( crType == null )
+                    {
+                        crType = new CritterType( text );
+                        CritterTypes.Add( crType );
+                    }
+
+                    if( !lstCritters.Items.Contains( text ) )
+                    {
+                        lstCritters.Items.Add( text );
+                        lstCritters.Update();
+                    }
                 }
+            }
+            else if( e.ProgressPercentage == (int)ProgressData.CritterAnimation )
+            {
+                object[] data = (object[])e.UserState;
+
+                string baseName = (string)data[0];
+                string animName = (string)data[1];
+                CritterAnimation anim = (CritterAnimation)data[2];
+
+                CritterType crType = CritterTypes.Find( cr => cr.Name == baseName );
+                crType.Animations.RemoveAll( a => a.Name == anim.Name );
+                crType.Animations.Add( anim );
+                
             }
             else if( e.ProgressPercentage >= 0 )
             {
