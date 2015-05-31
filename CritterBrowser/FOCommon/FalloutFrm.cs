@@ -13,22 +13,16 @@ namespace FOCommon.Graphic
         public List<Bitmap> Frames;
         public Point PixelShift { get; set; }
         public int FramesPerDir { get; set; }
-
-        public Bitmap GetAnimFrameByDir(int dir, int frame)
+        public Bitmap GetAnimFrameByDir( int dir, int frame )
         {
-            return Frames[(FramesPerDir * dir) + (frame-1)];
-        }
-
-        public Bitmap GetAnimFrameByDirN(int dir, int frame)
-        {
-            if (Frames == null)
+            if( Frames == null )
                 return (null);
 
             int result = (FramesPerDir * dir) + (frame - 1);
-            if (result < 0 || result >= Frames.Count)
+            if( result < 0 || result >= Frames.Count )
                 return (null);
-            else
-                return Frames[result];
+
+            return Frames[result];
         }
     }
 
@@ -100,17 +94,12 @@ namespace FOCommon.Graphic
                 memStream.Write(BitConverter.GetBytes(width), 0, 4);
                 memStream.Write(BitConverter.GetBytes(height), 0, 4);
                 Bitmap bmp = null;
-                try
-                {
-                    bmp = new Bitmap(memStream);
-                }
-                catch (ArgumentException e)
-                {
-                }
+                try { bmp = new Bitmap( memStream ); }
+                catch( ArgumentException ) {}
                 finally
                 {
-                    if (bmp != null)
-                        result.Add(bmp);
+                    if( bmp != null )
+                        result.Add( bmp );
                 }
                 memStream.Close();
                 chunkBegin += (12 + file_siz);
@@ -222,8 +211,8 @@ namespace FOCommon.Graphic
         }
 
         #region Bytes
-
         private static byte[] zeros = { 0, 0, 0, 0 };
+
         private static byte[] bmpHeader =
             {
                 0x42,0x4D,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x36,0x04,0x00,0x00,0x28,0x00,
@@ -295,7 +284,6 @@ namespace FOCommon.Graphic
                 0x61,0x00,0x41,0x50,0x58,0x00,0x40,0x4B,0x54,0x00,0x4B,0x62,0x77,0x00,0x53,0x54,
                 0xBD,0x00,0x0B,0x00,0x0B,0x00
             };
-
         #endregion
     }
 }

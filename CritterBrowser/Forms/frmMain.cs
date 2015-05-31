@@ -725,7 +725,7 @@ namespace CritterBrowser.Forms
 
                         for( int d = 0; d <= 5; d++ )
                         {
-                            frms[d] = frm.GetAnimFrameByDirN( d, 1 );
+                            frms[d] = frm.GetAnimFrameByDir( d, 1 );
                         }
                     }
 
@@ -750,7 +750,7 @@ namespace CritterBrowser.Forms
                         for( int dir = 0; dir <= 5; dir++ )
                         {
                             if( crAnim.Dir[dir] )
-                                frms[dir] = frm.GetAnimFrameByDirN( dir, 1 );
+                                frms[dir] = frm.GetAnimFrameByDir( dir, 1 );
                         }
                     }
                     else
@@ -780,7 +780,7 @@ namespace CritterBrowser.Forms
                         for( int dir = 0; dir <= 5; dir++ )
                         {
                             if( crAnim.Dir[dir] )
-                                frms[dir] = frm.GetAnimFrameByDirN( dir, 1 );
+                                frms[dir] = frm.GetAnimFrameByDir( dir, 1 );
                         }
                     }
                     else
@@ -1046,7 +1046,7 @@ namespace CritterBrowser.Forms
 
                         for( int d = 0; d <= 5; d++ )
                         {
-                            if( frm != null && frm.GetAnimFrameByDirN( d, 1 ) != null )
+                            if( frm != null && frm.GetAnimFrameByDir( d, 1 ) != null )
                             {
                                 CritterAnimation crAnim = crType[animName];
                                 crAnim.Dir[d] = true;
@@ -1073,7 +1073,7 @@ namespace CritterBrowser.Forms
                     else
                     {
                         FalloutFRM frm = LoadFRM( datafile, file, config.LoadMode );
-                        if( frm != null && frm.GetAnimFrameByDirN( 0, 1 ) != null )
+                        if( frm != null && frm.GetAnimFrameByDir( 0, 1 ) != null )
                         {
                             crAnim.Dir[dir] = crAnim.Splitted = true;
                             if( config.LoadMode == LoadModeType.Zip )
