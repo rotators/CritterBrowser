@@ -9,8 +9,10 @@ namespace CritterBrowser
     {
         public readonly string Name;
         public bool[] Dir = new bool[6];
-        public ZipStorer.ZipFileEntry[] ZipEntry = new ZipStorer.ZipFileEntry[6];
         public bool Splitted;
+
+        public ZipStorer.ZipFileEntry[] ZipData = new ZipStorer.ZipFileEntry[6];
+        public int[] DatData = new int[6];
 
         public bool AllDirs
         {

@@ -222,7 +222,7 @@
             // 
             // openFile
             // 
-            this.openFile.Filter = "FOnline datafiles|*.zip";
+            this.openFile.Filter = "All supported types|*.dat;*.zip|Fallout2 datafiles|*.dat|FOnline datafiles|*.zip";
             this.openFile.ReadOnlyChecked = true;
             this.openFile.RestoreDirectory = true;
             // 

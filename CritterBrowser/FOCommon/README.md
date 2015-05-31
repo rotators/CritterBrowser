@@ -1,1 +1,1 @@
-﻿Various stuff from [FOCommon](https://github.com/rotators/FOCommon).
+﻿Various stuff from [FOCommon](https://github.com/rotators/FOCommon/).
