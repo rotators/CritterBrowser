@@ -5,22 +5,56 @@ using System.IO.Compression;
 
 namespace CritterBrowser
 {
+    public enum CritterAnimationDir
+    {
+        None,
+        Full,
+        Partial
+    }
+
     class CritterAnimation
     {
         public readonly string Name;
-        public bool[] Dir = new bool[6];
-        public bool Splitted;
+        public CritterAnimationDir[] Dir = new CritterAnimationDir[6];
 
         public ZipStorer.ZipFileEntry[] ZipData = new ZipStorer.ZipFileEntry[6];
         public int[] DatData = new int[6];
+
+        public bool Full
+        {
+            get
+            {
+                foreach( CritterAnimationDir crAnimType in Dir )
+                {
+                    if( crAnimType != CritterAnimationDir.Full )
+                        return (false);
+                }
+
+                return (true);
+            }
+        }
+
+        public bool Partial
+        {
+            get
+            {
+                foreach( CritterAnimationDir crAnimType in Dir )
+                {
+                    if( crAnimType != CritterAnimationDir.Partial )
+                        return (false);
+                }
+
+                return (true);
+            }
+        }
 
         public bool AllDirs
         {
             get
             {
-                foreach( bool d in Dir )
+                foreach( CritterAnimationDir t in Dir )
                 {
-                    if( !d )
+                    if( t == CritterAnimationDir.None )
                         return (false);
                 }
 
@@ -32,9 +66,9 @@ namespace CritterBrowser
         {
             get
             {
-                foreach( bool d in Dir )
+                foreach( CritterAnimationDir  t in Dir )
                 {
-                    if( d )
+                    if( t != CritterAnimationDir.None )
                         return (true);
                 }
                 return (false);

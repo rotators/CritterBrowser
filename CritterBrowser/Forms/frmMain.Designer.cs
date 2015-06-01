@@ -45,6 +45,8 @@
             this.openFile = new System.Windows.Forms.OpenFileDialog();
             this.tabGame = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tabFallout = new System.Windows.Forms.TabPage();
             this.falloutCrittersLst = new System.Windows.Forms.TextBox();
             this.txtFalloutCrittersLst = new System.Windows.Forms.Label();
@@ -92,6 +94,9 @@
             this.frmChecker = new System.ComponentModel.BackgroundWorker();
             this.menu.SuspendLayout();
             this.tabGame.SuspendLayout();
+            this.tabGeneral.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tabFallout.SuspendLayout();
             this.grpFalloutConfiguration.SuspendLayout();
             this.flwFalloutConfiguration.SuspendLayout();
@@ -241,12 +246,41 @@
             // 
             // tabGeneral
             // 
+            this.tabGeneral.Controls.Add( this.tableLayoutPanel1 );
             this.tabGeneral.Location = new System.Drawing.Point( 4, 22 );
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Size = new System.Drawing.Size( 670, 107 );
             this.tabGeneral.TabIndex = 2;
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.AutoSize = true;
+            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 50F ) );
+            this.tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle( System.Windows.Forms.SizeType.Percent, 50F ) );
+            this.tableLayoutPanel1.Controls.Add( this.pictureBox1, 1, 0 );
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point( 0, 0 );
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 50F ) );
+            this.tableLayoutPanel1.RowStyles.Add( new System.Windows.Forms.RowStyle( System.Windows.Forms.SizeType.Percent, 50F ) );
+            this.tableLayoutPanel1.Size = new System.Drawing.Size( 670, 107 );
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.pictureBox1.Location = new System.Drawing.Point( 617, 3 );
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size( 50, 47 );
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
             // 
             // tabFallout
             // 
@@ -776,6 +810,11 @@
             this.menu.ResumeLayout( false );
             this.menu.PerformLayout();
             this.tabGame.ResumeLayout( false );
+            this.tabGeneral.ResumeLayout( false );
+            this.tabGeneral.PerformLayout();
+            this.tableLayoutPanel1.ResumeLayout( false );
+            this.tableLayoutPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.tabFallout.ResumeLayout( false );
             this.tabFallout.PerformLayout();
             this.grpFalloutConfiguration.ResumeLayout( false );
@@ -869,6 +908,8 @@
         private System.Windows.Forms.ToolStripMenuItem menuOptionsTarget;
         private System.Windows.Forms.ToolStripMenuItem menuAboutRepo;
         private System.Windows.Forms.ToolStripMenuItem menuAboutSelf;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 
