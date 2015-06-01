@@ -11,7 +11,7 @@ using System.Windows.Forms;
 #endif
 
 //
-// based on https://github.com/rotators/fo2238/Tools/FO2238Config/ by Atom/Rotators
+// based on https://github.com/rotators/fo2238/tree/master/Tools/FO2238Config/ by Atom/Rotators
 //
 
 public class IniParser
@@ -29,8 +29,14 @@ public class IniParser
 
     public readonly static String RootSection = "ROOT";
     public readonly static Char[] CommentChars = { '#', ';' };
+    public readonly static Char[] SectionChars = { '[', ']' };
+    public readonly static Char VarSeparator = '=';
+    public readonly static String EmptySetting = "0";
     public readonly static String[] FalseStrings = { "false", "disabled", "no", "0" };
     public readonly static String[] TrueStrings = { "true", "enabled", "yes", "1" };
+
+    public static String SectionOpen { get { return (SectionChars[0].ToString()); } }
+    public static String SectionClose { get { return (SectionChars[1].ToString()); } }
 
     public static String FalseString { get { return (FalseStrings[0]); } }
     public static String TrueString { get { return (TrueStrings[0]); } }
@@ -62,7 +68,7 @@ public class IniParser
 
                     if( strLine != "" )
                     {
-                        if( strLine.StartsWith( "[" ) && strLine.EndsWith( "]" ) )
+                        if( strLine.StartsWith( SectionOpen ) && strLine.EndsWith( SectionClose ) )
                         {
                             currentRoot = strLine.Substring( 1, strLine.Length - 2 );
                         }
@@ -72,7 +78,7 @@ public class IniParser
                         }
                         else
                         {
-                            keyPair = strLine.Split( new char[] { '=' }, 2 );
+                            keyPair = strLine.Split( new char[] { VarSeparator }, 2 );
 
                             SectionPair sectionPair;
                             String value = "";
@@ -119,7 +125,7 @@ public class IniParser
         sectionPair.Section = sectionName;
         sectionPair.Key = settingName;
         String ret = (String)keyPairs[sectionPair];
-        if( (ret == null) || ret.Length == 0 || !keyPairs.Contains( sectionPair ) ) return "0";
+        if( (ret == null) || ret.Length == 0 || !keyPairs.Contains( sectionPair ) ) return EmptySetting;
 
         return ret;
     }
@@ -149,7 +155,7 @@ public class IniParser
         foreach( SectionPair pair in keyPairs.Keys )
         {
             if( pair.Section == sectionName )
-                tmpArray.Add( pair.Key + "=" + keyPairs[pair] );
+                tmpArray.Add( pair.Key + VarSeparator + keyPairs[pair] );
         }
 
         return (String[])tmpArray.ToArray( typeof( String ) );
@@ -176,6 +182,9 @@ public class IniParser
     /// <param name="settingValue">Value of key.</param>
     public void AddSetting( String sectionName, String settingName, String settingValue )
     {
+        if( sectionName.Contains( SectionOpen ) || sectionName.Contains( SectionClose ) )
+            throw new ArgumentException( "Invalid section name", "sectionName" );
+
         SectionPair sectionPair;
         sectionPair.Section = sectionName;
         sectionPair.Key = settingName;
@@ -272,7 +281,7 @@ public class IniParser
                 tmpValue = (String)keyPairs[sectionPair];
 
                 if( tmpValue != null )
-                    tmpValue = "=" + tmpValue;
+                    tmpValue = VarSeparator + tmpValue;
 
                 strToSave += (sectionPair.Key + tmpValue + Environment.NewLine);
             }
@@ -282,7 +291,7 @@ public class IniParser
 
         foreach( String section in sections )
         {
-            strToSave += ("[" + section + "]" + Environment.NewLine);
+            strToSave += (SectionOpen + section + SectionClose + Environment.NewLine);
 
             foreach( SectionPair sectionPair in keyPairs.Keys )
             {
@@ -291,7 +300,7 @@ public class IniParser
                     tmpValue = (String)keyPairs[sectionPair];
 
                     if( tmpValue != null )
-                        tmpValue = "=" + tmpValue;
+                        tmpValue = VarSeparator + tmpValue;
 
                     strToSave += (sectionPair.Key + tmpValue + Environment.NewLine);
                 }
@@ -454,5 +463,6 @@ public class IniParser
             return 0;
         }
     }
+
 #endif // INIPARSER_CONTROLS
 }

@@ -168,32 +168,32 @@
             this.menuFileOpenDatafile,
             this.menuFileOpenDirectory} );
             this.menuFileOpen.Name = "menuFileOpen";
-            this.menuFileOpen.Size = new System.Drawing.Size( 152, 22 );
+            this.menuFileOpen.Size = new System.Drawing.Size( 112, 22 );
             this.menuFileOpen.Text = "Open...";
             // 
             // menuFileOpenDatafile
             // 
             this.menuFileOpenDatafile.Name = "menuFileOpenDatafile";
-            this.menuFileOpenDatafile.Size = new System.Drawing.Size( 152, 22 );
+            this.menuFileOpenDatafile.Size = new System.Drawing.Size( 131, 22 );
             this.menuFileOpenDatafile.Text = "Datafile...";
             this.menuFileOpenDatafile.Click += new System.EventHandler( this.menuFileOpenDatafile_Click );
             // 
             // menuFileOpenDirectory
             // 
             this.menuFileOpenDirectory.Name = "menuFileOpenDirectory";
-            this.menuFileOpenDirectory.Size = new System.Drawing.Size( 152, 22 );
+            this.menuFileOpenDirectory.Size = new System.Drawing.Size( 131, 22 );
             this.menuFileOpenDirectory.Text = "Directory...";
             this.menuFileOpenDirectory.Click += new System.EventHandler( this.menuFileOpenDirectory_Click );
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size( 149, 6 );
+            this.toolStripSeparator1.Size = new System.Drawing.Size( 109, 6 );
             // 
             // menuFileExit
             // 
             this.menuFileExit.Name = "menuFileExit";
-            this.menuFileExit.Size = new System.Drawing.Size( 152, 22 );
+            this.menuFileExit.Size = new System.Drawing.Size( 112, 22 );
             this.menuFileExit.Text = "Exit";
             this.menuFileExit.Click += new System.EventHandler( this.menuFileExit_Click );
             // 

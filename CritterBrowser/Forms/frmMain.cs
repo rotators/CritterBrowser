@@ -719,22 +719,28 @@ namespace CritterBrowser.Forms
             {
                 case LoadModeType.Directory:
                     filename = openDirectory.SelectedPath + Path.DirectorySeparatorChar + CurrentCritterType.Name + animName;
-                    if( File.Exists( filename + ".FRM" ) )
-                    {
-                        FalloutFRM frm = LoadFRM( null, filename, LoadModeType.Directory );
 
+                    if( !crAnim.Splitted )
+                    {
+                        if( !File.Exists( filename + ".FRM" ) )
+                            return;
+
+                        FalloutFRM frm = LoadFRM( null, filename + ".FRM", LoadModeType.Directory );
                         for( int d = 0; d <= 5; d++ )
                         {
-                            frms[d] = frm.GetAnimFrameByDir( d, 1 );
+                            if( crAnim.Dir[d] )
+                                frms[d] = frm.GetAnimFrameByDir( d, 1 );
                         }
                     }
-
-                    for( int d = 0; d <= 5; d++ )
+                    else
                     {
-                        if( CurrentCritterType[animName].Dir[d] && File.Exists( filename + ".FR" + d ) )
+                        for( int d = 0; d <= 5; d++ )
                         {
-                            FalloutFRM frm = LoadFRM( null, filename + ".FR" + d, LoadModeType.Directory );
-                            frms[d] = frm.Frames[0];
+                            if( crAnim.Dir[d] )
+                            {
+                                FalloutFRM frm = LoadFRM( null, filename + ".FR" + d, LoadModeType.Directory );
+                                frms[d] = frm.Frames[0];
+                            }
                         }
                     }
                     break;

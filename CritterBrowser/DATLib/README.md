@@ -1,1 +1,0 @@
-﻿[DATLib](https://github.com/rotators/Tools/DATLib/) by Ghosthack/Rotators.
