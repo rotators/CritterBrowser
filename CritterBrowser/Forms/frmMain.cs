@@ -88,6 +88,7 @@ namespace CritterBrowser.Forms
             EnableControls( false );
 
             statusLabel.Text = "";
+            tableLayoutPanel1.AutoSize = true;
 
             switch( StartPosition )
             {
@@ -146,7 +147,7 @@ namespace CritterBrowser.Forms
                 link.Enabled = false;
             }
 
-            pictureBox1.Image = null;
+            animPreview.Image = null;
         }
 
         /// <summary>
@@ -666,6 +667,68 @@ namespace CritterBrowser.Forms
         }
 
         /// <summary>
+        /// File->Export event.
+        /// </summary>
+        private void menuFileExport_Click( object sender, EventArgs e )
+        {
+            if( CurrentCritterType == null )
+                return;
+
+            saveFile.FileName = CurrentCritterType.Name + ".zip";
+            DialogResult result = saveFile.ShowDialog( this );
+            if( result != DialogResult.OK )
+                return;
+
+            ZipStorer zip = ZipStorer.Create( saveFile.FileName, "" );
+            PackCritterType( zip, CurrentCritterType );
+            zip.Close();
+        }
+
+
+        void PackCritterType( ZipStorer zip, string crTypeName )
+        {
+            CritterType crType = CritterTypes.Find( cr => crTypeName.ToUpper() == cr.Name );
+            if( crType == null )
+                PackCritterType( zip, crType );
+        }
+
+        void PackCritterType( ZipStorer zip, CritterType crType )
+        {
+            foreach( CritterAnimation crAnim in crType.Animations )
+            {
+                if( crAnim.Full )
+                {
+                    object datafile = null;
+                    if( OpenCurrentDatafile( ref datafile ) )
+                    {
+                        byte[] bytes = null;
+                        string filename = null;
+                        DateTime dateTime = DateTime.Now;
+                        switch( LoadMode)
+                        {
+                            case LoadModeType.Directory:
+                                filename = openDirectory.SelectedPath + Path.DirectorySeparatorChar + crType.Name + crAnim.Name + ".FRM";
+                                if( File.Exists( filename ) )
+                                {
+                                    bytes = File.ReadAllBytes( filename );
+                                    dateTime = File.GetLastWriteTime( filename);
+                                    filename = crType.Name + crAnim.Name + ".FRM";
+                                }
+                                break;
+                        }
+                        CloseCurrentDatafile( ref datafile );
+
+                        if( bytes != null && bytes.Length > 0 )
+                        {
+                            MemoryStream stream = new MemoryStream( bytes, false );
+                            zip.AddStream( ZipStorer.Compression.Deflate, filename, stream, dateTime, "" );
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// File->Close event.
         /// </summary>
         private void menuFileExit_Click( object sender, EventArgs e )
@@ -712,11 +775,13 @@ namespace CritterBrowser.Forms
                 PrevSelectedCritterIndex = self.SelectedIndex;
 
             ResetAnimations();
+            animPreview.Hide();
+            animPreview.Update();
+            animPreview.Image = null;
+            animPreview.Size = new Size( 0, 0 );
 
             string baseName = (string)self.SelectedItem;
             CurrentCritterType = CritterTypes.Find( cr => cr.Name == baseName );
-
-            RefreshFalloutFOnline( CurrentCritterType, true );
 
             foreach( CritterAnimation crAnim in CurrentCritterType.Animations )
             {
@@ -727,10 +792,7 @@ namespace CritterBrowser.Forms
                 link.Enabled = true;
             }
 
-            pictureBox1.Hide();
-            pictureBox1.Update();
-            pictureBox1.Image = null;
-            pictureBox1.Size = new Size( 0, 0 );
+            RefreshFalloutFOnline( CurrentCritterType, true );
 
             object datafile = null;
             if( OpenCurrentDatafile( ref datafile ) )
@@ -741,12 +803,13 @@ namespace CritterBrowser.Forms
                     if( crAnim != null )
                     {
                         Bitmap[] frm = LoadFRM( datafile, CurrentCritterType, crAnim.Name, LoadMode );
-                        if( frm != null && frm[3] != null )
+                        if( frm != null && (frm[3] != null || frm[0] != null ))
                         {
-                            pictureBox1.Size = new Size( frm[3].Width, frm[3].Height );
-                            pictureBox1.Image = frm[3];
-                            pictureBox1.Update();
-                            pictureBox1.Show();
+                            Bitmap bmp = (frm[3] != null ? frm[3] : frm[0]);
+                            animPreview.Size = new Size( bmp.Width, bmp.Height );
+                            animPreview.Image = bmp;
+                            animPreview.Update();
+                            animPreview.Show();
                             break;
                         }
                     }
