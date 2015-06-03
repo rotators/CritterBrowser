@@ -10,12 +10,29 @@ using System.Drawing;
 using System.Windows.Forms;
 #endif
 
-//
-// based on https://github.com/rotators/fo2238/tree/master/Tools/FO2238Config/ by Atom/Rotators
-//
-
+/// <remarks>Based on https://github.com/rotators/fo2238/tree/master/Tools/FO2238Config/ by Atom/Rotators</remarks>
 public class IniParser
 {
+    #region Static members
+
+    public readonly static String RootSection = "ROOT";
+    public readonly static Char[] CommentChars = { '#', ';' };
+    public readonly static Char[] SectionChars = { '[', ']' };
+    public readonly static Char VarSeparator = '=';
+    public readonly static String EmptySetting = "0";
+    public readonly static String[] FalseStrings = { "false", "disabled", "no", "0" };
+    public readonly static String[] TrueStrings = { "true", "enabled", "yes", "1" };
+
+    public static String Comment { get { return (CommentChars[0].ToString()); } }
+
+    public static String SectionOpen { get { return (SectionChars[0].ToString()); } }
+    public static String SectionClose { get { return (SectionChars[1].ToString()); } }
+
+    public static String FalseString { get { return (FalseStrings[0]); } }
+    public static String TrueString { get { return (TrueStrings[0]); } }
+
+    #endregion
+
     private Hashtable keyPairs = new Hashtable();
     private String iniFilePath;
 
@@ -27,19 +44,98 @@ public class IniParser
 
     public readonly bool Loaded = false;
 
-    public readonly static String RootSection = "ROOT";
-    public readonly static Char[] CommentChars = { '#', ';' };
-    public readonly static Char[] SectionChars = { '[', ']' };
-    public readonly static Char VarSeparator = '=';
-    public readonly static String EmptySetting = "0";
-    public readonly static String[] FalseStrings = { "false", "disabled", "no", "0" };
-    public readonly static String[] TrueStrings = { "true", "enabled", "yes", "1" };
+    /// <summary>
+    /// Defines file header.
+    /// All elements will added at beginning of saved file with default comment character.
+    /// Note that all comments are ignored when opening file; list must filled before each
+    /// save or it will be lost.
+    /// </summary>
+    /// <seealso cref="HeaderText"/>
+    public List<String> Header = new List<string>();
 
-    public static String SectionOpen { get { return (SectionChars[0].ToString()); } }
-    public static String SectionClose { get { return (SectionChars[1].ToString()); } }
+    /// <summary>
+    /// Returns file header as a text.
+    /// </summary>
+    /// <seealso cref="Header"/>
+    public String HeaderText
+    {
+        get
+        {
+            string result = String.Empty;
 
-    public static String FalseString { get { return (FalseStrings[0]); } }
-    public static String TrueString { get { return (TrueStrings[0]); } }
+            if( Header.Count > 0 )
+            {
+                foreach( String line in Header )
+                {
+                    result += Comment + " " + line + Environment.NewLine;
+                }
+            }
+
+            return (result);
+        }
+
+    }
+
+    /// <summary>
+    /// Returns current sections, keys pairs as text.
+    /// </summary>
+    public String ConfigurationText
+    {
+        get
+        {
+            ArrayList rootSection = new ArrayList();
+            ArrayList sections = new ArrayList();
+            String tmpValue = "";
+            String strToSave = "";
+
+            foreach( SectionPair sectionPair in keyPairs.Keys )
+            {
+                if( sectionPair.Section == RootSection )
+                    rootSection.Add( sectionPair );
+                else if( !sections.Contains( sectionPair.Section ) )
+                    sections.Add( sectionPair.Section );
+            }
+
+            sections.Sort();
+
+            if( rootSection.Count > 0 )
+            {
+                foreach( SectionPair sectionPair in rootSection )
+                {
+                    tmpValue = (String)keyPairs[sectionPair];
+
+                    if( tmpValue != null )
+                        tmpValue = VarSeparator + tmpValue;
+
+                    strToSave += (sectionPair.Key + tmpValue + Environment.NewLine);
+                }
+
+                strToSave += Environment.NewLine;
+            }
+
+            foreach( String section in sections )
+            {
+                strToSave += (SectionOpen + section + SectionClose + Environment.NewLine);
+
+                foreach( SectionPair sectionPair in keyPairs.Keys )
+                {
+                    if( sectionPair.Section == section )
+                    {
+                        tmpValue = (String)keyPairs[sectionPair];
+
+                        if( tmpValue != null )
+                            tmpValue = VarSeparator + tmpValue;
+
+                        strToSave += (sectionPair.Key + tmpValue + Environment.NewLine);
+                    }
+                }
+
+                strToSave += Environment.NewLine;
+            }
+
+            return (strToSave);
+        }
+    }
 
     /// <summary>
     /// Opens the INI file at the given path and enumerates the values in the IniParser.
@@ -259,55 +355,15 @@ public class IniParser
     /// <param name="newFilePath">New file path.</param>
     public void SaveSettings( String newFilePath )
     {
-        ArrayList rootSection = new ArrayList();
-        ArrayList sections = new ArrayList();
-        String tmpValue = "";
         String strToSave = "";
 
-        foreach( SectionPair sectionPair in keyPairs.Keys )
+        String header = HeaderText;
+        if( header != String.Empty )
         {
-            if( sectionPair.Section == RootSection )
-                rootSection.Add( sectionPair );
-            else if( !sections.Contains( sectionPair.Section ) )
-                sections.Add( sectionPair.Section );
-        }
-
-        sections.Sort();
-
-        if( rootSection.Count > 0 )
-        {
-            foreach( SectionPair sectionPair in rootSection )
-            {
-                tmpValue = (String)keyPairs[sectionPair];
-
-                if( tmpValue != null )
-                    tmpValue = VarSeparator + tmpValue;
-
-                strToSave += (sectionPair.Key + tmpValue + Environment.NewLine);
-            }
-
+            strToSave += header;
             strToSave += Environment.NewLine;
         }
-
-        foreach( String section in sections )
-        {
-            strToSave += (SectionOpen + section + SectionClose + Environment.NewLine);
-
-            foreach( SectionPair sectionPair in keyPairs.Keys )
-            {
-                if( sectionPair.Section == section )
-                {
-                    tmpValue = (String)keyPairs[sectionPair];
-
-                    if( tmpValue != null )
-                        tmpValue = VarSeparator + tmpValue;
-
-                    strToSave += (sectionPair.Key + tmpValue + Environment.NewLine);
-                }
-            }
-
-            strToSave += Environment.NewLine;
-        }
+        strToSave += ConfigurationText;
 
         try
         {
