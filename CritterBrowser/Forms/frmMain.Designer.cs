@@ -803,6 +803,7 @@
             // 
             // menuFileExport
             // 
+            this.menuFileExport.Enabled = false;
             this.menuFileExport.Name = "menuFileExport";
             this.menuFileExport.Size = new System.Drawing.Size( 152, 22 );
             this.menuFileExport.Text = "Export...";

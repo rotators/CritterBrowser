@@ -12,78 +12,6 @@ namespace CritterBrowser
         Partial
     }
 
-    class CritterAnimation
-    {
-        public readonly string Name;
-        public CritterAnimationDir[] Dir = new CritterAnimationDir[6];
-
-        public ZipStorer.ZipFileEntry[] ZipData = new ZipStorer.ZipFileEntry[6];
-        public int[] DatData = new int[6];
-
-        public bool Full
-        {
-            get
-            {
-                foreach( CritterAnimationDir crAnimType in Dir )
-                {
-                    if( crAnimType != CritterAnimationDir.Full )
-                        return (false);
-                }
-
-                return (true);
-            }
-        }
-
-        public bool Partial
-        {
-            get
-            {
-                foreach( CritterAnimationDir crAnimType in Dir )
-                {
-                    if( crAnimType != CritterAnimationDir.Partial )
-                        return (false);
-                }
-
-                return (true);
-            }
-        }
-
-        public bool AllDirs
-        {
-            get
-            {
-                foreach( CritterAnimationDir t in Dir )
-                {
-                    if( t == CritterAnimationDir.None )
-                        return (false);
-                }
-
-                return (true);
-            }
-        }
-
-        public bool AnyDir
-        {
-            get
-            {
-                foreach( CritterAnimationDir  t in Dir )
-                {
-                    if( t != CritterAnimationDir.None )
-                        return (true);
-                }
-                return (false);
-            }
-        }
-
-        public CritterAnimation(string name)
-        {
-            if( name.Length != 2 )
-                throw new ArgumentException( "wrong length", "name" );
-
-            Name = name.ToUpper();
-        }
-    }
-
     class CritterType
     {
         public readonly string Name;
@@ -113,6 +41,32 @@ namespace CritterBrowser
             get
             {
                 return (Animations.Find(anim => anim.Name == name));
+            }
+        }
+
+        public int AnimationsFiles
+        {
+            get
+            {
+                int result = 0;
+
+                foreach( CritterAnimation crAnim in Animations )
+                {
+                    if( crAnim.Full )
+                        result++;
+                    else
+                    {
+                        foreach( CritterAnimationDir dir in crAnim.Dir )
+                        {
+                            if( dir == CritterAnimationDir.None )
+                                continue;
+
+                            result++;
+                        }
+                    }
+                }
+
+                return (result);
             }
         }
 
@@ -248,6 +202,92 @@ namespace CritterBrowser
             }
 
             return (result);
+        }
+    }
+
+    class CritterAnimation
+    {
+        public readonly string Name;
+        public CritterAnimationDir[] Dir = new CritterAnimationDir[6];
+
+        public ZipStorer.ZipFileEntry[] ZipData = new ZipStorer.ZipFileEntry[6];
+        public int[] DatData = new int[6];
+
+        public bool Full
+        {
+            get
+            {
+                foreach( CritterAnimationDir crAnimType in Dir )
+                {
+                    if( crAnimType != CritterAnimationDir.Full )
+                        return (false);
+                }
+
+                return (true);
+            }
+        }
+
+        public bool Partial
+        {
+            get
+            {
+                foreach( CritterAnimationDir crAnimType in Dir )
+                {
+                    if( crAnimType != CritterAnimationDir.Partial )
+                        return (false);
+                }
+
+                return (true);
+            }
+        }
+
+        public bool AllDirs
+        {
+            get
+            {
+                foreach( CritterAnimationDir t in Dir )
+                {
+                    if( t == CritterAnimationDir.None )
+                        return (false);
+                }
+
+                return (true);
+            }
+        }
+
+        public bool AnyDir
+        {
+            get
+            {
+                foreach( CritterAnimationDir  t in Dir )
+                {
+                    if( t != CritterAnimationDir.None )
+                        return (true);
+                }
+                return (false);
+            }
+        }
+
+        public CritterAnimation(string name)
+        {
+            if( name.Length != 2 )
+                throw new ArgumentException( "wrong length", "name" );
+
+            Name = name.ToUpper();
+        }
+    }
+
+    class CritterAnimationPacked
+    {
+        public readonly string Filename;
+        public readonly byte[] Bytes;
+        public readonly DateTime Date;
+
+        public CritterAnimationPacked( string filename, byte[] bytes, DateTime date )
+        {
+            Filename = filename;
+            Bytes = bytes;
+            Date = date;
         }
     }
 }

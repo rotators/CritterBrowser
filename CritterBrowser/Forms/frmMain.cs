@@ -58,6 +58,7 @@ namespace CritterBrowser.Forms
 
         // other
         readonly string ArtCritters = "ART" + Path.DirectorySeparatorChar + "CRITTERS" + Path.DirectorySeparatorChar;
+        readonly string ArtCrittersZip = "art/critters/";
 
         List<string> ValidAnimations = new List<string>();
         List<string> ValidAnimationsGroups = new List<string>();
@@ -613,6 +614,7 @@ namespace CritterBrowser.Forms
             CritterTypes.Clear();
 
             menuFileOpen.Enabled =
+            menuFileExport.Enabled =
             menuOptionsTarget.Enabled =
                 false;
             lstCritters.SelectedIndex = PrevSelectedCritterIndex = -1;
@@ -620,7 +622,6 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline( new CritterType( "" ), true );
             statusLabel.Text = "Opening " + target + "...";
 
-            frmChecker.DoWork -= frmChecker_DoWork;
             frmCheckerCompleted = false;
 
             return (config);
@@ -647,7 +648,6 @@ namespace CritterBrowser.Forms
                 return;
 
             frmCheckerConfig config = frmCheckerPrepare( loadMode, openFile.FileName );
-            frmChecker.DoWork += new DoWorkEventHandler( frmChecker_DoWork );
             frmChecker.RunWorkerAsync( config );
         }
 
@@ -662,8 +662,7 @@ namespace CritterBrowser.Forms
                 return;
 
             frmCheckerConfig config = frmCheckerPrepare( LoadModeType.Directory, openDirectory.SelectedPath );
-            frmChecker.DoWork +=new DoWorkEventHandler(frmChecker_DoWork);
-            frmChecker.RunWorkerAsync(config);
+            frmChecker.RunWorkerAsync( config );
         }
 
         /// <summary>
@@ -680,51 +679,88 @@ namespace CritterBrowser.Forms
                 return;
 
             ZipStorer zip = ZipStorer.Create( saveFile.FileName, "" );
-            PackCritterType( zip, CurrentCritterType );
+            AddCritterType( zip, CurrentCritterType );
             zip.Close();
         }
 
-
-        void PackCritterType( ZipStorer zip, string crTypeName )
+        void AddCritterType( ZipStorer zip, string crTypeName )
         {
             CritterType crType = CritterTypes.Find( cr => crTypeName.ToUpper() == cr.Name );
             if( crType == null )
-                PackCritterType( zip, crType );
+            {
+                return;
+            }
+
+            AddCritterType( zip, crType );
         }
 
-        void PackCritterType( ZipStorer zip, CritterType crType )
+        void AddCritterType( ZipStorer zip, CritterType crType )
         {
+            object datafile = null;
+            if( !OpenCurrentDatafile( ref datafile ) )
+                return;
+
+            List<CritterAnimationPacked> zipFiles = new List<CritterAnimationPacked>();
+
             foreach( CritterAnimation crAnim in crType.Animations )
             {
-                if( crAnim.Full )
-                {
-                    object datafile = null;
-                    if( OpenCurrentDatafile( ref datafile ) )
-                    {
-                        byte[] bytes = null;
-                        string filename = null;
-                        DateTime dateTime = DateTime.Now;
-                        switch( LoadMode)
-                        {
-                            case LoadModeType.Directory:
-                                filename = openDirectory.SelectedPath + Path.DirectorySeparatorChar + crType.Name + crAnim.Name + ".FRM";
-                                if( File.Exists( filename ) )
-                                {
-                                    bytes = File.ReadAllBytes( filename );
-                                    dateTime = File.GetLastWriteTime( filename);
-                                    filename = crType.Name + crAnim.Name + ".FRM";
-                                }
-                                break;
-                        }
-                        CloseCurrentDatafile( ref datafile );
+                List<string> nameList = new List<string>();
+                List<byte[]> bytesList = new List<byte[]>();
+                List<DateTime> dateList = new List<DateTime>();
 
-                        if( bytes != null && bytes.Length > 0 )
-                        {
-                            MemoryStream stream = new MemoryStream( bytes, false );
-                            zip.AddStream( ZipStorer.Compression.Deflate, filename, stream, dateTime, "" );
-                        }
+                string crName = crType.Name + crAnim.Name;
+
+                for( int d = 0; d <= 5; d++ )
+                {
+                    if( crAnim.Dir[d] == CritterAnimationDir.None )
+                        continue;
+
+                    string suffix = crAnim.Full ? "M" : d.ToString();
+
+                    switch( LoadMode )
+                    {
+                        case LoadModeType.Directory:
+                            string filename = openDirectory.SelectedPath + Path.DirectorySeparatorChar + crName + ".FR" + suffix;
+                            if( File.Exists( filename ) )
+                            {
+                                zipFiles.Add( new CritterAnimationPacked(
+                                    ArtCrittersZip + crName + ".FR" + suffix,
+                                    File.ReadAllBytes( filename ),
+                                    File.GetLastWriteTime( filename )
+                                 ) );
+                            }
+                            break;
+
+                        case LoadModeType.Zip:
+                            ZipStorer zipDatafile = (ZipStorer)datafile;
+                            MemoryStream stream = new MemoryStream();
+                            zipDatafile.ExtractFile( crAnim.ZipData[d], stream );
+                            zipFiles.Add( new CritterAnimationPacked(
+                                ArtCrittersZip + crName + ".FR" + suffix,
+                                stream.ToArray(),
+                                crAnim.ZipData[d].ModifyTime ) );
+                            break;
+
+                        case LoadModeType.Dat:
+                            DAT dat = (DAT)datafile;
+                            zipFiles.Add( new CritterAnimationPacked(
+                                ArtCrittersZip + crName + ".FR" + suffix,
+                                dat.FileList[crAnim.DatData[d]].GetData(),
+                                DateTime.Now ) );
+                            break;
                     }
+
+                    if( crAnim.Full )
+                        break;
                 }
+            }
+
+            CloseCurrentDatafile( ref datafile );
+
+            foreach( CritterAnimationPacked crAnimPacked in zipFiles )
+            {
+                MemoryStream stream = new MemoryStream( crAnimPacked.Bytes, false );
+                zip.AddStream( ZipStorer.Compression.Deflate, crAnimPacked.Filename, stream, crAnimPacked.Date, "" );
             }
         }
 
@@ -1100,6 +1136,7 @@ namespace CritterBrowser.Forms
                     foreach( DATFile entry in dat.FileList )
                     {
                         idx++;
+
                         string filename = entry.Path.ToUpper()
                             .Replace( '\\', Path.DirectorySeparatorChar )
                             .Replace( '/', Path.DirectorySeparatorChar );
@@ -1112,6 +1149,13 @@ namespace CritterBrowser.Forms
                             continue;
 
                         // DATLib doesn't care about FileIndex, so we have to
+
+                        if( idx >= int.MaxValue )
+                        {
+                            self.ReportProgress( (int)ProgressData.ErrorMessage, "Too many files" );
+                            return;
+                        }
+
                         entry.FileIndex = idx;
                         files.Add( entry );
                     }
@@ -1321,7 +1365,7 @@ namespace CritterBrowser.Forms
                 TargetName = config.Target;
                 LoadMode = config.LoadMode;
 
-                menuOptionsTarget.Enabled = true;
+                menuFileExport.Enabled = menuOptionsTarget.Enabled = true;
 
                 EnableControls( true );
             }
