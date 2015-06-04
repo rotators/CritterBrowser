@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using System.IO.Compression;
 
 // enable extensions in .net 2.0
 namespace System.Runtime.CompilerServices
@@ -36,6 +38,13 @@ namespace CritterBrowser
             }
 
             return (true);
+        }
+ 
+        public static void AddText( this ZipStorer self, ZipStorer.Compression _method, string _text, string _filenameInZip, DateTime _modTime, string _comment )
+        {
+            byte[] bytes = Encoding.UTF8.GetBytes( _text );
+            MemoryStream stream = new MemoryStream( bytes );
+            self.AddStream( _method, _filenameInZip, stream, _modTime, _comment );
         }
     }
 }

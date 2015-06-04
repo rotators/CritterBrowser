@@ -86,7 +86,7 @@ public class IniParser
             ArrayList rootSection = new ArrayList();
             ArrayList sections = new ArrayList();
             String tmpValue = "";
-            String strToSave = "";
+            String result = "";
 
             foreach( SectionPair sectionPair in keyPairs.Keys )
             {
@@ -107,15 +107,15 @@ public class IniParser
                     if( tmpValue != null )
                         tmpValue = VarSeparator + tmpValue;
 
-                    strToSave += (sectionPair.Key + tmpValue + Environment.NewLine);
+                    result += (sectionPair.Key + tmpValue + Environment.NewLine);
                 }
 
-                strToSave += Environment.NewLine;
+                result += Environment.NewLine;
             }
 
             foreach( String section in sections )
             {
-                strToSave += (SectionOpen + section + SectionClose + Environment.NewLine);
+                result += (SectionOpen + section + SectionClose + Environment.NewLine);
 
                 foreach( SectionPair sectionPair in keyPairs.Keys )
                 {
@@ -126,14 +126,33 @@ public class IniParser
                         if( tmpValue != null )
                             tmpValue = VarSeparator + tmpValue;
 
-                        strToSave += (sectionPair.Key + tmpValue + Environment.NewLine);
+                        result += (sectionPair.Key + tmpValue + Environment.NewLine);
                     }
                 }
 
-                strToSave += Environment.NewLine;
+                result += Environment.NewLine;
             }
 
-            return (strToSave);
+            return (result);
+        }
+    }
+
+    public string AsText
+    {
+        get
+        {
+            String result = "";
+
+            String header = HeaderText;
+            if( header != String.Empty )
+            {
+                result += header;
+                result += Environment.NewLine;
+            }
+
+            result += ConfigurationText;
+
+            return (result);
         }
     }
 
@@ -355,20 +374,10 @@ public class IniParser
     /// <param name="newFilePath">New file path.</param>
     public void SaveSettings( String newFilePath )
     {
-        String strToSave = "";
-
-        String header = HeaderText;
-        if( header != String.Empty )
-        {
-            strToSave += header;
-            strToSave += Environment.NewLine;
-        }
-        strToSave += ConfigurationText;
-
         try
         {
             TextWriter tw = new StreamWriter( newFilePath );
-            tw.Write( strToSave );
+            tw.Write( AsText );
             tw.Close();
         }
         catch( Exception ex )

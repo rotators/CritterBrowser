@@ -222,7 +222,7 @@
             this.ClientSize = new System.Drawing.Size( 340, 77 );
             this.Controls.Add( this.tblAnimation );
             this.DoubleBuffered = true;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.Name = "frmAnimation";
             this.Text = "Animation";

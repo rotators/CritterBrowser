@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO.Compression;
+using System.Drawing;
 
 namespace CritterBrowser
 {
@@ -22,6 +23,8 @@ namespace CritterBrowser
         public string Sound = "", Comment = "";
 
         public List<CritterAnimation> Animations = new List<CritterAnimation>();
+
+        public Bitmap Preview;
 
         public CritterType(string name)
         {
