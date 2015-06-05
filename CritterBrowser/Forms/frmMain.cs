@@ -955,7 +955,7 @@ namespace CritterBrowser.Forms
                 {
                     case LoadModeType.Directory:
                         string directory = (string)datafile;
-                        files[d] = crType.Name + animName + ".FR" + (crAnim.Full ? "M" : d.ToString());
+                        files[d] = crType.Name + animName + ".FR" + (crAnim.Dir[d] == CritterAnimationDir.Full ? "M" : d.ToString());
                         break;
 
                     case LoadModeType.Zip:
@@ -1061,14 +1061,18 @@ namespace CritterBrowser.Forms
             object datafile = null;
             if( !OpenDatafile( ref datafile, config.Target, config.LoadMode ) )
             {
-                self.ReportProgress( (int)ProgressData.ErrorMessage, "Error opening "+config.Target );
+                self.ReportProgress( (int)ProgressData.ErrorMessage, "Error opening " + config.Target );
                 return;
             }
 
             switch( config.LoadMode )
             {
                 case LoadModeType.Directory:
-                    files.AddRange( Directory.GetFiles( config.Target, "*.FR?", SearchOption.TopDirectoryOnly ) );
+                    string[] tmpfiles = Directory.GetFiles( config.Target, "*.FR?", SearchOption.TopDirectoryOnly );
+                    foreach( string file in tmpfiles )
+                    {
+                        files.Add( Path.GetFileName( file ) );
+                    }
                     break;
 
                 case LoadModeType.Zip:
