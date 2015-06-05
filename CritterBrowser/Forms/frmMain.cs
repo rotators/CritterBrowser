@@ -150,7 +150,10 @@ namespace CritterBrowser.Forms
                 link.Enabled = false;
             }
 
+            animPreview.Hide();
+            animPreview.Update();
             animPreview.Image = null;
+            animPreview.Size = new Size( 0, 0 );
         }
 
         /// <summary>
@@ -524,6 +527,12 @@ namespace CritterBrowser.Forms
         {
             switch( loadMode )
             {
+                case LoadModeType.Directory:
+                    if( !Directory.Exists( targetName ) )
+                        return (false);
+                    datafile = targetName;
+                    break;
+
                 case LoadModeType.Zip:
                     ZipStorer zip = ZipStorer.Open( targetName, FileAccess.Read );
                     if( zip == null )
@@ -629,6 +638,7 @@ namespace CritterBrowser.Forms
                 false;
             lstCritters.SelectedIndex = PrevSelectedCritterIndex = -1;
             lstCritters.Items.Clear();
+            EnableControls( false );
             RefreshFalloutFOnline( new CritterType( "" ), true );
             statusLabel.Text = "Opening " + target + "...";
 
@@ -821,10 +831,6 @@ namespace CritterBrowser.Forms
                 PrevSelectedCritterIndex = self.SelectedIndex;
 
             ResetAnimations();
-            animPreview.Hide();
-            animPreview.Update();
-            animPreview.Image = null;
-            animPreview.Size = new Size( 0, 0 );
 
             string baseName = (string)self.SelectedItem;
             CurrentCritterType = CritterTypes.Find( cr => cr.Name == baseName );
@@ -945,12 +951,11 @@ namespace CritterBrowser.Forms
                 if( crAnim.Dir[d] == CritterAnimationDir.None )
                     continue;
 
-                string suffix = crAnim.Full ? "M" : d.ToString();
-
                 switch( loadMode )
                 {
                     case LoadModeType.Directory:
-                        files[d] = openDirectory.SelectedPath + Path.DirectorySeparatorChar + CurrentCritterType.Name + animName + ".FR" + suffix;
+                        string directory = (string)datafile;
+                        files[d] = crType.Name + animName + ".FR" + (crAnim.Full ? "M" : d.ToString());
                         break;
 
                     case LoadModeType.Zip:
@@ -1012,19 +1017,17 @@ namespace CritterBrowser.Forms
             switch( loadMode )
             {
                 case LoadModeType.Directory:
-                    string filename = (string)file;
+                    string filename = (string)datafile + Path.DirectorySeparatorChar + (string)file;
                     if( File.Exists( filename ) )
                         bytes = File.ReadAllBytes( filename );
                     break;
 
                 case LoadModeType.Zip:
-                    using( MemoryStream stream = new MemoryStream() )
-                    {
-                        ZipStorer zip = (ZipStorer)datafile;
-                        ZipStorer.ZipFileEntry zipEntry = (ZipStorer.ZipFileEntry)file;
-                        zip.ExtractFile( zipEntry, stream );
-                        bytes = stream.ToArray();
-                    }
+                    MemoryStream stream = new MemoryStream();
+                    ZipStorer zip = (ZipStorer)datafile;
+                    ZipStorer.ZipFileEntry zipEntry = (ZipStorer.ZipFileEntry)file;
+                    zip.ExtractFile( zipEntry, stream );
+                    bytes = stream.ToArray();
                     break;
 
                 case LoadModeType.Dat:
@@ -1058,7 +1061,7 @@ namespace CritterBrowser.Forms
             object datafile = null;
             if( !OpenDatafile( ref datafile, config.Target, config.LoadMode ) )
             {
-                self.ReportProgress( (int)ProgressData.ErrorMessage, "Error opening file" );
+                self.ReportProgress( (int)ProgressData.ErrorMessage, "Error opening "+config.Target );
                 return;
             }
 
