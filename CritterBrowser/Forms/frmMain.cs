@@ -102,14 +102,13 @@ namespace CritterBrowser.Forms
                     CenterToScreen();
                     break;
             }
-
         }
 
         /// <summary>
         /// Preprare form to be closed even if any BackgroundWorker is running.
         /// </summary>
         /// <remarks>http://stackoverflow.com/a/1732361</remarks>
-        protected override void OnFormClosing(FormClosingEventArgs e)
+        protected override void OnFormClosing( FormClosingEventArgs e )
         {
             if( !frmCheckerCompleted )
             {
@@ -123,7 +122,7 @@ namespace CritterBrowser.Forms
             base.OnFormClosing( e );
         }
 
-        void EnableControls(bool enable)
+        void EnableControls( bool enable )
         {
             lstCritters.Enabled =
             grpFalloutConfiguration.Enabled =
@@ -161,160 +160,160 @@ namespace CritterBrowser.Forms
         /// </summary>
         void InitAnimations()
         {
-            AddAnimationGroup("A", "unarmed");
-            AddAnimation("AA", "idle");
-            AddAnimation("AB", "walk");
-            AddAnimation("AE", "climb");
-            AddAnimation("AK", "pick up");
-            AddAnimation("AL", "use");
-            AddAnimation("AN", "dodge");
-            AddAnimation("AO", "hit front");
-            AddAnimation("AP", "hit back");
-            AddAnimation("AQ", "punch");
-            AddAnimation("AR", "kick");
-            AddAnimation("AS", "throw");
-            AddAnimation("AT", "run");
+            AddAnimationGroup( "A", "unarmed" );
+            AddAnimation( "AA", "idle" );
+            AddAnimation( "AB", "walk" );
+            AddAnimation( "AE", "climb" );
+            AddAnimation( "AK", "pick up" );
+            AddAnimation( "AL", "use" );
+            AddAnimation( "AN", "dodge" );
+            AddAnimation( "AO", "hit front" );
+            AddAnimation( "AP", "hit back" );
+            AddAnimation( "AQ", "punch" );
+            AddAnimation( "AR", "kick" );
+            AddAnimation( "AS", "throw" );
+            AddAnimation( "AT", "run" );
 
-            AddAnimationGroup("C", "stand up");
-            AddAnimation("CH", "front");
-            AddAnimation("CJ", "back");
+            AddAnimationGroup( "C", "stand up" );
+            AddAnimation( "CH", "front" );
+            AddAnimation( "CJ", "back" );
 
-            AddAnimationGroup("B", "death");
-            AddAnimation("BA", "fall back");
-            AddAnimation("BB", "fall front");
-            AddAnimation("BD", "hole");
-            AddAnimation("BE", "fall back burn");
-            AddAnimation("BF", "ripped");
-            AddAnimation("BG", "perforated");
-            AddAnimation("BH", "fall back electric");
-            AddAnimation("BI", "cut");
-            AddAnimation("BJ", "fall front burn");
-            AddAnimation("BK", "ashes");
-            AddAnimation("BL", "explosion");
-            AddAnimation("BM", "meltdown");
-            AddAnimation("BN", "burning dance");
-            AddAnimation("BO", "bleed back");
-            AddAnimation("BP", "bleed front");
+            AddAnimationGroup( "B", "death" );
+            AddAnimation( "BA", "fall back" );
+            AddAnimation( "BB", "fall front" );
+            AddAnimation( "BD", "hole" );
+            AddAnimation( "BE", "fall back burn" );
+            AddAnimation( "BF", "ripped" );
+            AddAnimation( "BG", "perforated" );
+            AddAnimation( "BH", "fall back electric" );
+            AddAnimation( "BI", "cut" );
+            AddAnimation( "BJ", "fall front burn" );
+            AddAnimation( "BK", "ashes" );
+            AddAnimation( "BL", "explosion" );
+            AddAnimation( "BM", "meltdown" );
+            AddAnimation( "BN", "burning dance" );
+            AddAnimation( "BO", "bleed back" );
+            AddAnimation( "BP", "bleed front" );
 
-            AddAnimationGroup("D", "knife");
-            AddAnimation("DA", "idle");
-            AddAnimation("DB", "walk");
-            AddAnimation("DC", "pull out");
-            AddAnimation("DD", "put in");
-            AddAnimation("DE", "dodge");
-            AddAnimation("DF", "thrust");
-            AddAnimation("DG", "swing");
-            AddAnimation("DM", "throw");
+            AddAnimationGroup( "D", "knife" );
+            AddAnimation( "DA", "idle" );
+            AddAnimation( "DB", "walk" );
+            AddAnimation( "DC", "pull out" );
+            AddAnimation( "DD", "put in" );
+            AddAnimation( "DE", "dodge" );
+            AddAnimation( "DF", "thrust" );
+            AddAnimation( "DG", "swing" );
+            AddAnimation( "DM", "throw" );
 
-            AddAnimationGroup("E", "club");
-            AddAnimation("EA", "idle");
-            AddAnimation("EB", "walk");
-            AddAnimation("EC", "pull out");
-            AddAnimation("ED", "put in");
-            AddAnimation("EE", "dodge");
-            AddAnimation("EF", "thrust");
-            AddAnimation("EG", "swing");
+            AddAnimationGroup( "E", "club" );
+            AddAnimation( "EA", "idle" );
+            AddAnimation( "EB", "walk" );
+            AddAnimation( "EC", "pull out" );
+            AddAnimation( "ED", "put in" );
+            AddAnimation( "EE", "dodge" );
+            AddAnimation( "EF", "thrust" );
+            AddAnimation( "EG", "swing" );
 
-            AddAnimationGroup("F", "hammer");
-            AddAnimation("FA", "idle");
-            AddAnimation("FB", "walk");
-            AddAnimation("FC", "pull out");
-            AddAnimation("FD", "put in");
-            AddAnimation("FE", "dodge");
-            AddAnimation("FF", "thrust");
-            AddAnimation("FG", "swing");
+            AddAnimationGroup( "F", "hammer" );
+            AddAnimation( "FA", "idle" );
+            AddAnimation( "FB", "walk" );
+            AddAnimation( "FC", "pull out" );
+            AddAnimation( "FD", "put in" );
+            AddAnimation( "FE", "dodge" );
+            AddAnimation( "FF", "thrust" );
+            AddAnimation( "FG", "swing" );
 
-            AddAnimationGroup("G", "spear");
-            AddAnimation("GA", "idle");
-            AddAnimation("GB", "walk");
-            AddAnimation("GC", "pull out");
-            AddAnimation("GD", "put int");
-            AddAnimation("GE", "dodge");
-            AddAnimation("GF", "thrust");
-            AddAnimation("GG", "swing");
-            AddAnimation("GM", "throw");
+            AddAnimationGroup( "G", "spear" );
+            AddAnimation( "GA", "idle" );
+            AddAnimation( "GB", "walk" );
+            AddAnimation( "GC", "pull out" );
+            AddAnimation( "GD", "put int" );
+            AddAnimation( "GE", "dodge" );
+            AddAnimation( "GF", "thrust" );
+            AddAnimation( "GG", "swing" );
+            AddAnimation( "GM", "throw" );
 
-            AddAnimationGroup("H", "pistol");
-            AddAnimation("HA", "idle/reload");
-            AddAnimation("HB", "walk");
-            AddAnimation("HC", "pull out");
-            AddAnimation("HD", "put in");
-            AddAnimation("HE", "dodge");
-            AddAnimation("HH", "aim");
-            AddAnimation("HI", "pull down");
-            AddAnimation("HJ", "shot");
+            AddAnimationGroup( "H", "pistol" );
+            AddAnimation( "HA", "idle/reload" );
+            AddAnimation( "HB", "walk" );
+            AddAnimation( "HC", "pull out" );
+            AddAnimation( "HD", "put in" );
+            AddAnimation( "HE", "dodge" );
+            AddAnimation( "HH", "aim" );
+            AddAnimation( "HI", "pull down" );
+            AddAnimation( "HJ", "shot" );
 
-            AddAnimationGroup("I", "smg");
-            AddAnimation("IA", "idle/reload");
-            AddAnimation("IB", "walk");
-            AddAnimation("IC", "pull out");
-            AddAnimation("ID", "put in");
-            AddAnimation("IE", "dodge");
-            AddAnimation("IH", "aim");
-            AddAnimation("II", "pull down");
-            AddAnimation("IJ", "shot");
-            AddAnimation("IK", "burst");
+            AddAnimationGroup( "I", "smg" );
+            AddAnimation( "IA", "idle/reload" );
+            AddAnimation( "IB", "walk" );
+            AddAnimation( "IC", "pull out" );
+            AddAnimation( "ID", "put in" );
+            AddAnimation( "IE", "dodge" );
+            AddAnimation( "IH", "aim" );
+            AddAnimation( "II", "pull down" );
+            AddAnimation( "IJ", "shot" );
+            AddAnimation( "IK", "burst" );
 
-            AddAnimationGroup("J", "rifle");
-            AddAnimation("JA", "idle/reload");
-            AddAnimation("JB", "walk");
-            AddAnimation("JC", "pull out");
-            AddAnimation("JD", "put in");
-            AddAnimation("JE", "dodge");
-            AddAnimation("JH", "aim");
-            AddAnimation("JI", "pull down");
-            AddAnimation("JJ", "shot");
-            AddAnimation("JK", "burst");
+            AddAnimationGroup( "J", "rifle" );
+            AddAnimation( "JA", "idle/reload" );
+            AddAnimation( "JB", "walk" );
+            AddAnimation( "JC", "pull out" );
+            AddAnimation( "JD", "put in" );
+            AddAnimation( "JE", "dodge" );
+            AddAnimation( "JH", "aim" );
+            AddAnimation( "JI", "pull down" );
+            AddAnimation( "JJ", "shot" );
+            AddAnimation( "JK", "burst" );
 
-            AddAnimationGroup("M", "rocket launcher");
-            AddAnimation("MA", "idle/reload");
-            AddAnimation("MB", "walk");
-            AddAnimation("MC", "pull out");
-            AddAnimation("MD", "put in");
-            AddAnimation("ME", "dodge");
-            AddAnimation("MH", "aim");
-            AddAnimation("MI", "pull down");
-            AddAnimation("MJ", "shot");
+            AddAnimationGroup( "M", "rocket launcher" );
+            AddAnimation( "MA", "idle/reload" );
+            AddAnimation( "MB", "walk" );
+            AddAnimation( "MC", "pull out" );
+            AddAnimation( "MD", "put in" );
+            AddAnimation( "ME", "dodge" );
+            AddAnimation( "MH", "aim" );
+            AddAnimation( "MI", "pull down" );
+            AddAnimation( "MJ", "shot" );
 
-            AddAnimationGroup("L", "minigun");
-            AddAnimation("LA", "idle/reload");
-            AddAnimation("LB", "walk");
-            AddAnimation("LC", "pull out");
-            AddAnimation("LD", "put in");
-            AddAnimation("LE", "dodge");
-            AddAnimation("LH", "aim");
-            AddAnimation("LI", "pull down");
-            AddAnimation("LK", "burst");
+            AddAnimationGroup( "L", "minigun" );
+            AddAnimation( "LA", "idle/reload" );
+            AddAnimation( "LB", "walk" );
+            AddAnimation( "LC", "pull out" );
+            AddAnimation( "LD", "put in" );
+            AddAnimation( "LE", "dodge" );
+            AddAnimation( "LH", "aim" );
+            AddAnimation( "LI", "pull down" );
+            AddAnimation( "LK", "burst" );
 
-            AddAnimationGroup("K", "heavy");
-            AddAnimation("KA", "idle/reload");
-            AddAnimation("KB", "walk");
-            AddAnimation("KC", "pull out");
-            AddAnimation("KD", "put in");
-            AddAnimation("KE", "dodge");
-            AddAnimation("KH", "aim");
-            AddAnimation("KI", "pull down");
-            AddAnimation("KJ", "shot");
-            AddAnimation("KK", "burst");
-            AddAnimation("KL", "flamer");
+            AddAnimationGroup( "K", "heavy" );
+            AddAnimation( "KA", "idle/reload" );
+            AddAnimation( "KB", "walk" );
+            AddAnimation( "KC", "pull out" );
+            AddAnimation( "KD", "put in" );
+            AddAnimation( "KE", "dodge" );
+            AddAnimation( "KH", "aim" );
+            AddAnimation( "KI", "pull down" );
+            AddAnimation( "KJ", "shot" );
+            AddAnimation( "KK", "burst" );
+            AddAnimation( "KL", "flamer" );
 
-            AddAnimationGroup("R", "body");
-            AddAnimation("RA", "back");
-            AddAnimation("RB", "front");
-            AddAnimation("RD", "hole");
-            AddAnimation("RE", "burned");
-            AddAnimation("RF", "perforated front");
-            AddAnimation("RG", "perforated back");
-            AddAnimation("RH", "electric");
-            AddAnimation("RJ", "cut");
-            AddAnimation("RK", "ashes");
-            AddAnimation("RL", "explosion");
-            AddAnimation("RM", "meltdown");
-            AddAnimation("RO", "bleed back");
-            AddAnimation("RP", "bleed front");
+            AddAnimationGroup( "R", "body" );
+            AddAnimation( "RA", "back" );
+            AddAnimation( "RB", "front" );
+            AddAnimation( "RD", "hole" );
+            AddAnimation( "RE", "burned" );
+            AddAnimation( "RF", "perforated front" );
+            AddAnimation( "RG", "perforated back" );
+            AddAnimation( "RH", "electric" );
+            AddAnimation( "RJ", "cut" );
+            AddAnimation( "RK", "ashes" );
+            AddAnimation( "RL", "explosion" );
+            AddAnimation( "RM", "meltdown" );
+            AddAnimation( "RO", "bleed back" );
+            AddAnimation( "RP", "bleed front" );
 
-            AddAnimationGroup("N", "target");
-            AddAnimation("NA", "target");
+            AddAnimationGroup( "N", "target" );
+            AddAnimation( "NA", "target" );
         }
 
         //
@@ -336,7 +335,7 @@ namespace CritterBrowser.Forms
         /// </summary>
         /// <param name="animGroup">(required length: 1)</param>
         /// <param name="description">Short information about animation group.</param>
-        void AddAnimationGroup(string animGroup, string description = "" )
+        void AddAnimationGroup( string animGroup, string description = "" )
         {
             if( !animGroup.IsAlpha() )
                 return;
@@ -354,11 +353,11 @@ namespace CritterBrowser.Forms
             group.Name = AnimGroup + animGroup;
 
             group.Text = animGroup + "*";
-            if (description.Length > 0)
+            if( description.Length > 0 )
                 group.Text += " (" + description + ")";
 
-            group.Margin = new Padding(15);
-            group.Padding = new Padding(3);
+            group.Margin = new Padding( 15 );
+            group.Padding = new Padding( 3 );
             group.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             group.AutoSize = true;
 
@@ -366,14 +365,14 @@ namespace CritterBrowser.Forms
             fpanel.Name = AnimFlow + animGroup;
 
             fpanel.FlowDirection = FlowDirection.TopDown;
-            fpanel.Padding = new Padding(0);
-            fpanel.Margin = new Padding(0);
+            fpanel.Padding = new Padding( 0 );
+            fpanel.Margin = new Padding( 0 );
             fpanel.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             fpanel.AutoSize = true;
             fpanel.Dock = DockStyle.Fill;
 
-            group.Controls.Add(fpanel);
-            animations.Controls.Add(group);
+            group.Controls.Add( fpanel );
+            animations.Controls.Add( group );
         }
 
         /// <summary>
@@ -381,19 +380,19 @@ namespace CritterBrowser.Forms
         /// </summary>
         /// <param name="animName">Animation identifier (required length: 2).</param>
         /// <param name="description">Short information about animation type</param>
-        void AddAnimation(string animName, string description = "")
+        void AddAnimation( string animName, string description = "" )
         {
             if( !animName.IsAlpha() )
                 return;
 
             animName = animName.ToUpper();
 
-            if (animName.Length != 2)
+            if( animName.Length != 2 )
                 return;
 
-            string animGroup = animName.Substring(0, 1);
+            string animGroup = animName.Substring( 0, 1 );
 
-            if (!ValidAnimationsGroups.Contains(animGroup))
+            if( !ValidAnimationsGroups.Contains( animGroup ) )
                 return;
 
             if( ValidAnimations.Contains( animName ) )
@@ -401,42 +400,42 @@ namespace CritterBrowser.Forms
 
             ValidAnimations.Add( animName );
 
-            FlowLayoutPanel fpanel = (FlowLayoutPanel)GetControl(AnimFlow + animGroup);
+            FlowLayoutPanel fpanel = (FlowLayoutPanel)GetControl( AnimFlow + animGroup );
 
             Panel panel = new Panel();
             panel.Name = AnimPanel + animName;
-            panel.Margin = panel.Padding = new Padding(0);
+            panel.Margin = panel.Padding = new Padding( 0 );
             panel.AutoSize = true;
 
             CheckBox check = new CheckBox();
             check.Name = AnimCheck + animName;
 
-            check.Font = new Font(check.Font.FontFamily, 7, FontStyle.Underline);
-            check.Margin = new Padding(0);
-            check.Padding = new Padding(3);
+            check.Font = new Font( check.Font.FontFamily, 7, FontStyle.Underline );
+            check.Margin = new Padding( 0 );
+            check.Padding = new Padding( 3 );
             check.AutoSize = true;
 
             LinkLabel link = new LinkLabel();
             link.Name = AnimLink + animName;
 
             link.Text = animName;
-            if (description.Length > 0)
+            if( description.Length > 0 )
                 link.Text += " (" + description.ToLower() + ")";
 
             link.AutoSize = true;
             link.Tag = animName;
-            link.LinkClicked += new LinkLabelLinkClickedEventHandler(animLink_LinkClicked);
+            link.LinkClicked += new LinkLabelLinkClickedEventHandler( animLink_LinkClicked );
 
             check.Enabled = link.Enabled = false;
 
-            panel.Controls.Add(check);
+            panel.Controls.Add( check );
             link.Location = check.Location;
             link.Top += 3;
             link.Left = check.Right - 3;
-            panel.Controls.Add(link);
-            fpanel.Controls.Add(panel);
+            panel.Controls.Add( link );
+            fpanel.Controls.Add( panel );
 
-            fpanel.Invalidate(true);
+            fpanel.Invalidate( true );
         }
 
         /// <summary>
@@ -452,9 +451,9 @@ namespace CritterBrowser.Forms
 
             const int bonusX = 115;
             int maxH = -1;
-            foreach (GroupBox group in groups)
+            foreach( GroupBox group in groups )
             {
-                if (group.Height > maxH)
+                if( group.Height > maxH )
                     maxH = group.Height;
             }
             maxH += bonusX;
@@ -465,9 +464,9 @@ namespace CritterBrowser.Forms
 
             var fixColumnWidth = new Action( () =>
                 {
-                    foreach (GroupBox group in column)
+                    foreach( GroupBox group in column )
                     {
-                        if (!group.AutoSize)
+                        if( !group.AutoSize )
                             continue;
 
                         Size oldSize = group.Size;
@@ -478,24 +477,24 @@ namespace CritterBrowser.Forms
                 }
             );
 
-            foreach (GroupBox group in groups)
+            foreach( GroupBox group in groups )
             {
                 int currH = group.Height;
-                if (currH + h < maxH)
+                if( currH + h < maxH )
                 {
                     group.Top = h;
                     h += currH;
                     group.Left = x;
-                    if (group.Width > w)
+                    if( group.Width > w )
                         w = group.Width;
 
-                    column.Add(group);
+                    column.Add( group );
                 }
                 else
                 {
                     fixColumnWidth();
                     column.Clear();
-                    column.Add(group);
+                    column.Add( group );
 
                     x += w;
                     group.Left = x;
@@ -514,9 +513,9 @@ namespace CritterBrowser.Forms
         /// <returns>Control object</returns>
         /// <exception cref="NotSupportedException">Thrown when control has not been found, or there is more than one with given name</exception>
         /// <example>Label lbl = (Label)GetControl( "labelName" );</example>
-        private Control GetControl(string name)
+        private Control GetControl( string name )
         {
-            Control[] controls = Controls.Find(name, true);
+            Control[] controls = Controls.Find( name, true );
             if( controls != null && controls.Length == 1 )
                 return (controls[0]);
 
@@ -599,7 +598,7 @@ namespace CritterBrowser.Forms
                 fonlineAlias.Value = crType.Alias;
                 fonlineMultihex.Value = crType.Multihex;
                 fonlineAim.CheckState = (crType.Aim ? CheckState.Checked : CheckState.Unchecked);
-                fonlineAim.CheckState = (crType.Armor? CheckState.Checked : CheckState.Unchecked);
+                fonlineAim.CheckState = (crType.Armor ? CheckState.Checked : CheckState.Unchecked);
                 fonlineRotate.CheckState = (crType.Rotate ? CheckState.Checked : CheckState.Unchecked);
                 fonlineWalk.Value = crType.Walk;
                 fonlineRun.Value = crType.Run;
@@ -650,9 +649,9 @@ namespace CritterBrowser.Forms
         /// <summary>
         /// File->Open->Datafile event.
         /// </summary>
-        private void menuFileOpenDatafile_Click(object sender, EventArgs e)
+        private void menuFileOpenDatafile_Click( object sender, EventArgs e )
         {
-            DialogResult result = openFile.ShowDialog(this);
+            DialogResult result = openFile.ShowDialog( this );
 
             if( result != DialogResult.OK )
                 return;
@@ -662,7 +661,7 @@ namespace CritterBrowser.Forms
             LoadModeType loadMode = LoadModeType.None;
             if( ext == "ZIP" )
                 loadMode = LoadModeType.Zip;
-            else if( ext == "DAT")
+            else if( ext == "DAT" )
                 loadMode = LoadModeType.Dat;
             else
                 return;
@@ -674,11 +673,11 @@ namespace CritterBrowser.Forms
         /// <summary>
         /// File->Open->Directory event.
         /// </summary>
-        private void menuFileOpenDirectory_Click(object sender, EventArgs e)
+        private void menuFileOpenDirectory_Click( object sender, EventArgs e )
         {
-            DialogResult result = openDirectory.ShowDialog(this);
+            DialogResult result = openDirectory.ShowDialog( this );
 
-            if (result != DialogResult.OK)
+            if( result != DialogResult.OK )
                 return;
 
             frmCheckerConfig config = frmCheckerPrepare( LoadModeType.Directory, openDirectory.SelectedPath );
@@ -700,7 +699,50 @@ namespace CritterBrowser.Forms
 
             ZipStorer zip = ZipStorer.Create( saveFile.FileName, "" );
             AddCritterType( zip, CurrentCritterType );
+            zip.AddText( ZipStorer.Compression.Deflate, CompletionText( CurrentCritterType ), CurrentCritterType.Name + ".txt", DateTime.Now, "" );
             zip.Close();
+        }
+
+        /// <summary>
+        /// File->Close event.
+        /// </summary>
+        private void menuFileExit_Click( object sender, EventArgs e )
+        {
+            Close();
+        }
+
+        /// <summary>
+        /// Options->General event.
+        /// </summary>
+        private void menuOptionsGeneral_Click( object sender, EventArgs e )
+        {
+            frmOptionsGeneral optionsGeneral = new frmOptionsGeneral();
+
+            DialogResult result = optionsGeneral.ShowDialog( this );
+
+            if( result != DialogResult.OK )
+                return;
+
+            Settings.Config.SaveSettings();
+        }
+
+        private void menuTestsCompletion_Click( object sender, EventArgs e )
+        {
+            if( CurrentCritterType == null )
+                return;
+
+            MessageBox.Show( CompletionText( CurrentCritterType ) );
+        }
+
+        private void menuAboutSelf_Click( object sender, EventArgs e )
+        {
+            frmAbout about = new frmAbout();
+            about.ShowDialog( this );
+        }
+
+        private void menuAboutRepo_Click( object sender, EventArgs e )
+        {
+            Process.Start( "https://github.com/rotators/CritterBrowser/" );
         }
 
         void AddCritterType( ZipStorer zip, string crTypeName )
@@ -735,12 +777,12 @@ namespace CritterBrowser.Forms
                     if( crAnim.Dir[d] == CritterAnimationDir.None )
                         continue;
 
-                    string ext = "FR" + (crAnim.Full ? "M" : d.ToString());
+                    string ext = ".FR" + (crAnim.Full ? "M" : d.ToString());
 
                     switch( LoadMode )
                     {
                         case LoadModeType.Directory:
-                            string filename = openDirectory.SelectedPath + Path.DirectorySeparatorChar + crName + ".FR" + ext;
+                            string filename = openDirectory.SelectedPath + Path.DirectorySeparatorChar + crName + ext;
                             if( File.Exists( filename ) )
                             {
                                 zipFiles.Add( new CritterAnimationPacked(
@@ -784,45 +826,11 @@ namespace CritterBrowser.Forms
             }
         }
 
-        /// <summary>
-        /// File->Close event.
-        /// </summary>
-        private void menuFileExit_Click( object sender, EventArgs e )
-        {
-            Close();
-        }
-
-        /// <summary>
-        /// Options->General event.
-        /// </summary>
-        private void menuOptionsGeneral_Click( object sender, EventArgs e )
-        {
-            frmOptionsGeneral optionsGeneral = new frmOptionsGeneral();
-
-            DialogResult result = optionsGeneral.ShowDialog( this );
-
-            if( result != DialogResult.OK )
-                return;
-
-            Settings.Config.SaveSettings();
-        }
-
-        private void menuAboutSelf_Click( object sender, EventArgs e )
-        {
-            frmAbout about = new frmAbout();
-            about.ShowDialog( this );
-        }
-
-        private void menuAboutRepo_Click( object sender, EventArgs e )
-        {
-            Process.Start( "https://github.com/rotators/CritterBrowser/" );
-        }
-
         private void lstCritters_SelectedValueChanged( object sender, EventArgs e )
         {
             ListBox self = (ListBox)sender;
 
-            if (self.SelectedItem == null)
+            if( self.SelectedItem == null )
                 return;
 
             if( self.SelectedIndex == PrevSelectedCritterIndex )
@@ -855,7 +863,7 @@ namespace CritterBrowser.Forms
             }
         }
 
-        void animLink_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        void animLink_LinkClicked( object sender, LinkLabelLinkClickedEventArgs e )
         {
             if( LoadMode == LoadModeType.None )
                 return;
@@ -882,7 +890,7 @@ namespace CritterBrowser.Forms
             frmAnimation animWin = new frmAnimation();
             animWin.Text = CurrentCritterType.Name + animName;
 
-            
+
             Bitmap[] frms = LoadFRM( datafile, CurrentCritterType, animName, LoadMode );
             CloseCurrentDatafile( ref datafile );
 
@@ -1096,7 +1104,7 @@ namespace CritterBrowser.Forms
                         files.Add( entry );
                     }
                     break;
-                
+
                 case LoadModeType.Dat:
                     DAT dat = (DAT)datafile;
                     int idx = -1;
@@ -1145,7 +1153,7 @@ namespace CritterBrowser.Forms
 
             List<CritterType> crTypesFound = new List<CritterType>();
             int currFile = 0, lastPercent = -1, filesCount = files.Count;
-            foreach (object file in files)
+            foreach( object file in files )
             {
                 if( self.CancellationPending )
                 {
@@ -1157,11 +1165,11 @@ namespace CritterBrowser.Forms
                 if( percent != lastPercent )
                 {
                     lastPercent = percent;
-                    self.ReportProgress( percent, "Checking "+config.Target );
+                    self.ReportProgress( percent, "Checking " + config.Target );
                 }
 
                 string filename = null;
-                
+
                 switch( config.LoadMode )
                 {
                     case LoadModeType.Directory:
@@ -1178,23 +1186,23 @@ namespace CritterBrowser.Forms
                     default:
                         throw new NotSupportedException();
                 }
-                
+
 
                 if( !ValidNameFRM( filename, ref baseName, ref animName, ref dir, ref ext ) )
                     continue;
 
                 CritterType crType = crTypesFound.Find( cr => cr.Name == baseName );
-                if (crType == null)
+                if( crType == null )
                 {
-                    crType = new CritterType(baseName);
-                    crTypesFound.Add(crType);
+                    crType = new CritterType( baseName );
+                    crTypesFound.Add( crType );
                     self.ReportProgress( (int)ProgressData.CritterTypeName, crType.Name );
                 }
-                
-                if (crType[animName] == null)
+
+                if( crType[animName] == null )
                 {
-                    CritterAnimation crAnim = new CritterAnimation(animName);
-                    crType.Animations.Add(crAnim);
+                    CritterAnimation crAnim = new CritterAnimation( animName );
+                    crType.Animations.Add( crAnim );
                 }
 
                 if( ext == "FRM" )
@@ -1268,22 +1276,41 @@ namespace CritterBrowser.Forms
                 self.ReportProgress( (int)ProgressData.CritterAnimation, data );
             }
 
-            self.ReportProgress( 100, "Caching critters preview..." );
+            currFile = 0;
+            lastPercent = -1;
+            filesCount = crTypesFound.Count;
             foreach( CritterType crType in crTypesFound )
             {
+                int percent = (++currFile * 100) / filesCount;
+                if( percent != lastPercent )
+                {
+                    self.ReportProgress( 100 - percent, "Caching critters preview..." );
+                }
+
                 foreach( string anim in ValidAnimations )
                 {
+                    bool found = false;
+
                     CritterAnimation crAnim = crType[anim];
                     if( crAnim != null )
                     {
                         Bitmap[] frm = LoadFRM( datafile, crType, crAnim.Name, config.LoadMode );
-                        if( frm != null && (frm[3] != null || frm[0] != null) )
+                        if( frm == null )
+                            continue;
+                        int[] dirs = { 3, 2, 4, 1, 5, 0 };
+                        foreach( int d in dirs )
                         {
-                            Bitmap bmp = (frm[3] != null ? frm[3] : frm[0]);
-                            object[] data = { crType.Name, bmp };
-                            self.ReportProgress( (int)ProgressData.CritterPreview, data );
-                            break;
+                            if( frm[d] != null )
+                            {
+                                object[] data = { crType.Name, frm[d] };
+                                self.ReportProgress( (int)ProgressData.CritterPreview, data );
+                                found = true;
+                                break;
+                            }
                         }
+
+                        if( found )
+                            break;
                     }
                 }
             }
@@ -1293,7 +1320,7 @@ namespace CritterBrowser.Forms
             self.ReportProgress( (int)ProgressData.Finish, config );
         }
 
-        private void frmChecker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        private void frmChecker_ProgressChanged( object sender, ProgressChangedEventArgs e )
         {
             if( e.ProgressPercentage == (int)ProgressData.CritterTypeName )
             {
@@ -1325,7 +1352,7 @@ namespace CritterBrowser.Forms
                 CritterType crType = CritterTypes.Find( cr => cr.Name == baseName );
                 crType.Animations.RemoveAll( a => a.Name == anim.Name );
                 crType.Animations.Add( anim );
-                
+
             }
             else if( e.ProgressPercentage == (int)ProgressData.CritterPreview )
             {
@@ -1380,7 +1407,7 @@ namespace CritterBrowser.Forms
             }
         }
 
-        private void frmChecker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        private void frmChecker_RunWorkerCompleted( object sender, RunWorkerCompletedEventArgs e )
         {
             frmCheckerCompleted = true;
 
@@ -1389,11 +1416,11 @@ namespace CritterBrowser.Forms
             statusProgress.Visible = false;
             statusLabel.Text = "";
 
-            if (ClosePending)
+            if( ClosePending )
                 Close();
         }
 
-        private void falloutAlias_ValueChanged(object sender, EventArgs e)
+        private void falloutAlias_ValueChanged( object sender, EventArgs e )
         {
             NumericUpDown self = (NumericUpDown)sender;
 
@@ -1403,7 +1430,7 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineEnabled_CheckedChanged(object sender, EventArgs e)
+        private void fonlineEnabled_CheckedChanged( object sender, EventArgs e )
         {
             CheckBox self = (CheckBox)sender;
 
@@ -1412,7 +1439,7 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineID_ValueChanged(object sender, EventArgs e)
+        private void fonlineID_ValueChanged( object sender, EventArgs e )
         {
             NumericUpDown self = (NumericUpDown)sender;
 
@@ -1421,7 +1448,7 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineAlias_ValueChanged(object sender, EventArgs e)
+        private void fonlineAlias_ValueChanged( object sender, EventArgs e )
         {
             NumericUpDown self = (NumericUpDown)sender;
 
@@ -1431,7 +1458,7 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineMultihex_ValueChanged(object sender, EventArgs e)
+        private void fonlineMultihex_ValueChanged( object sender, EventArgs e )
         {
             NumericUpDown self = (NumericUpDown)sender;
 
@@ -1440,7 +1467,7 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineAim_CheckedChanged(object sender, EventArgs e)
+        private void fonlineAim_CheckedChanged( object sender, EventArgs e )
         {
             CheckBox self = (CheckBox)sender;
 
@@ -1449,7 +1476,7 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineArmor_CheckedChanged(object sender, EventArgs e)
+        private void fonlineArmor_CheckedChanged( object sender, EventArgs e )
         {
             CheckBox self = (CheckBox)sender;
 
@@ -1458,7 +1485,7 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineRotate_CheckedChanged(object sender, EventArgs e)
+        private void fonlineRotate_CheckedChanged( object sender, EventArgs e )
         {
             CheckBox self = (CheckBox)sender;
 
@@ -1468,7 +1495,7 @@ namespace CritterBrowser.Forms
 
         }
 
-        private void fonlineWalk_ValueChanged(object sender, EventArgs e)
+        private void fonlineWalk_ValueChanged( object sender, EventArgs e )
         {
             NumericUpDown self = (NumericUpDown)sender;
 
@@ -1477,7 +1504,7 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineRun_ValueChanged(object sender, EventArgs e)
+        private void fonlineRun_ValueChanged( object sender, EventArgs e )
         {
             NumericUpDown self = (NumericUpDown)sender;
 
@@ -1486,7 +1513,7 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineSteps1_ValueChanged(object sender, EventArgs e)
+        private void fonlineSteps1_ValueChanged( object sender, EventArgs e )
         {
             NumericUpDown self = (NumericUpDown)sender;
 
@@ -1495,7 +1522,7 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineSteps2_ValueChanged(object sender, EventArgs e)
+        private void fonlineSteps2_ValueChanged( object sender, EventArgs e )
         {
             NumericUpDown self = (NumericUpDown)sender;
 
@@ -1504,7 +1531,7 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineSteps3_ValueChanged(object sender, EventArgs e)
+        private void fonlineSteps3_ValueChanged( object sender, EventArgs e )
         {
             NumericUpDown self = (NumericUpDown)sender;
 
@@ -1514,7 +1541,7 @@ namespace CritterBrowser.Forms
 
         }
 
-        private void fonlineSteps4_ValueChanged(object sender, EventArgs e)
+        private void fonlineSteps4_ValueChanged( object sender, EventArgs e )
         {
             NumericUpDown self = (NumericUpDown)sender;
 
@@ -1523,7 +1550,7 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineSound_TextChanged(object sender, EventArgs e)
+        private void fonlineSound_TextChanged( object sender, EventArgs e )
         {
             TextBox self = (TextBox)sender;
 
@@ -1532,13 +1559,123 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        private void fonlineComment_TextChanged(object sender, EventArgs e)
+        private void fonlineComment_TextChanged( object sender, EventArgs e )
         {
             TextBox self = (TextBox)sender;
 
             CurrentCritterType.Comment = self.Text;
 
             RefreshFalloutFOnline();
+        }
+
+        string CompletionText( CritterType crType )
+        {
+            string result = crType.Name + Environment.NewLine;
+
+            var groupComplete = new Func<char, bool>( ( groupName ) =>
+            {
+                List<string> animList = ValidAnimations.FindAll( name => name.StartsWith( groupName.ToString() ) );
+                foreach( string anim in animList )
+                {
+                    CritterAnimation crAnim = crType[anim];
+
+                    if( crAnim == null || !crAnim.Full )
+                        return (false);
+                }
+
+                return (true);
+            } );
+
+            var animComplete = new Func<CritterAnimation, bool>( ( crAnim ) =>
+            {
+                foreach( CritterAnimationDir dir in crAnim.Dir )
+                {
+                    if( dir == CritterAnimationDir.None )
+                        return (false);
+                }
+
+                return (true);
+            } );
+
+            List<string> complete = new List<string>();
+            List<string> partial = new List<string>();
+            int completeLen = -1;
+
+            bool firstPartial = true;
+            foreach( string groupNameStr in ValidAnimationsGroups )
+            {
+                char groupNameChar = groupNameStr[0];
+                string groupName = GetControl( AnimGroup + groupNameChar ).Text;
+
+                if( groupComplete( groupNameChar ) )
+                {
+                    if( completeLen < groupName.Length )
+                        completeLen = groupName.Length;
+                    complete.Add( groupName );
+                }
+                else
+                {
+                    if( crType[groupNameChar] == null )
+                        continue;
+
+                    if( firstPartial )
+                        firstPartial = false;
+                    else
+                        partial.Add( "" );
+                    partial.Add( groupName + ":" );
+                    
+                    List<CritterAnimation> list = crType.Animations.FindAll( cr => cr.Name.StartsWith( groupNameChar.ToString() ) );
+                    foreach( CritterAnimation crAnim in list )
+                    {
+                        string animName = "- " + GetControl( AnimLink + crAnim.Name ).Text;
+
+                        if( !animComplete( crAnim ) )
+                        {
+                            string[] dirName = { "NE", "E", "SE", "SW", "W", "NW" };
+                            List<string> dirDone = new List<string>();
+
+                            for( int dir = 0; dir <= 5; dir++ )
+                            {
+                                if( crAnim.Dir[dir] == CritterAnimationDir.None )
+                                    continue;
+
+                                dirDone.Add( dirName[dir] );
+                            }
+                            animName += " (" + string.Join( ",", dirDone.ToArray() ) + ")";
+                        }
+                        partial.Add( animName );
+                    }
+                }
+            }
+
+            if( complete.Count > 0 )
+            {
+                result += Environment.NewLine;
+                int i = 0;
+                result += "Completed sets:" + Environment.NewLine;
+                foreach( string name in complete )
+                {
+                    if( ++i > 5 )
+                    {
+                        result = result.TrimEnd();
+                        result += Environment.NewLine;
+                        i = 1;
+                    }
+                    result += name + new string( ' ', completeLen - name.Length );
+                }
+                result += Environment.NewLine;
+            }
+
+            if( partial.Count > 0 )
+            {
+                result += Environment.NewLine;
+                result += "Partial sets:" + Environment.NewLine;
+                foreach( string name in partial )
+                {
+                    result += name + Environment.NewLine;
+                }
+            }
+            return (result);
         }
     }
 }

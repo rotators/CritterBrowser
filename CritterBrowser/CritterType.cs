@@ -26,7 +26,7 @@ namespace CritterBrowser
 
         public Bitmap Preview;
 
-        public CritterType(string name)
+        public CritterType( string name )
         {
             Name = name.ToUpper();
         }
@@ -61,7 +61,7 @@ namespace CritterBrowser
                     {
                         foreach( CritterAnimationDir dir in crAnim.Dir )
                         {
-                            if( dir == CritterAnimationDir.None )
+                            if( dir != CritterAnimationDir.None )
                                 continue;
 
                             result++;
