@@ -30,11 +30,15 @@ namespace CritterBrowser.Forms
             public readonly string Target;
             public readonly bool FastCheck;
 
+            public string ShowCompletion;
+
             public frmCheckerConfig( LoadModeType loadMode, string target )
             {
                 LoadMode = loadMode;
                 Target = target;
                 FastCheck = Settings.GetBool( "FastCheckFRM" );
+
+                ShowCompletion = null;
             }
         }
 
@@ -70,8 +74,9 @@ namespace CritterBrowser.Forms
         CritterType CurrentCritterType = null;
         int PrevSelectedCritterIndex = -1;
 
-        LoadModeType LoadMode = LoadModeType.None;
-        string TargetName;
+        LoadModeType LoadedMode = LoadModeType.None;
+        string LoadedTarget;
+        bool LoadedFast;
 
         Color TransparencyFRM = Color.FromArgb( 11, 0, 11 );
 
@@ -576,12 +581,12 @@ namespace CritterBrowser.Forms
 
         bool OpenCurrentDatafile( ref object datafile )
         {
-            return (OpenDatafile( ref datafile, TargetName, LoadMode ));
+            return (OpenDatafile( ref datafile, LoadedTarget, LoadedMode ));
         }
 
         void CloseCurrentDatafile( ref object datafile )
         {
-            CloseDatafile( ref datafile, LoadMode );
+            CloseDatafile( ref datafile, LoadedMode );
         }
 
         /// <summary>
@@ -792,7 +797,7 @@ namespace CritterBrowser.Forms
 
                     string ext = ".FR" + (crAnim.Full ? "M" : d.ToString());
 
-                    switch( LoadMode )
+                    switch( LoadedMode )
                     {
                         case LoadModeType.Directory:
                             string filename = openDirectory.SelectedPath + Path.DirectorySeparatorChar + crName + ext;
@@ -888,7 +893,7 @@ namespace CritterBrowser.Forms
 
         void animLink_LinkClicked( object sender, LinkLabelLinkClickedEventArgs e )
         {
-            if( LoadMode == LoadModeType.None )
+            if( LoadedMode == LoadModeType.None )
                 return;
 
             LinkLabel self = (LinkLabel)sender;
@@ -906,14 +911,14 @@ namespace CritterBrowser.Forms
             object datafile = null;
             if( !OpenCurrentDatafile( ref datafile ) )
             {
-                MessageBox.Show( "Error opening " + TargetName, BaseText, MessageBoxButtons.OK, MessageBoxIcon.Error );
+                MessageBox.Show( "Error opening " + LoadedTarget, BaseText, MessageBoxButtons.OK, MessageBoxIcon.Error );
                 return;
             }
 
             frmAnimation animWin = new frmAnimation();
             animWin.Text = CurrentCritterType.Name + animName;
 
-            Bitmap[] frms = LoadFRM( datafile, CurrentCritterType, animName, LoadMode );
+            Bitmap[] frms = LoadFRM( datafile, CurrentCritterType, animName, LoadedMode );
             CloseCurrentDatafile( ref datafile );
 
             animWin.anim0.Image = frms[0];
@@ -1410,11 +1415,27 @@ namespace CritterBrowser.Forms
                 frmCheckerConfig config = (frmCheckerConfig)e.UserState;
 
                 Text = BaseText + " : " + config.Target;
-                TargetName = config.Target;
-                LoadMode = config.LoadMode;
+                LoadedMode = config.LoadMode;
+                LoadedTarget = config.Target;
+                LoadedFast = config.FastCheck;
 
                 menuFileExport.Enabled = menuOptionsTarget.Enabled = true;
-                lstCritters.SelectedIndex = 0;
+
+                if( config.ShowCompletion != null )
+                {
+                    if( lstCritters.Items.Contains( config.ShowCompletion ) )
+                    {
+                        lstCritters.SelectedItem = config.ShowCompletion;
+                        button1_Click( null, null );
+                    }
+                    else
+                    {
+                        MessageBox.Show( "Cannot find '" + config.ShowCompletion + "' critter" );
+                        lstCritters.SelectedIndex = 0;
+                    }
+                }
+                else
+                    lstCritters.SelectedIndex = 0;
 
                 EnableControls( true );
             }
@@ -1604,6 +1625,31 @@ namespace CritterBrowser.Forms
         {
             if( CurrentCritterType == null )
                 return;
+
+            if( LoadedFast )
+            {
+                DialogResult result = MessageBox.Show(
+                    "Current target has been opened with simple animation verification" + Environment.NewLine
+                    + Environment.NewLine
+                    + "It is advised to disable that option before generating" + Environment.NewLine
+                    + "completion report or it may contain invalid informations" + Environment.NewLine
+                    + Environment.NewLine
+                    + "Do you wish to turn off simple verification and reopen current target?",
+                    CritterBrowser.Self,
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button1 );
+
+                if( result == DialogResult.Yes )
+                {
+                    Settings.Set( "FastCheckFRM", false );
+                    frmCheckerConfig config = frmCheckerPrepare( LoadedMode, LoadedTarget );
+                    config.ShowCompletion = CurrentCritterType.Name;
+                    frmChecker.RunWorkerAsync( config );
+
+                    return;
+                }
+            }
 
             frmCompletion completion = new frmCompletion( this, CurrentCritterType );
             completion.ShowDialog( this );

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Text;
 using System.Windows.Forms;
 
@@ -291,13 +292,37 @@ namespace CritterBrowser.Forms
             grpBBCode.Enabled = radioForum.Checked;
             grpPicture.Enabled = radioPicture.Checked;
 
-            textOut.Visible = btnSaveText.Visible = radioText.Checked || radioForum.Checked;
-            picOut.Visible = btnSavePicture.Visible = radioPicture.Checked;
+            checkFull.Enabled = !radioPicture.Checked;
+
+            if( radioPicture.Checked )
+                textOut.Visible = false;
+            if( radioText.Checked || radioForum.Checked )
+                picOut.Visible = false;
+
+            if( radioText.Checked || radioForum.Checked )
+                textOut.Visible = true;
+            if( radioPicture.Checked )
+                picOut.Visible = true;
+
+            btnSaveText.Visible = radioText.Checked || radioForum.Checked;
+            btnSavePicture.Visible = radioPicture.Checked;
+
+            Update();
         }
 
         private void radioText_CheckedChanged( object sender, EventArgs e )
         {
             textOut.Text = CompletionText( CurrentCritterType, !checkFull.Checked );
+
+            VerifyControls();
+        }
+
+        private void radioPicture_CheckedChanged( object sender, EventArgs e )
+        {
+            Bitmap bmp = new Bitmap( main.animations.ClientRectangle.Width, main.animations.ClientRectangle.Height );
+            main.animations.DrawToBitmap( bmp, main.animations.ClientRectangle );
+
+            picOut.Image = bmp;
 
             VerifyControls();
         }
@@ -308,18 +333,11 @@ namespace CritterBrowser.Forms
                 radioText_CheckedChanged( sender, e );
             else if( radioForum.Checked )
                 event_forumGeneric( sender, e );
-            //else if( radioPicture.Checked )
-            //    ?
         }
 
         private void event_forumGeneric( object sender, EventArgs e )
         {
             textOut.Text = CompletionBBCode( CurrentCritterType, !checkFull.Checked, (int)numColumns.Value, radioRu.Checked );
-        }
-
-        private void btnClose_Click( object sender, EventArgs e )
-        {
-            Close();
         }
 
         private void btnSaveText_Click( object sender, EventArgs e )
@@ -331,6 +349,25 @@ namespace CritterBrowser.Forms
                 return;
 
             File.WriteAllText( saveText.FileName, textOut.Text );
+        }
+
+        private void btnSavePicture_Click( object sender, EventArgs e )
+        {
+            savePicture.FileName = CurrentCritterType.Name + ".png";
+
+            DialogResult result = savePicture.ShowDialog(this);
+            if( result!=DialogResult.OK)
+                return;
+
+            Bitmap bmp = new Bitmap( main.animations.ClientRectangle.Width, main.animations.ClientRectangle.Height );
+            main.animations.DrawToBitmap( bmp, main.animations.ClientRectangle );
+
+            bmp.Save( savePicture.FileName, ImageFormat.Png );
+        }
+
+        private void btnClose_Click( object sender, EventArgs e )
+        {
+            Close();
         }
     }
 }

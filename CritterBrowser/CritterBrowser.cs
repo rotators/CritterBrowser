@@ -19,6 +19,11 @@ namespace CritterBrowser
         {
             return (Config.GetSettingBool( IniParser.RootSection, name ));
         }
+
+        public static void Set( string name, bool value )
+        {
+            Config.AddSetting( IniParser.RootSection, name, value );
+        }
     }
 
     static class CritterBrowser

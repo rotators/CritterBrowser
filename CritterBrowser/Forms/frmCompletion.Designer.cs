@@ -52,6 +52,7 @@
             this.btnSavePicture = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
             this.saveText = new System.Windows.Forms.SaveFileDialog();
+            this.savePicture = new System.Windows.Forms.SaveFileDialog();
             this.grpBBCode.SuspendLayout();
             this.flowBBCode.SuspendLayout();
             this.flowBBCodeColumns.SuspendLayout();
@@ -234,7 +235,6 @@
             // radioPicture
             // 
             this.radioPicture.AutoSize = true;
-            this.radioPicture.Enabled = false;
             this.radioPicture.Location = new System.Drawing.Point( 3, 49 );
             this.radioPicture.Name = "radioPicture";
             this.radioPicture.Size = new System.Drawing.Size( 58, 17 );
@@ -242,6 +242,7 @@
             this.radioPicture.TabStop = true;
             this.radioPicture.Text = "Picture";
             this.radioPicture.UseVisualStyleBackColor = true;
+            this.radioPicture.CheckedChanged += new System.EventHandler( this.radioPicture_CheckedChanged );
             // 
             // flowOptions
             // 
@@ -267,9 +268,11 @@
             // 
             // picOut
             // 
+            this.picOut.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.picOut.Location = new System.Drawing.Point( 292, 3 );
             this.picOut.Name = "picOut";
             this.picOut.Size = new System.Drawing.Size( 283, 200 );
+            this.picOut.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.picOut.TabIndex = 4;
             this.picOut.TabStop = false;
             // 
@@ -333,6 +336,7 @@
             this.btnSavePicture.TabIndex = 1;
             this.btnSavePicture.Text = "Save picture...";
             this.btnSavePicture.UseVisualStyleBackColor = true;
+            this.btnSavePicture.Click += new System.EventHandler( this.btnSavePicture_Click );
             // 
             // btnClose
             // 
@@ -347,9 +351,16 @@
             // saveText
             // 
             this.saveText.DefaultExt = "txt";
-            this.saveText.Filter = "Text file|.txt";
+            this.saveText.Filter = "Text file|*.txt";
             this.saveText.RestoreDirectory = true;
             this.saveText.SupportMultiDottedExtensions = true;
+            // 
+            // savePicture
+            // 
+            this.savePicture.DefaultExt = "png";
+            this.savePicture.Filter = "Picture|*.png";
+            this.savePicture.RestoreDirectory = true;
+            this.savePicture.SupportMultiDottedExtensions = true;
             // 
             // frmCompletion
             // 
@@ -414,5 +425,6 @@
         private System.Windows.Forms.Button btnSavePicture;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.SaveFileDialog saveText;
+        private System.Windows.Forms.SaveFileDialog savePicture;
     }
 }

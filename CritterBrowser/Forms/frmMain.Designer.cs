@@ -929,7 +929,6 @@
         private System.Windows.Forms.TabControl tabGame;
         private System.Windows.Forms.TabPage tabFallout;
         private System.Windows.Forms.TabPage tabFOnline;
-        private System.Windows.Forms.Panel animations;
         private System.Windows.Forms.ListBox lstCritters;
         private System.Windows.Forms.TabPage tabGeneral;
         private System.Windows.Forms.TextBox fonlineCritterTypesCfg;
@@ -993,6 +992,7 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
+        protected internal System.Windows.Forms.Panel animations;
     }
 }
 
