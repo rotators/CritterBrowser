@@ -29,31 +29,80 @@
         private void InitializeComponent()
         {
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkCompletion = new System.Windows.Forms.CheckBox();
+            this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnOK = new System.Windows.Forms.Button();
+            this.btnCancel = new System.Windows.Forms.Button();
+            this.txtHeader = new System.Windows.Forms.Label();
             this.flowLayoutPanel1.SuspendLayout();
+            this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.AutoSize = true;
             this.flowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.flowLayoutPanel1.Controls.Add( this.checkBox1 );
+            this.flowLayoutPanel1.Controls.Add( this.txtHeader );
+            this.flowLayoutPanel1.Controls.Add( this.checkCompletion );
+            this.flowLayoutPanel1.Controls.Add( this.flowLayoutPanel2 );
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point( 0, 0 );
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding( 10 );
             this.flowLayoutPanel1.Size = new System.Drawing.Size( 522, 227 );
             this.flowLayoutPanel1.TabIndex = 0;
             // 
-            // checkBox1
+            // checkCompletion
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Enabled = false;
-            this.checkBox1.Location = new System.Drawing.Point( 3, 3 );
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size( 146, 17 );
-            this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "Include completion status";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkCompletion.AutoSize = true;
+            this.checkCompletion.Location = new System.Drawing.Point( 13, 31 );
+            this.checkCompletion.Name = "checkCompletion";
+            this.checkCompletion.Size = new System.Drawing.Size( 146, 17 );
+            this.checkCompletion.TabIndex = 0;
+            this.checkCompletion.Text = "Include completion status";
+            this.checkCompletion.UseVisualStyleBackColor = true;
+            // 
+            // flowLayoutPanel2
+            // 
+            this.flowLayoutPanel2.AutoSize = true;
+            this.flowLayoutPanel2.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.flowLayoutPanel2.Controls.Add( this.btnOK );
+            this.flowLayoutPanel2.Controls.Add( this.btnCancel );
+            this.flowLayoutPanel2.Location = new System.Drawing.Point( 13, 54 );
+            this.flowLayoutPanel2.Name = "flowLayoutPanel2";
+            this.flowLayoutPanel2.Size = new System.Drawing.Size( 162, 29 );
+            this.flowLayoutPanel2.TabIndex = 2;
+            // 
+            // btnOK
+            // 
+            this.btnOK.Location = new System.Drawing.Point( 3, 3 );
+            this.btnOK.Name = "btnOK";
+            this.btnOK.Size = new System.Drawing.Size( 75, 23 );
+            this.btnOK.TabIndex = 0;
+            this.btnOK.Text = "OK";
+            this.btnOK.UseVisualStyleBackColor = true;
+            this.btnOK.Click += new System.EventHandler( this.btnOK_Click );
+            // 
+            // btnCancel
+            // 
+            this.btnCancel.Location = new System.Drawing.Point( 84, 3 );
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size( 75, 23 );
+            this.btnCancel.TabIndex = 1;
+            this.btnCancel.Text = "Cancel";
+            this.btnCancel.UseVisualStyleBackColor = true;
+            this.btnCancel.Click += new System.EventHandler( this.btnCancel_Click );
+            // 
+            // txtHeader
+            // 
+            this.txtHeader.AutoSize = true;
+            this.txtHeader.Location = new System.Drawing.Point( 13, 10 );
+            this.txtHeader.Name = "txtHeader";
+            this.txtHeader.Padding = new System.Windows.Forms.Padding( 0, 0, 0, 5 );
+            this.txtHeader.Size = new System.Drawing.Size( 48, 18 );
+            this.txtHeader.TabIndex = 3;
+            this.txtHeader.Text = "[Header]";
             // 
             // frmExport
             // 
@@ -68,6 +117,7 @@
             this.Text = "Export";
             this.flowLayoutPanel1.ResumeLayout( false );
             this.flowLayoutPanel1.PerformLayout();
+            this.flowLayoutPanel2.ResumeLayout( false );
             this.ResumeLayout( false );
             this.PerformLayout();
 
@@ -76,6 +126,10 @@
         #endregion
 
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
+        private System.Windows.Forms.Button btnOK;
+        private System.Windows.Forms.Button btnCancel;
+        protected internal System.Windows.Forms.CheckBox checkCompletion;
+        private System.Windows.Forms.Label txtHeader;
     }
 }

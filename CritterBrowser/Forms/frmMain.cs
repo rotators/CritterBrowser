@@ -699,14 +699,24 @@ namespace CritterBrowser.Forms
             if( CurrentCritterType == null )
                 return;
 
+            DialogResult result = DialogResult.Cancel;
+
+            frmExport export = new frmExport( CurrentCritterType.Name );
+            result = export.ShowDialog( this );
+            if( result != DialogResult.OK )
+                return;
+
             saveFile.FileName = CurrentCritterType.Name + ".zip";
-            DialogResult result = saveFile.ShowDialog( this );
+            result = saveFile.ShowDialog( this );
             if( result != DialogResult.OK )
                 return;
 
             ZipStorer zip = ZipStorer.Create( saveFile.FileName, "" );
             AddCritterType( zip, CurrentCritterType );
-            zip.AddText( ZipStorer.Compression.Deflate, CompletionText( CurrentCritterType ), CurrentCritterType.Name + ".txt", DateTime.Now, "" );
+
+            if( export.checkCompletion.Checked )
+                zip.AddText( ZipStorer.Compression.Deflate, CompletionText( CurrentCritterType ), CurrentCritterType.Name + ".txt", DateTime.Now, "" );
+            
             zip.Close();
         }
 
