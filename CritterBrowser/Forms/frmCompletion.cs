@@ -1,11 +1,8 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Text;
+using System.IO;
 using System.Windows.Forms;
 
 namespace CritterBrowser.Forms
@@ -355,8 +352,8 @@ namespace CritterBrowser.Forms
         {
             savePicture.FileName = CurrentCritterType.Name + ".png";
 
-            DialogResult result = savePicture.ShowDialog(this);
-            if( result!=DialogResult.OK)
+            DialogResult result = savePicture.ShowDialog( this );
+            if( result != DialogResult.OK )
                 return;
 
             Bitmap bmp = new Bitmap( main.animations.ClientRectangle.Width, main.animations.ClientRectangle.Height );
