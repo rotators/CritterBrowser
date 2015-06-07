@@ -45,7 +45,6 @@
             this.menuOptionsGeneral = new System.Windows.Forms.ToolStripMenuItem();
             this.menuOptionsTarget = new System.Windows.Forms.ToolStripMenuItem();
             this.menuTests = new System.Windows.Forms.ToolStripMenuItem();
-            this.completionStatusToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFile = new System.Windows.Forms.OpenFileDialog();
             this.tabGame = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
@@ -253,18 +252,9 @@
             // menuTests
             // 
             this.menuTests.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.menuTests.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
-            this.completionStatusToolStripMenuItem} );
             this.menuTests.Name = "menuTests";
             this.menuTests.Size = new System.Drawing.Size( 51, 20 );
             this.menuTests.Text = "TESTS";
-            // 
-            // completionStatusToolStripMenuItem
-            // 
-            this.completionStatusToolStripMenuItem.Name = "completionStatusToolStripMenuItem";
-            this.completionStatusToolStripMenuItem.Size = new System.Drawing.Size( 171, 22 );
-            this.completionStatusToolStripMenuItem.Text = "Completion status";
-            this.completionStatusToolStripMenuItem.Click += new System.EventHandler( this.menuTestsCompletion_Click );
             // 
             // openFile
             // 
@@ -996,7 +986,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.SaveFileDialog saveFile;
         private System.Windows.Forms.ToolStripMenuItem menuTests;
-        private System.Windows.Forms.ToolStripMenuItem completionStatusToolStripMenuItem;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;

@@ -743,14 +743,6 @@ namespace CritterBrowser.Forms
             Settings.Config.SaveSettings();
         }
 
-        private void menuTestsCompletion_Click( object sender, EventArgs e )
-        {
-            if( CurrentCritterType == null )
-                return;
-
-            MessageBox.Show( CompletionText( CurrentCritterType ) );
-        }
-
         private void menuAboutSelf_Click( object sender, EventArgs e )
         {
             frmAbout about = new frmAbout();
@@ -1701,6 +1693,151 @@ namespace CritterBrowser.Forms
                     result += name + Environment.NewLine;
                 }
             }
+
+            return (result);
+        }
+
+        string CompletionBBCode( CritterType crType, bool partial = false, int columns = 5, bool fonlineRu = false )
+        {
+            fonlineRu = true;
+
+            string newLine = string.Empty;
+
+            string tableStart = !fonlineRu ? "[table]" : "[xtable]{tbody}";
+            string tableEnd = !fonlineRu ? "[/table]" : "{/tbody}[/xtable]";
+
+            char tagOpen = !fonlineRu ? '[' : '{';
+            char tagClose = !fonlineRu ? ']' : '}';
+
+            var rawtag = new Func<string, string, string>( ( id, text ) =>
+            {
+                string bb = id.Split( new char[] { '=' }, 2 )[0];
+                return ('[' + id + ']' + text + "[/" + bb + ']');
+            } );
+
+            var tag = new Func<string, string, string>( ( id, text ) =>
+            {
+                string bb = id.Split( new char[] { '=' }, 2 )[0];
+                return (tagOpen + id + tagClose + text + tagOpen + '/' + bb + tagClose);
+            } );
+
+            var td = new Func<string, string>( text =>
+            {
+                return (tag( "td", text ));
+            } );
+
+            var tr = new Func<string, string>( text =>
+            {
+                return (tag( "tr", text ));
+            } );
+
+            var animComplete = new Func<CritterAnimation, bool>( ( crAnim ) =>
+            {
+                foreach( CritterAnimationDir dir in crAnim.Dir )
+                {
+                    if( dir == CritterAnimationDir.None )
+                        return (false);
+                }
+
+                return (true);
+            } );
+
+            string result = tableStart + newLine;
+
+            List<List<string>> groups = new List<List<string>>();
+
+            foreach( string groupNameStr in ValidAnimationsGroups )
+            {
+                char groupNameChar = groupNameStr[0];
+                string groupName = GetControl( AnimGroup + groupNameChar ).Text;
+
+                if( partial && crType[groupNameChar] == null )
+                    continue;
+
+                List<string> group = new List<string>();
+                group.Add( td( rawtag( "b", groupName ) ) );
+
+                List<string> animList = ValidAnimations.FindAll( anim => anim.StartsWith( groupNameStr ) );
+
+                foreach( string anim in animList )
+                {
+                    string animName = GetControl( AnimLink + anim ).Text;
+
+                    CritterAnimation crAnim = crType[anim];
+                    if( crAnim == null )
+                        group.Add( td( rawtag( "color=red", animName ) ) );
+                    else if( animComplete( crAnim ) )
+                        group.Add( td( rawtag( "color=green", animName ) ) );
+                    else
+                    {
+                        string[] dirName = { "NE", "E", "SE", "SW", "W", "NW" };
+                        List<string> dirDone = new List<string>();
+
+                        for( int dir = 0; dir <= 5; dir++ )
+                        {
+                            if( crAnim.Dir[dir] == CritterAnimationDir.None )
+                                continue;
+
+                            dirDone.Add( dirName[dir] );
+                        }
+                        animName += " (" + string.Join( ",", dirDone.ToArray() ) + ")";
+
+                        group.Add( td( rawtag( "color=yellow", animName ) ) );
+                    }
+                    
+                }
+                groups.Add( group );
+            }
+
+            int curr = 0;
+            List<string> lines = new List<string>(), rlines = new List<string>();
+            int linesH = 0;
+            foreach( List<string> group in groups )
+            {
+                if( ++curr > columns )
+                {
+                    foreach( string line in lines )
+                    {
+                        result += tr( line ) + newLine;
+                    }
+                    lines.Clear();
+                    curr = 1;
+                    linesH = 0;
+                }
+
+                if( linesH < group.Count )
+                    linesH = group.Count;
+
+                if( lines.Count == 0 )
+                    lines.AddRange( group );
+                else
+                {
+                    for( int l = 0; l < linesH; l++ )
+                    {
+                        if( l >= lines.Count )
+                        {
+                            string line = string.Empty;
+                            for( int x = 1; x < curr; x++ )
+                            {
+                                line += td( "" );
+                            }
+                            lines.Add( line );
+                        }
+                        if( l >= group.Count )
+                        {
+                            group.Add( td( "" ) );
+                        }
+                        lines[l] += group[l];
+                    }
+                }
+            }
+
+            foreach( string line in lines )
+            {
+                result += tr( line ) + newLine;
+            }
+
+            result += tableEnd + newLine;
 
             return (result);
         }
