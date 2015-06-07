@@ -241,7 +241,6 @@
 
         #endregion
 
-        private System.Windows.Forms.TableLayoutPanel tblAnimation;
         private System.Windows.Forms.Label txtAnim0;
         private System.Windows.Forms.Label txtAnim1;
         private System.Windows.Forms.Label txtAnim2;
@@ -254,5 +253,6 @@
         protected internal System.Windows.Forms.PictureBox anim2;
         protected internal System.Windows.Forms.PictureBox anim3;
         protected internal System.Windows.Forms.PictureBox anim4;
+        protected internal System.Windows.Forms.TableLayoutPanel tblAnimation;
     }
 }

@@ -58,10 +58,12 @@ namespace CritterBrowser.Forms
 
         // other
         readonly string ArtCritters = "ART" + Path.DirectorySeparatorChar + "CRITTERS" + Path.DirectorySeparatorChar;
-        readonly string ArtCrittersZip = "art/critters/";
+        readonly string ArtCrittersZip;
 
-        List<string> ValidAnimations = new List<string>();
-        List<string> ValidAnimationsGroups = new List<string>();
+        readonly List<string> ValidAnimations = new List<string>();
+        readonly List<string> ValidAnimationsGroups = new List<string>();
+        readonly int ValidAnimationsNumber;
+
         List<frmAnimation> AnimationWindows = new List<frmAnimation>();
 
         List<CritterType> CritterTypes = new List<CritterType>();
@@ -82,12 +84,18 @@ namespace CritterBrowser.Forms
 
             BaseText = Text;
 
+            ArtCrittersZip = ArtCritters.Replace( '\\', '/' ).ToLower();
+
             menuAboutSelf.Text = new frmAbout().AssemblyProduct;
 
             InitAnimations();
             AutoPlacement();
             ValidAnimationsGroups.Sort();
             ValidAnimations.Sort();
+            ValidAnimationsNumber = ValidAnimations.Count * 6;
+            if( ValidAnimations.Contains( "NA" ) )
+                ValidAnimationsNumber -= 5;
+
             EnableControls( false );
 
             statusLabel.Text = "";
@@ -463,19 +471,18 @@ namespace CritterBrowser.Forms
             List<GroupBox> column = new List<GroupBox>();
 
             var fixColumnWidth = new Action( () =>
+            {
+                foreach( GroupBox group in column )
                 {
-                    foreach( GroupBox group in column )
-                    {
-                        if( !group.AutoSize )
-                            continue;
+                    if( !group.AutoSize )
+                        continue;
 
-                        Size oldSize = group.Size;
-                        group.AutoSize = false;
-                        group.Size = oldSize;
-                        group.Width = w;
-                    }
+                    Size oldSize = group.Size;
+                    group.AutoSize = false;
+                    group.Size = oldSize;
+                    group.Width = w;
                 }
-            );
+            } );
 
             foreach( GroupBox group in groups )
             {
@@ -838,18 +845,28 @@ namespace CritterBrowser.Forms
             else
                 PrevSelectedCritterIndex = self.SelectedIndex;
 
-            ResetAnimations();
+            //ResetAnimations();
 
             string baseName = (string)self.SelectedItem;
             CurrentCritterType = CritterTypes.Find( cr => cr.Name == baseName );
 
-            foreach( CritterAnimation crAnim in CurrentCritterType.Animations )
+            foreach( string crAnimName in ValidAnimations )
             {
-                CheckBox check = (CheckBox)GetControl( AnimCheck + crAnim.Name );
-                check.CheckState = (crAnim.AllDirs ? CheckState.Checked : CheckState.Indeterminate);
+                CheckState state = CheckState.Unchecked;
+                CritterAnimation crAnim = CurrentCritterType[crAnimName];
+                if( crAnim != null )
+                {
+                    if( crAnim.AllDirs )
+                        state = CheckState.Checked;
+                    else
+                        state = CheckState.Indeterminate;
+                }
 
-                LinkLabel link = (LinkLabel)GetControl( AnimLink + crAnim.Name );
-                link.Enabled = true;
+                CheckBox check = (CheckBox)GetControl( AnimCheck + crAnimName );
+                check.CheckState = state;
+
+                LinkLabel link = (LinkLabel)GetControl( AnimLink + crAnimName );
+                link.Enabled = state != CheckState.Unchecked;
             }
 
             RefreshFalloutFOnline( CurrentCritterType, true );
@@ -890,16 +907,26 @@ namespace CritterBrowser.Forms
             frmAnimation animWin = new frmAnimation();
             animWin.Text = CurrentCritterType.Name + animName;
 
-
             Bitmap[] frms = LoadFRM( datafile, CurrentCritterType, animName, LoadMode );
             CloseCurrentDatafile( ref datafile );
 
             animWin.anim0.Image = frms[0];
-            animWin.anim1.Image = frms[1];
-            animWin.anim2.Image = frms[2];
-            animWin.anim3.Image = frms[3];
-            animWin.anim4.Image = frms[4];
-            animWin.anim5.Image = frms[5];
+            if( animName == "NA" )
+            {
+                for( int c = 1; c <= 5; c++ )
+                {
+                    animWin.tblAnimation.ColumnStyles[c].SizeType = SizeType.Absolute;
+                    animWin.tblAnimation.ColumnStyles[c].Width = 0;
+                }
+            }
+            else
+            {
+                animWin.anim1.Image = frms[1];
+                animWin.anim2.Image = frms[2];
+                animWin.anim3.Image = frms[3];
+                animWin.anim4.Image = frms[4];
+                animWin.anim5.Image = frms[5];
+            }
 
             animWin.Show();
             AnimationWindows.Add( animWin );
@@ -1599,7 +1626,6 @@ namespace CritterBrowser.Forms
 
             List<string> complete = new List<string>();
             List<string> partial = new List<string>();
-            int completeLen = -1;
 
             bool firstPartial = true;
             foreach( string groupNameStr in ValidAnimationsGroups )
@@ -1609,9 +1635,7 @@ namespace CritterBrowser.Forms
 
                 if( groupComplete( groupNameChar ) )
                 {
-                    if( completeLen < groupName.Length )
-                        completeLen = groupName.Length;
-                    complete.Add( groupName );
+                    complete.Add( " " + groupName );
                 }
                 else
                 {
@@ -1622,12 +1646,12 @@ namespace CritterBrowser.Forms
                         firstPartial = false;
                     else
                         partial.Add( "" );
-                    partial.Add( groupName + ":" );
+                    partial.Add( " " + groupName + ":" );
                     
                     List<CritterAnimation> list = crType.Animations.FindAll( cr => cr.Name.StartsWith( groupNameChar.ToString() ) );
                     foreach( CritterAnimation crAnim in list )
                     {
-                        string animName = "- " + GetControl( AnimLink + crAnim.Name ).Text;
+                        string animName = " - " + GetControl( AnimLink + crAnim.Name ).Text;
 
                         if( !animComplete( crAnim ) )
                         {
@@ -1651,19 +1675,11 @@ namespace CritterBrowser.Forms
             if( complete.Count > 0 )
             {
                 result += Environment.NewLine;
-                int i = 0;
                 result += "Completed sets:" + Environment.NewLine;
                 foreach( string name in complete )
                 {
-                    if( ++i > 5 )
-                    {
-                        result = result.TrimEnd();
-                        result += Environment.NewLine;
-                        i = 1;
-                    }
-                    result += name + new string( ' ', completeLen - name.Length );
+                    result += name + Environment.NewLine;
                 }
-                result += Environment.NewLine;
             }
 
             if( partial.Count > 0 )
@@ -1675,6 +1691,7 @@ namespace CritterBrowser.Forms
                     result += name + Environment.NewLine;
                 }
             }
+
             return (result);
         }
     }

@@ -47,7 +47,7 @@ namespace CritterBrowser
             }
         }
 
-        public int AnimationsFiles
+        public int AnimationsCount
         {
             get
             {
@@ -56,12 +56,12 @@ namespace CritterBrowser
                 foreach( CritterAnimation crAnim in Animations )
                 {
                     if( crAnim.Full )
-                        result++;
+                        result += 6;
                     else
                     {
                         foreach( CritterAnimationDir dir in crAnim.Dir )
                         {
-                            if( dir != CritterAnimationDir.None )
+                            if( dir == CritterAnimationDir.None )
                                 continue;
 
                             result++;
@@ -95,22 +95,19 @@ namespace CritterBrowser
             List<string> args = new List<string>();
 
             var sbool = new Func<bool, string>( b =>
-                {
-                    return (b ? "1" : "0");
-                }
-            );
+            {
+                return (b ? "1" : "0");
+            } );
 
             var anim = new Func<string, string>( name =>
-                {
-                    return (this[name] != null ? "1" : "0");
-                }
-            );
+            {
+                return (this[name] != null ? "1" : "0");
+            } );
 
             var animGroup = new Func<char, string>( name =>
-                {
-                    return (this[name] != null ? "1" : "0");
-                }
-            );
+            {
+                return (this[name] != null ? "1" : "0");
+            } );
 
             // cvet plz, no format changes ;_;
 
