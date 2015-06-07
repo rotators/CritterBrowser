@@ -56,6 +56,12 @@
     <Compile Include="Forms\frmAbout.Designer.cs">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frmCompletion.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmCompletion.Designer.cs">
+      <DependentUpon>frmCompletion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\frmExport.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +113,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmAnimation.resx">
       <DependentUpon>frmAnimation.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmCompletion.resx">
+      <DependentUpon>frmCompletion.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmExport.resx">
       <DependentUpon>frmExport.cs</DependentUpon>

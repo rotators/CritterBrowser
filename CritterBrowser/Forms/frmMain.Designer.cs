@@ -48,11 +48,10 @@
             this.openFile = new System.Windows.Forms.OpenFileDialog();
             this.tabGame = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.tblGeneral = new System.Windows.Forms.TableLayoutPanel();
             this.animPreview = new System.Windows.Forms.PictureBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.tabFallout = new System.Windows.Forms.TabPage();
             this.falloutCrittersLst = new System.Windows.Forms.TextBox();
             this.txtFalloutCrittersLst = new System.Windows.Forms.Label();
@@ -99,10 +98,11 @@
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.frmChecker = new System.ComponentModel.BackgroundWorker();
             this.saveFile = new System.Windows.Forms.SaveFileDialog();
+            this.label1 = new System.Windows.Forms.Label();
             this.menu.SuspendLayout();
             this.tabGame.SuspendLayout();
             this.tabGeneral.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.tblGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animPreview)).BeginInit();
             this.flowLayoutPanel1.SuspendLayout();
             this.tabFallout.SuspendLayout();
@@ -277,7 +277,7 @@
             // 
             // tabGeneral
             // 
-            this.tabGeneral.Controls.Add( this.tableLayoutPanel1 );
+            this.tabGeneral.Controls.Add( this.tblGeneral );
             this.tabGeneral.Location = new System.Drawing.Point( 4, 22 );
             this.tabGeneral.Name = "tabGeneral";
             this.tabGeneral.Size = new System.Drawing.Size( 670, 107 );
@@ -285,24 +285,24 @@
             this.tabGeneral.Text = "General";
             this.tabGeneral.UseVisualStyleBackColor = true;
             // 
-            // tableLayoutPanel1
+            // tblGeneral
             // 
-            this.tableLayoutPanel1.AutoSize = true;
-            this.tableLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle() );
-            this.tableLayoutPanel1.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle() );
-            this.tableLayoutPanel1.Controls.Add( this.animPreview, 1, 0 );
-            this.tableLayoutPanel1.Controls.Add( this.flowLayoutPanel1, 0, 0 );
-            this.tableLayoutPanel1.Controls.Add( this.label2, 0, 1 );
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point( 0, 0 );
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add( new System.Windows.Forms.RowStyle() );
-            this.tableLayoutPanel1.RowStyles.Add( new System.Windows.Forms.RowStyle() );
-            this.tableLayoutPanel1.Size = new System.Drawing.Size( 670, 107 );
-            this.tableLayoutPanel1.TabIndex = 0;
+            this.tblGeneral.AutoSize = true;
+            this.tblGeneral.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.tblGeneral.ColumnCount = 2;
+            this.tblGeneral.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle() );
+            this.tblGeneral.ColumnStyles.Add( new System.Windows.Forms.ColumnStyle() );
+            this.tblGeneral.Controls.Add( this.animPreview, 1, 0 );
+            this.tblGeneral.Controls.Add( this.flowLayoutPanel1, 0, 0 );
+            this.tblGeneral.Controls.Add( this.button1, 0, 1 );
+            this.tblGeneral.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tblGeneral.Location = new System.Drawing.Point( 0, 0 );
+            this.tblGeneral.Name = "tblGeneral";
+            this.tblGeneral.RowCount = 2;
+            this.tblGeneral.RowStyles.Add( new System.Windows.Forms.RowStyle() );
+            this.tblGeneral.RowStyles.Add( new System.Windows.Forms.RowStyle() );
+            this.tblGeneral.Size = new System.Drawing.Size( 670, 107 );
+            this.tblGeneral.TabIndex = 0;
             // 
             // animPreview
             // 
@@ -310,7 +310,7 @@
             this.animPreview.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.animPreview.Location = new System.Drawing.Point( 617, 3 );
             this.animPreview.Name = "animPreview";
-            this.tableLayoutPanel1.SetRowSpan( this.animPreview, 2 );
+            this.tblGeneral.SetRowSpan( this.animPreview, 2 );
             this.animPreview.Size = new System.Drawing.Size( 50, 50 );
             this.animPreview.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.animPreview.TabIndex = 0;
@@ -323,28 +323,22 @@
             this.flowLayoutPanel1.AutoSize = true;
             this.flowLayoutPanel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.flowLayoutPanel1.Controls.Add( this.label1 );
-            this.flowLayoutPanel1.Location = new System.Drawing.Point( 3, 3 );
+            this.flowLayoutPanel1.Location = new System.Drawing.Point( 32, 3 );
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size( 41, 13 );
             this.flowLayoutPanel1.TabIndex = 1;
             // 
-            // label1
+            // button1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point( 3, 0 );
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size( 35, 13 );
-            this.label1.TabIndex = 1;
-            this.label1.Text = "label1";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point( 3, 19 );
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size( 35, 13 );
-            this.label2.TabIndex = 2;
-            this.label2.Text = "label2";
+            this.button1.AutoSize = true;
+            this.button1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.button1.Location = new System.Drawing.Point( 3, 22 );
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size( 99, 23 );
+            this.button1.TabIndex = 2;
+            this.button1.Text = "Completion report";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler( this.button1_Click );
             // 
             // tabFallout
             // 
@@ -859,6 +853,16 @@
             this.saveFile.RestoreDirectory = true;
             this.saveFile.SupportMultiDottedExtensions = true;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point( 3, 0 );
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size( 35, 13 );
+            this.label1.TabIndex = 1;
+            this.label1.Text = "label1";
+            this.label1.Visible = false;
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
@@ -882,8 +886,8 @@
             this.tabGame.ResumeLayout( false );
             this.tabGeneral.ResumeLayout( false );
             this.tabGeneral.PerformLayout();
-            this.tableLayoutPanel1.ResumeLayout( false );
-            this.tableLayoutPanel1.PerformLayout();
+            this.tblGeneral.ResumeLayout( false );
+            this.tblGeneral.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animPreview)).EndInit();
             this.flowLayoutPanel1.ResumeLayout( false );
             this.flowLayoutPanel1.PerformLayout();
@@ -980,15 +984,15 @@
         private System.Windows.Forms.ToolStripMenuItem menuOptionsTarget;
         private System.Windows.Forms.ToolStripMenuItem menuAboutRepo;
         private System.Windows.Forms.ToolStripMenuItem menuAboutSelf;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.TableLayoutPanel tblGeneral;
         private System.Windows.Forms.PictureBox animPreview;
         private System.Windows.Forms.ToolStripMenuItem menuFileExport;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.SaveFileDialog saveFile;
         private System.Windows.Forms.ToolStripMenuItem menuTests;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
     }
 }
 

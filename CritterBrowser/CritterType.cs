@@ -13,7 +13,7 @@ namespace CritterBrowser
         Partial
     }
 
-    class CritterType
+    public class CritterType
     {
         public readonly string Name;
 
@@ -205,7 +205,7 @@ namespace CritterBrowser
         }
     }
 
-    class CritterAnimation
+    public class CritterAnimation
     {
         public readonly string Name;
         public CritterAnimationDir[] Dir = new CritterAnimationDir[6];
@@ -277,7 +277,7 @@ namespace CritterBrowser
         }
     }
 
-    class CritterAnimationPacked
+    public class CritterAnimationPacked
     {
         public readonly string Filename;
         public readonly byte[] Bytes;

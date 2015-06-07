@@ -50,18 +50,18 @@ namespace CritterBrowser.Forms
         readonly string BaseText;
 
         // Generated members names prefix
-        readonly string AnimCheck = "animCheck";
-        readonly string AnimFlow = "animFlow";
-        readonly string AnimGroup = "animGroup";
-        readonly string AnimLink = "animLink";
-        readonly string AnimPanel = "animPanel";
+        internal readonly string AnimCheck = "animCheck";
+        internal readonly string AnimFlow = "animFlow";
+        internal readonly string AnimGroup = "animGroup";
+        internal readonly string AnimLink = "animLink";
+        internal readonly string AnimPanel = "animPanel";
 
         // other
         readonly string ArtCritters = "ART" + Path.DirectorySeparatorChar + "CRITTERS" + Path.DirectorySeparatorChar;
         readonly string ArtCrittersZip;
 
-        readonly List<string> ValidAnimations = new List<string>();
-        readonly List<string> ValidAnimationsGroups = new List<string>();
+        internal readonly List<string> ValidAnimations = new List<string>();
+        internal readonly List<string> ValidAnimationsGroups = new List<string>();
         readonly int ValidAnimationsNumber;
 
         List<frmAnimation> AnimationWindows = new List<frmAnimation>();
@@ -99,7 +99,7 @@ namespace CritterBrowser.Forms
             EnableControls( false );
 
             statusLabel.Text = "";
-            tableLayoutPanel1.AutoSize = true;
+            tblGeneral.AutoSize = true;
 
             switch( StartPosition )
             {
@@ -133,6 +133,7 @@ namespace CritterBrowser.Forms
         void EnableControls( bool enable )
         {
             lstCritters.Enabled =
+            tblGeneral.Enabled =
             grpFalloutConfiguration.Enabled =
             falloutCrittersLst.Enabled =
             grpFonlineConfiguration.Enabled =
@@ -520,7 +521,7 @@ namespace CritterBrowser.Forms
         /// <returns>Control object</returns>
         /// <exception cref="NotSupportedException">Thrown when control has not been found, or there is more than one with given name</exception>
         /// <example>Label lbl = (Label)GetControl( "labelName" );</example>
-        private Control GetControl( string name )
+        internal Control GetControl( string name )
         {
             Control[] controls = Controls.Find( name, true );
             if( controls != null && controls.Length == 1 )
@@ -715,7 +716,10 @@ namespace CritterBrowser.Forms
             AddCritterType( zip, CurrentCritterType );
 
             if( export.checkCompletion.Checked )
-                zip.AddText( ZipStorer.Compression.Deflate, CompletionText( CurrentCritterType ), CurrentCritterType.Name + ".txt", DateTime.Now, "" );
+            {
+                frmCompletion completion = new frmCompletion( this );
+                zip.AddText( ZipStorer.Compression.Deflate, completion.CompletionText( CurrentCritterType, true ), CurrentCritterType.Name + ".txt", DateTime.Now, "" );
+            }
             
             zip.Close();
         }
@@ -1410,8 +1414,7 @@ namespace CritterBrowser.Forms
                 LoadMode = config.LoadMode;
 
                 menuFileExport.Enabled = menuOptionsTarget.Enabled = true;
-
-                statusLabel.Text = "Caching critters preview...";
+                lstCritters.SelectedIndex = 0;
 
                 EnableControls( true );
             }
@@ -1597,249 +1600,13 @@ namespace CritterBrowser.Forms
             RefreshFalloutFOnline();
         }
 
-        string CompletionText( CritterType crType )
+        private void button1_Click( object sender, EventArgs e )
         {
-            string result = crType.Name + Environment.NewLine;
+            if( CurrentCritterType == null )
+                return;
 
-            var groupComplete = new Func<char, bool>( ( groupName ) =>
-            {
-                List<string> animList = ValidAnimations.FindAll( name => name.StartsWith( groupName.ToString() ) );
-                foreach( string anim in animList )
-                {
-                    CritterAnimation crAnim = crType[anim];
-
-                    if( crAnim == null || !crAnim.Full )
-                        return (false);
-                }
-
-                return (true);
-            } );
-
-            var animComplete = new Func<CritterAnimation, bool>( ( crAnim ) =>
-            {
-                foreach( CritterAnimationDir dir in crAnim.Dir )
-                {
-                    if( dir == CritterAnimationDir.None )
-                        return (false);
-                }
-
-                return (true);
-            } );
-
-            List<string> complete = new List<string>();
-            List<string> partial = new List<string>();
-
-            bool firstPartial = true;
-            foreach( string groupNameStr in ValidAnimationsGroups )
-            {
-                char groupNameChar = groupNameStr[0];
-                string groupName = GetControl( AnimGroup + groupNameChar ).Text;
-
-                if( groupComplete( groupNameChar ) )
-                {
-                    complete.Add( " " + groupName );
-                }
-                else
-                {
-                    if( crType[groupNameChar] == null )
-                        continue;
-
-                    if( firstPartial )
-                        firstPartial = false;
-                    else
-                        partial.Add( "" );
-                    partial.Add( " " + groupName + ":" );
-                    
-                    List<CritterAnimation> list = crType.Animations.FindAll( cr => cr.Name.StartsWith( groupNameChar.ToString() ) );
-                    foreach( CritterAnimation crAnim in list )
-                    {
-                        string animName = " - " + GetControl( AnimLink + crAnim.Name ).Text;
-
-                        if( !animComplete( crAnim ) )
-                        {
-                            string[] dirName = { "NE", "E", "SE", "SW", "W", "NW" };
-                            List<string> dirDone = new List<string>();
-
-                            for( int dir = 0; dir <= 5; dir++ )
-                            {
-                                if( crAnim.Dir[dir] == CritterAnimationDir.None )
-                                    continue;
-
-                                dirDone.Add( dirName[dir] );
-                            }
-                            animName += " (" + string.Join( ",", dirDone.ToArray() ) + ")";
-                        }
-                        partial.Add( animName );
-                    }
-                }
-            }
-
-            if( complete.Count > 0 )
-            {
-                result += Environment.NewLine;
-                result += "Completed sets:" + Environment.NewLine;
-                foreach( string name in complete )
-                {
-                    result += name + Environment.NewLine;
-                }
-            }
-
-            if( partial.Count > 0 )
-            {
-                result += Environment.NewLine;
-                result += "Partial sets:" + Environment.NewLine;
-                foreach( string name in partial )
-                {
-                    result += name + Environment.NewLine;
-                }
-            }
-
-            return (result);
-        }
-
-        string CompletionBBCode( CritterType crType, bool partial = false, int columns = 5, bool fonlineRu = false )
-        {
-            fonlineRu = true;
-
-            string newLine = string.Empty;
-
-            string tableStart = !fonlineRu ? "[table]" : "[xtable]{tbody}";
-            string tableEnd = !fonlineRu ? "[/table]" : "{/tbody}[/xtable]";
-
-            char tagOpen = !fonlineRu ? '[' : '{';
-            char tagClose = !fonlineRu ? ']' : '}';
-
-            var rawtag = new Func<string, string, string>( ( id, text ) =>
-            {
-                string bb = id.Split( new char[] { '=' }, 2 )[0];
-                return ('[' + id + ']' + text + "[/" + bb + ']');
-            } );
-
-            var tag = new Func<string, string, string>( ( id, text ) =>
-            {
-                string bb = id.Split( new char[] { '=' }, 2 )[0];
-                return (tagOpen + id + tagClose + text + tagOpen + '/' + bb + tagClose);
-            } );
-
-            var td = new Func<string, string>( text =>
-            {
-                return (tag( "td", text ));
-            } );
-
-            var tr = new Func<string, string>( text =>
-            {
-                return (tag( "tr", text ));
-            } );
-
-            var animComplete = new Func<CritterAnimation, bool>( ( crAnim ) =>
-            {
-                foreach( CritterAnimationDir dir in crAnim.Dir )
-                {
-                    if( dir == CritterAnimationDir.None )
-                        return (false);
-                }
-
-                return (true);
-            } );
-
-            string result = tableStart + newLine;
-
-            List<List<string>> groups = new List<List<string>>();
-
-            foreach( string groupNameStr in ValidAnimationsGroups )
-            {
-                char groupNameChar = groupNameStr[0];
-                string groupName = GetControl( AnimGroup + groupNameChar ).Text;
-
-                if( partial && crType[groupNameChar] == null )
-                    continue;
-
-                List<string> group = new List<string>();
-                group.Add( td( rawtag( "b", groupName ) ) );
-
-                List<string> animList = ValidAnimations.FindAll( anim => anim.StartsWith( groupNameStr ) );
-
-                foreach( string anim in animList )
-                {
-                    string animName = GetControl( AnimLink + anim ).Text;
-
-                    CritterAnimation crAnim = crType[anim];
-                    if( crAnim == null )
-                        group.Add( td( rawtag( "color=red", animName ) ) );
-                    else if( animComplete( crAnim ) )
-                        group.Add( td( rawtag( "color=green", animName ) ) );
-                    else
-                    {
-                        string[] dirName = { "NE", "E", "SE", "SW", "W", "NW" };
-                        List<string> dirDone = new List<string>();
-
-                        for( int dir = 0; dir <= 5; dir++ )
-                        {
-                            if( crAnim.Dir[dir] == CritterAnimationDir.None )
-                                continue;
-
-                            dirDone.Add( dirName[dir] );
-                        }
-                        animName += " (" + string.Join( ",", dirDone.ToArray() ) + ")";
-
-                        group.Add( td( rawtag( "color=yellow", animName ) ) );
-                    }
-                    
-                }
-                groups.Add( group );
-            }
-
-            int curr = 0;
-            List<string> lines = new List<string>(), rlines = new List<string>();
-            int linesH = 0;
-            foreach( List<string> group in groups )
-            {
-                if( ++curr > columns )
-                {
-                    foreach( string line in lines )
-                    {
-                        result += tr( line ) + newLine;
-                    }
-                    lines.Clear();
-                    curr = 1;
-                    linesH = 0;
-                }
-
-                if( linesH < group.Count )
-                    linesH = group.Count;
-
-                if( lines.Count == 0 )
-                    lines.AddRange( group );
-                else
-                {
-                    for( int l = 0; l < linesH; l++ )
-                    {
-                        if( l >= lines.Count )
-                        {
-                            string line = string.Empty;
-                            for( int x = 1; x < curr; x++ )
-                            {
-                                line += td( "" );
-                            }
-                            lines.Add( line );
-                        }
-                        if( l >= group.Count )
-                        {
-                            group.Add( td( "" ) );
-                        }
-                        lines[l] += group[l];
-                    }
-                }
-            }
-
-            foreach( string line in lines )
-            {
-                result += tr( line ) + newLine;
-            }
-
-            result += tableEnd + newLine;
-
-            return (result);
+            frmCompletion completion = new frmCompletion( this, CurrentCritterType );
+            completion.ShowDialog( this );
         }
     }
 }
