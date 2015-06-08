@@ -31,7 +31,7 @@ public class IniParser
     public static String FalseString { get { return (FalseStrings[0]); } }
     public static String TrueString { get { return (TrueStrings[0]); } }
 
-    #endregion
+    #endregion // Static members
 
     private Hashtable keyPairs = new Hashtable();
     private String iniFilePath;
@@ -162,57 +162,18 @@ public class IniParser
     /// <param name="iniPath">Full path to INI file.</param>
     public IniParser( String iniPath )
     {
-        TextReader iniFile = null;
-        String strLine = null;
-        String currentRoot = null;
-        String[] keyPair = null;
-
         iniFilePath = iniPath;
 
         if( File.Exists( iniPath ) )
         {
+            TextReader iniFile = null;
+
             try
             {
                 iniFile = new StreamReader( iniPath );
+                Read( iniFile );
 
-                strLine = iniFile.ReadLine();
-
-                while( strLine != null )
-                {
-                    strLine = strLine.Trim().TrimStart( new char[] { '\t' } );
-
-                    if( strLine != "" )
-                    {
-                        if( strLine.StartsWith( SectionOpen ) && strLine.EndsWith( SectionClose ) )
-                        {
-                            currentRoot = strLine.Substring( 1, strLine.Length - 2 );
-                        }
-                        else if( CommentChars.Length > 0 && strLine.IndexOfAny( CommentChars ) == 0 )
-                        {
-                            // comment
-                        }
-                        else
-                        {
-                            keyPair = strLine.Split( new char[] { VarSeparator }, 2 );
-
-                            SectionPair sectionPair;
-                            String value = "";
-
-                            if( currentRoot == null )
-                                currentRoot = RootSection;
-
-                            sectionPair.Section = currentRoot;
-                            sectionPair.Key = keyPair[0];
-
-                            if( keyPair.Length > 1 )
-                                value = keyPair[1];
-
-                            keyPairs.Add( sectionPair, value );
-                        }
-                    }
-
-                    strLine = iniFile.ReadLine();
-                }
+                Loaded = true;
             }
             catch( Exception ex )
             {
@@ -221,11 +182,81 @@ public class IniParser
             finally
             {
                 if( iniFile != null )
-                {
                     iniFile.Close();
-                    Loaded = true;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Reads a Stream and enumerates the values in the IniParser.
+    /// </summary>
+    /// <param name="stream">Stream to process.</param>
+    public IniParser( Stream stream )
+    {
+        if( stream.CanRead )
+        {
+            TextReader readStream = null;
+
+            try
+            {
+                readStream = new StreamReader( stream );
+                Read( readStream );
+                Loaded = true;
+            }
+            catch( Exception ex )
+            {
+                throw ex;
+            }
+            finally
+            {
+                if( readStream != null )
+                    readStream.Close();
+            }
+        }
+    }
+
+    protected void Read( TextReader text )
+    {
+        String currentRoot = null;
+        String[] keyPair = null;
+
+        String strLine = text.ReadLine();
+
+        while( strLine != null )
+        {
+            strLine = strLine.Trim().TrimStart( new char[] { '\t' } );
+
+            if( strLine != "" )
+            {
+                if( strLine.StartsWith( SectionOpen ) && strLine.EndsWith( SectionClose ) )
+                {
+                    currentRoot = strLine.Substring( 1, strLine.Length - 2 );
+                }
+                else if( CommentChars.Length > 0 && strLine.IndexOfAny( CommentChars ) == 0 )
+                {
+                    // comment
+                }
+                else
+                {
+                    keyPair = strLine.Split( new char[] { VarSeparator }, 2 );
+
+                    SectionPair sectionPair;
+                    String value = "";
+
+                    if( currentRoot == null )
+                        currentRoot = RootSection;
+
+                    sectionPair.Section = currentRoot;
+                    sectionPair.Key = keyPair[0];
+
+                    if( keyPair.Length > 1 )
+                        value = keyPair[1];
+
+                    keyPairs.Add( sectionPair, value );
                 }
             }
+
+            strLine = text.ReadLine();
         }
     }
 
@@ -391,6 +422,9 @@ public class IniParser
     /// </summary>
     public void SaveSettings()
     {
+        if( iniFilePath == null || iniFilePath == String.Empty )
+            throw new InvalidOperationException( "INI file path not set, probably object initialized from Stream" );
+
         SaveSettings( iniFilePath );
     }
 
