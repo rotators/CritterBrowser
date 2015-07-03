@@ -30,6 +30,8 @@ namespace CritterBrowser.Forms
             public readonly string Target;
             public readonly bool FastCheck;
 
+            public string[] TargetCrittersLst;
+            public IniParser TargetConfig;
             public string ShowCompletion;
 
             public frmCheckerConfig( LoadModeType loadMode, string target )
@@ -38,6 +40,8 @@ namespace CritterBrowser.Forms
                 Target = target;
                 FastCheck = Settings.GetBool( "FastCheckFRM" );
 
+                TargetCrittersLst = null;
+                TargetConfig = null;
                 ShowCompletion = null;
             }
         }
@@ -77,6 +81,7 @@ namespace CritterBrowser.Forms
         LoadModeType LoadedMode = LoadModeType.None;
         string LoadedTarget;
         bool LoadedFast;
+        IniParser LoadedConfig;
 
         Color TransparencyFRM = Color.FromArgb( 11, 0, 11 );
 
@@ -645,6 +650,7 @@ namespace CritterBrowser.Forms
             CritterTypes.Clear();
 
             menuFileOpen.Enabled =
+            menuFileImport.Enabled =
             menuFileExport.Enabled =
             menuOptionsTarget.Enabled =
                 false;
@@ -664,12 +670,12 @@ namespace CritterBrowser.Forms
         /// </summary>
         private void menuFileOpenDatafile_Click( object sender, EventArgs e )
         {
-            DialogResult result = openFile.ShowDialog( this );
+            DialogResult result = dlgDatafile.ShowDialog( this );
 
             if( result != DialogResult.OK )
                 return;
 
-            string ext = Path.GetExtension( openFile.SafeFileName ).Substring( 1 ).ToUpper();
+            string ext = Path.GetExtension( dlgDatafile.SafeFileName ).Substring( 1 ).ToUpper();
 
             LoadModeType loadMode = LoadModeType.None;
             if( ext == "ZIP" )
@@ -679,7 +685,7 @@ namespace CritterBrowser.Forms
             else
                 return;
 
-            frmCheckerConfig config = frmCheckerPrepare( loadMode, openFile.FileName );
+            frmCheckerConfig config = frmCheckerPrepare( loadMode, dlgDatafile.FileName );
             frmChecker.RunWorkerAsync( config );
         }
 
@@ -688,17 +694,65 @@ namespace CritterBrowser.Forms
         /// </summary>
         private void menuFileOpenDirectory_Click( object sender, EventArgs e )
         {
-            DialogResult result = openDirectory.ShowDialog( this );
+            DialogResult result = dlgDirectory.ShowDialog( this );
 
             if( result != DialogResult.OK )
                 return;
 
-            frmCheckerConfig config = frmCheckerPrepare( LoadModeType.Directory, openDirectory.SelectedPath );
+            frmCheckerConfig config = frmCheckerPrepare( LoadModeType.Directory, dlgDirectory.SelectedPath );
             frmChecker.RunWorkerAsync( config );
         }
 
         /// <summary>
-        /// File->Export event.
+        /// File->Import settings event.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void menuFileImport_Click( object sender, EventArgs e )
+        {
+            if( LoadedMode == LoadModeType.None )
+                return;
+
+            dlgImport.FileName = "";
+
+            DialogResult result = dlgImport.ShowDialog( this );
+            if( result != DialogResult.OK )
+                return;
+
+            if( dlgImport.SafeFileName.ToUpper() == "CRITTERS.LST" )
+            {
+                StreamReader text = new StreamReader( dlgImport.FileName );
+
+                string line = null;
+
+                while( (line = text.ReadLine()) != null )
+                {
+                    string[] vals = line.Split( new char[] { ',' }, 3 );
+                    if( vals.Length < 2 )
+                        continue;
+
+                    CritterType crType = CritterTypes.Find( cr => cr.Name == vals[1].ToUpper() );
+                    if( crType == null )
+                        continue;
+
+                    UInt16 alias = 0;
+                    if( UInt16.TryParse( vals[1], out alias ) )
+                    {
+                        crType.Alias = alias;
+                    }
+                }
+            }
+            else if( dlgImport.SafeFileName.ToUpper() == "CRITTERTYPES.CFG" )
+            {
+            }
+            else
+                return;
+
+            lstCritters.Select();
+        }
+
+        /// <summary>
+        /// File->Export critter event.
         /// </summary>
         private void menuFileExport_Click( object sender, EventArgs e )
         {
@@ -708,24 +762,31 @@ namespace CritterBrowser.Forms
             DialogResult result = DialogResult.Cancel;
 
             frmExport export = new frmExport( CurrentCritterType.Name );
+
             result = export.ShowDialog( this );
             if( result != DialogResult.OK )
                 return;
 
-            saveFile.FileName = CurrentCritterType.Name + ".zip";
-            result = saveFile.ShowDialog( this );
+            dlgExport.FileName = CurrentCritterType.Name + ".zip";
+            result = dlgExport.ShowDialog( this );
             if( result != DialogResult.OK )
                 return;
 
-            ZipStorer zip = ZipStorer.Create( saveFile.FileName, "" );
-            AddCritterType( zip, CurrentCritterType );
+            ZipStorer zip = ZipStorer.Create( dlgExport.FileName, "" );
+
+            IniParser cfg = new IniParser();
+
+            CurrentCritterType.Save( cfg, CurrentCritterType.Name );
+            zip.AddText( ZipStorer.Compression.Deflate, cfg.AsText, CritterBrowser.ConfigName, DateTime.Now, "" );
 
             if( export.checkCompletion.Checked )
             {
                 frmCompletion completion = new frmCompletion( this );
                 zip.AddText( ZipStorer.Compression.Deflate, completion.CompletionText( CurrentCritterType, true ), CurrentCritterType.Name + ".txt", DateTime.Now, "" );
             }
-            
+
+            AddCritterType( zip, CurrentCritterType );
+
             zip.Close();
         }
 
@@ -800,7 +861,7 @@ namespace CritterBrowser.Forms
                     switch( LoadedMode )
                     {
                         case LoadModeType.Directory:
-                            string filename = openDirectory.SelectedPath + Path.DirectorySeparatorChar + crName + ext;
+                            string filename = dlgDirectory.SelectedPath + Path.DirectorySeparatorChar + crName + ext;
                             if( File.Exists( filename ) )
                             {
                                 zipFiles.Add( new CritterAnimationPacked(
@@ -886,8 +947,15 @@ namespace CritterBrowser.Forms
             {
                 animPreview.Size = new Size( CurrentCritterType.Preview.Width, CurrentCritterType.Preview.Height );
                 animPreview.Image = CurrentCritterType.Preview;
-                animPreview.Update();
                 animPreview.Show();
+                animPreview.Update();
+            }
+            else
+            {
+                animPreview.Hide();
+                animPreview.Update();
+                animPreview.Size = Size.Empty;
+                animPreview.Image = null;
             }
         }
 
@@ -1111,6 +1179,9 @@ namespace CritterBrowser.Forms
                 return;
             }
 
+            string[] CrittersLst = null;
+            IniParser TargetCfg = null;
+
             switch( config.LoadMode )
             {
                 case LoadModeType.Directory:
@@ -1119,6 +1190,15 @@ namespace CritterBrowser.Forms
                     {
                         files.Add( Path.GetFileName( file ) );
                     }
+
+                    if( File.Exists( config.Target + Path.DirectorySeparatorChar + "CRITTERS.LST" ) )
+                        CrittersLst = File.ReadAllLines( config.Target + Path.DirectorySeparatorChar + "CRITTERS.LST" );
+
+                    string oldCfgName = config.Target + Path.DirectorySeparatorChar + "CritterBrowser.cfg";
+                    TargetCfg = new IniParser( oldCfgName );
+                    if( !TargetCfg.Loaded )
+                        TargetCfg = null;
+
                     break;
 
                 case LoadModeType.Zip:
@@ -1133,9 +1213,35 @@ namespace CritterBrowser.Forms
                             .Replace( '/', Path.DirectorySeparatorChar );
 
                         if( !filename.StartsWith( ArtCritters ) )
+                        {
+                            if( filename == CritterBrowser.ConfigName.ToUpper() )
+                            {
+                                MemoryStream stream = new MemoryStream();
+                                if( zip.ExtractFile( entry, stream ) )
+                                {
+                                    stream.Seek( 0, SeekOrigin.Begin );
+                                    TargetCfg = new IniParser( stream );
+                                    if( !TargetCfg.Loaded )
+                                        TargetCfg = null;
+                                }
+                            }
                             continue;
+                        }
+                        else if( Path.GetFileName( filename ).ToUpper() == "CRITTERS.LST" )
+                        {
+                            MemoryStream stream = new MemoryStream();
+                            if( zip.ExtractFile( entry, stream ) )
+                            {
+                                stream.Seek(0,SeekOrigin.Begin);
+                                StreamReader streamRead = new StreamReader( stream );
+                                CrittersLst = streamRead.ReadToEnd().Replace( "\r", "" ).Split( '\n' );
+                            }
 
-                        string extmp = Path.GetExtension( filename );
+                            continue;
+                        }
+
+
+                        string extmp = Path.GetExtension( filename ).ToUpper();
                         if( extmp.Length != 4 || extmp.Substring( 1, 2 ) != "FR" )
                             continue;
 
@@ -1155,15 +1261,36 @@ namespace CritterBrowser.Forms
                             .Replace( '/', Path.DirectorySeparatorChar );
 
                         if( !filename.StartsWith( ArtCritters ) )
+                        {
+                            if( filename == CritterBrowser.ConfigName.ToUpper() )
+                            {
+                                byte[] bytes = entry.GetData();
+                                MemoryStream stream = new MemoryStream( bytes );
+                                TargetCfg = new IniParser( stream );
+                                if( !TargetCfg.Loaded )
+                                    TargetCfg = null;
+                            }
                             continue;
+                        }
+                        else if( Path.GetFileName( filename ).ToUpper() == "CRITTERS.LST" )
+                        {
+                            MemoryStream stream = new MemoryStream( entry.GetData() );
+                            if( stream.Length > 0 )
+                            {
+                                StreamReader streamRead = new StreamReader( stream );
+                                CrittersLst = streamRead.ReadToEnd().Replace( "\r", "" ).Split( '\n' );
+                            }
 
-                        string extmp = Path.GetExtension( filename );
+                            continue;
+                        }
+
+                        string extmp = Path.GetExtension( filename ).ToUpper();
                         if( extmp.Length != 4 || extmp.Substring( 1, 2 ) != "FR" )
                             continue;
 
                         // DATLib doesn't care about FileIndex, so we have to
 
-                        if( idx == int.MaxValue )
+                        if( idx >= int.MaxValue )
                         {
                             self.ReportProgress( (int)ProgressData.ErrorMessage, "Too many files" );
                             CloseDatafile( ref datafile, config.LoadMode );
@@ -1190,7 +1317,7 @@ namespace CritterBrowser.Forms
             int dir = -1;
 
             List<CritterType> crTypesFound = new List<CritterType>();
-            int currFile = 0, lastPercent = -1, filesCount = files.Count;
+            int currFile = 0, lastPercent = int.MinValue, filesCount = files.Count;
             foreach( object file in files )
             {
                 if( self.CancellationPending )
@@ -1224,7 +1351,6 @@ namespace CritterBrowser.Forms
                     default:
                         throw new NotSupportedException();
                 }
-
 
                 if( !ValidNameFRM( filename, ref baseName, ref animName, ref dir, ref ext ) )
                     continue;
@@ -1282,7 +1408,7 @@ namespace CritterBrowser.Forms
                         }
                     }
                 }
-                else // !ext == "FRM";
+                else // ext != "FRM";
                 {
                     CritterAnimation crAnim = crType[animName];
 
@@ -1355,6 +1481,8 @@ namespace CritterBrowser.Forms
 
             CloseDatafile( ref datafile, config.LoadMode );
 
+            config.TargetCrittersLst = CrittersLst;
+            config.TargetConfig = TargetCfg;
             self.ReportProgress( (int)ProgressData.Finish, config );
         }
 
@@ -1414,12 +1542,56 @@ namespace CritterBrowser.Forms
             {
                 frmCheckerConfig config = (frmCheckerConfig)e.UserState;
 
+                
                 Text = BaseText + " : " + config.Target;
                 LoadedMode = config.LoadMode;
-                LoadedTarget = config.Target;
+                string LoadedConfigName = LoadedTarget = config.Target;
                 LoadedFast = config.FastCheck;
 
-                menuFileExport.Enabled = menuOptionsTarget.Enabled = true;
+                LoadedConfigName += LoadedMode == LoadModeType.Directory ? Path.DirectorySeparatorChar : '.';
+                LoadedConfigName += CritterBrowser.ConfigName;
+
+                LoadedConfig = new IniParser( LoadedConfigName );
+
+                if( config.TargetConfig != null )
+                {
+                    foreach( string section in config.TargetConfig.EnumSections() )
+                    {
+                        foreach( string key in config.TargetConfig.EnumSectionKeys( section ) )
+                        {
+                            LoadedConfig.AddNewSetting( section, key, config.TargetConfig.GetSetting( section, key ) );
+                        }
+                    }
+                }
+
+                if( config.TargetCrittersLst != null )
+                {
+                    foreach( string line in config.TargetCrittersLst )
+                    {
+                        string[] args = line.Split( new char[] { ',' }, 3 );
+                        if( args.Length < 2 )
+                            continue;
+
+                        string basename = args[0].ToUpper();
+                        UInt16 value = 0;
+                        if( UInt16.TryParse( args[1], out value ) && value > 0 )
+                            LoadedConfig.AddNewSetting( args[0], "Alias", value );
+                    }
+                }
+
+                foreach( string section in LoadedConfig.EnumSections())
+                {
+                    CritterType crType = CritterTypes.Find( cr => cr.Name.ToUpper() == section.ToUpper() );
+                    if( crType == null )
+                        continue;
+
+                    crType.Load( LoadedConfig, section );
+                }
+
+                menuFileImport.Enabled =
+                menuFileExport.Enabled =
+                menuOptionsTarget.Enabled =
+                    true;
 
                 if( config.ShowCompletion != null )
                 {
@@ -1473,6 +1645,12 @@ namespace CritterBrowser.Forms
                 Close();
         }
 
+        void SaveTargetConfig()
+        {
+            CurrentCritterType.Save( LoadedConfig, CurrentCritterType.Name );
+            LoadedConfig.SaveSettings();
+        }
+
         private void falloutAlias_ValueChanged( object sender, EventArgs e )
         {
             NumericUpDown self = (NumericUpDown)sender;
@@ -1481,6 +1659,7 @@ namespace CritterBrowser.Forms
             fonlineAlias.Value = self.Value;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineEnabled_CheckedChanged( object sender, EventArgs e )
@@ -1490,6 +1669,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Enabled = self.Checked;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineID_ValueChanged( object sender, EventArgs e )
@@ -1499,6 +1679,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.ID = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineAlias_ValueChanged( object sender, EventArgs e )
@@ -1509,6 +1690,7 @@ namespace CritterBrowser.Forms
             falloutAlias.Value = self.Value;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineMultihex_ValueChanged( object sender, EventArgs e )
@@ -1518,6 +1700,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Multihex = (byte)self.Value;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineAim_CheckedChanged( object sender, EventArgs e )
@@ -1527,6 +1710,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Aim = self.Checked;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineArmor_CheckedChanged( object sender, EventArgs e )
@@ -1536,6 +1720,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Armor = self.Checked;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineRotate_CheckedChanged( object sender, EventArgs e )
@@ -1545,7 +1730,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Rotate = self.Checked;
 
             RefreshFalloutFOnline();
-
+            SaveTargetConfig();
         }
 
         private void fonlineWalk_ValueChanged( object sender, EventArgs e )
@@ -1555,6 +1740,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Walk = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineRun_ValueChanged( object sender, EventArgs e )
@@ -1564,6 +1750,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Run = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineSteps1_ValueChanged( object sender, EventArgs e )
@@ -1573,6 +1760,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Step1 = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineSteps2_ValueChanged( object sender, EventArgs e )
@@ -1582,6 +1770,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Step2 = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineSteps3_ValueChanged( object sender, EventArgs e )
@@ -1591,7 +1780,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Step3 = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
-
+            SaveTargetConfig();
         }
 
         private void fonlineSteps4_ValueChanged( object sender, EventArgs e )
@@ -1601,6 +1790,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Step4 = (UInt16)self.Value;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineSound_TextChanged( object sender, EventArgs e )
@@ -1610,6 +1800,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Sound = self.Text;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void fonlineComment_TextChanged( object sender, EventArgs e )
@@ -1619,6 +1810,7 @@ namespace CritterBrowser.Forms
             CurrentCritterType.Comment = self.Text;
 
             RefreshFalloutFOnline();
+            SaveTargetConfig();
         }
 
         private void button1_Click( object sender, EventArgs e )

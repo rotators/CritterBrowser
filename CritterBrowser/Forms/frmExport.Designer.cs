@@ -29,11 +29,11 @@
         private void InitializeComponent()
         {
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.txtHeader = new System.Windows.Forms.Label();
             this.checkCompletion = new System.Windows.Forms.CheckBox();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnOK = new System.Windows.Forms.Button();
             this.btnCancel = new System.Windows.Forms.Button();
-            this.txtHeader = new System.Windows.Forms.Label();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
@@ -50,8 +50,18 @@
             this.flowLayoutPanel1.Location = new System.Drawing.Point( 0, 0 );
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding( 10 );
-            this.flowLayoutPanel1.Size = new System.Drawing.Size( 522, 227 );
+            this.flowLayoutPanel1.Size = new System.Drawing.Size( 194, 105 );
             this.flowLayoutPanel1.TabIndex = 0;
+            // 
+            // txtHeader
+            // 
+            this.txtHeader.AutoSize = true;
+            this.txtHeader.Location = new System.Drawing.Point( 13, 10 );
+            this.txtHeader.Name = "txtHeader";
+            this.txtHeader.Padding = new System.Windows.Forms.Padding( 0, 0, 0, 5 );
+            this.txtHeader.Size = new System.Drawing.Size( 48, 18 );
+            this.txtHeader.TabIndex = 3;
+            this.txtHeader.Text = "[Header]";
             // 
             // checkCompletion
             // 
@@ -86,6 +96,7 @@
             // 
             // btnCancel
             // 
+            this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.Location = new System.Drawing.Point( 84, 3 );
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size( 75, 23 );
@@ -94,23 +105,13 @@
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler( this.btnCancel_Click );
             // 
-            // txtHeader
-            // 
-            this.txtHeader.AutoSize = true;
-            this.txtHeader.Location = new System.Drawing.Point( 13, 10 );
-            this.txtHeader.Name = "txtHeader";
-            this.txtHeader.Padding = new System.Windows.Forms.Padding( 0, 0, 0, 5 );
-            this.txtHeader.Size = new System.Drawing.Size( 48, 18 );
-            this.txtHeader.TabIndex = 3;
-            this.txtHeader.Text = "[Header]";
-            // 
             // frmExport
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF( 6F, 13F );
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size( 522, 227 );
+            this.ClientSize = new System.Drawing.Size( 194, 105 );
             this.Controls.Add( this.flowLayoutPanel1 );
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "frmExport";

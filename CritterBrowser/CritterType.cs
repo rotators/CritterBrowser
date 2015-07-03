@@ -73,6 +73,59 @@ namespace CritterBrowser
             }
         }
 
+        public void Load( IniParser ini, string section )
+        {
+            Enabled = ini.GetSettingBool( section, "Enabled" );
+            ID = ini.GetSettingUInt16( section, "ID" );
+            Alias = ini.GetSettingUInt16( section, "Alias" );
+            Multihex = ini.GetSettingByte( section, "Multihex" );
+            Aim = ini.GetSettingBool( section, "Aim" );
+            Armor = ini.GetSettingBool( section, "Armor" );
+            Rotate = ini.GetSettingBool( section, "Rotate" );
+
+            Walk = ini.GetSettingUInt16( section, "Walk" );
+            Run = ini.GetSettingUInt16( section, "Run" );
+            Step1 = ini.GetSettingUInt16( section, "Step1" ); ;
+            Step2 = ini.GetSettingUInt16( section, "Step2" ); ;
+            Step3 = ini.GetSettingUInt16( section, "Step3" ); ;
+            Step4 = ini.GetSettingUInt16( section, "Step4" ); ;
+
+            Sound = ini.GetSetting( section, "Sound" );
+            Comment = ini.GetSetting( section, "Comment" );
+
+            if( Sound == IniParser.EmptySetting )
+                Sound = "";
+            if( Comment == IniParser.EmptySetting )
+                Comment = "";
+        }
+
+        public void Save( IniParser ini, string section )
+        {
+            ini.AddSetting( section, "Enabled", Enabled );
+            ini.AddSetting( section, "ID", ID.ToString() );
+            ini.AddSetting( section, "Alias", Alias.ToString() );
+            ini.AddSetting( section, "Multihex", Multihex.ToString() );
+            ini.AddSetting( section, "Aim", Aim );
+            ini.AddSetting( section, "Armor", Armor );
+            ini.AddSetting( section, "Rotate", Rotate );
+
+            ini.AddSetting( section, "Walk", Walk.ToString() );
+            ini.AddSetting( section, "Run", Run.ToString() );
+            ini.AddSetting( section, "Step1", Step1.ToString() );
+            ini.AddSetting( section, "Step2", Step2.ToString() );
+            ini.AddSetting( section, "Step3", Step3.ToString() );
+            ini.AddSetting( section, "Step4", Step4.ToString() );
+
+            if( Sound.Length > 0 )
+                ini.AddNewSetting( section, "Sound", Sound );
+            else
+                ini.DeleteSetting( section, "Sound" );
+
+            if( Comment.Length > 0 )
+                ini.AddNewSetting( section, "Comment", Comment );
+            else
+                ini.DeleteSetting( section, "Comment" );
+        }
         public string ToFalloutString() // is it actually correct?
         {
             string result = Name.ToLower();

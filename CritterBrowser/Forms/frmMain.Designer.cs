@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.openDirectory = new System.Windows.Forms.FolderBrowserDialog();
+            this.dlgDirectory = new System.Windows.Forms.FolderBrowserDialog();
             this.menu = new System.Windows.Forms.MenuStrip();
             this.menuAbout = new System.Windows.Forms.ToolStripMenuItem();
             this.menuAboutSelf = new System.Windows.Forms.ToolStripMenuItem();
@@ -38,6 +38,7 @@
             this.menuFileOpenDatafile = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFileOpenDirectory = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.menuFileImport = new System.Windows.Forms.ToolStripMenuItem();
             this.menuFileExport = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuFileExit = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,12 +46,13 @@
             this.menuOptionsGeneral = new System.Windows.Forms.ToolStripMenuItem();
             this.menuOptionsTarget = new System.Windows.Forms.ToolStripMenuItem();
             this.menuTests = new System.Windows.Forms.ToolStripMenuItem();
-            this.openFile = new System.Windows.Forms.OpenFileDialog();
+            this.dlgDatafile = new System.Windows.Forms.OpenFileDialog();
             this.tabGame = new System.Windows.Forms.TabControl();
             this.tabGeneral = new System.Windows.Forms.TabPage();
             this.tblGeneral = new System.Windows.Forms.TableLayoutPanel();
             this.animPreview = new System.Windows.Forms.PictureBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.tabFallout = new System.Windows.Forms.TabPage();
             this.falloutCrittersLst = new System.Windows.Forms.TextBox();
@@ -97,8 +99,8 @@
             this.statusProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.frmChecker = new System.ComponentModel.BackgroundWorker();
-            this.saveFile = new System.Windows.Forms.SaveFileDialog();
-            this.label1 = new System.Windows.Forms.Label();
+            this.dlgExport = new System.Windows.Forms.SaveFileDialog();
+            this.dlgImport = new System.Windows.Forms.OpenFileDialog();
             this.menu.SuspendLayout();
             this.tabGame.SuspendLayout();
             this.tabGeneral.SuspendLayout();
@@ -124,10 +126,10 @@
             this.status.SuspendLayout();
             this.SuspendLayout();
             // 
-            // openDirectory
+            // dlgDirectory
             // 
-            this.openDirectory.Description = "Select a directory containing critters animations.";
-            this.openDirectory.ShowNewFolderButton = false;
+            this.dlgDirectory.Description = "Select a directory containing critters animations.";
+            this.dlgDirectory.ShowNewFolderButton = false;
             // 
             // menu
             // 
@@ -171,6 +173,7 @@
             this.menuFile.DropDownItems.AddRange( new System.Windows.Forms.ToolStripItem[] {
             this.menuFileOpen,
             this.toolStripSeparator1,
+            this.menuFileImport,
             this.menuFileExport,
             this.toolStripSeparator2,
             this.menuFileExit} );
@@ -184,7 +187,7 @@
             this.menuFileOpenDatafile,
             this.menuFileOpenDirectory} );
             this.menuFileOpen.Name = "menuFileOpen";
-            this.menuFileOpen.Size = new System.Drawing.Size( 116, 22 );
+            this.menuFileOpen.Size = new System.Drawing.Size( 163, 22 );
             this.menuFileOpen.Text = "Open...";
             // 
             // menuFileOpenDatafile
@@ -204,25 +207,33 @@
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size( 113, 6 );
+            this.toolStripSeparator1.Size = new System.Drawing.Size( 160, 6 );
+            // 
+            // menuFileImport
+            // 
+            this.menuFileImport.Enabled = false;
+            this.menuFileImport.Name = "menuFileImport";
+            this.menuFileImport.Size = new System.Drawing.Size( 163, 22 );
+            this.menuFileImport.Text = "Import settings...";
+            this.menuFileImport.Click += new System.EventHandler( this.menuFileImport_Click );
             // 
             // menuFileExport
             // 
             this.menuFileExport.Enabled = false;
             this.menuFileExport.Name = "menuFileExport";
-            this.menuFileExport.Size = new System.Drawing.Size( 116, 22 );
-            this.menuFileExport.Text = "Export...";
+            this.menuFileExport.Size = new System.Drawing.Size( 163, 22 );
+            this.menuFileExport.Text = "Export critter...";
             this.menuFileExport.Click += new System.EventHandler( this.menuFileExport_Click );
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size( 113, 6 );
+            this.toolStripSeparator2.Size = new System.Drawing.Size( 160, 6 );
             // 
             // menuFileExit
             // 
             this.menuFileExit.Name = "menuFileExit";
-            this.menuFileExit.Size = new System.Drawing.Size( 116, 22 );
+            this.menuFileExit.Size = new System.Drawing.Size( 163, 22 );
             this.menuFileExit.Text = "Exit";
             this.menuFileExit.Click += new System.EventHandler( this.menuFileExit_Click );
             // 
@@ -256,11 +267,11 @@
             this.menuTests.Size = new System.Drawing.Size( 51, 20 );
             this.menuTests.Text = "TESTS";
             // 
-            // openFile
+            // dlgDatafile
             // 
-            this.openFile.Filter = "All supported types|*.dat;*.zip|Fallout2 datafiles|*.dat|FOnline datafiles|*.zip";
-            this.openFile.ReadOnlyChecked = true;
-            this.openFile.RestoreDirectory = true;
+            this.dlgDatafile.Filter = "All supported types|*.dat;*.zip|Fallout2 datafiles|*.dat|FOnline datafiles|*.zip";
+            this.dlgDatafile.ReadOnlyChecked = true;
+            this.dlgDatafile.RestoreDirectory = true;
             // 
             // tabGame
             // 
@@ -327,6 +338,16 @@
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size( 41, 13 );
             this.flowLayoutPanel1.TabIndex = 1;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point( 3, 0 );
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size( 35, 13 );
+            this.label1.TabIndex = 1;
+            this.label1.Text = "label1";
+            this.label1.Visible = false;
             // 
             // button1
             // 
@@ -847,21 +868,17 @@
             this.frmChecker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler( this.frmChecker_ProgressChanged );
             this.frmChecker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler( this.frmChecker_RunWorkerCompleted );
             // 
-            // saveFile
+            // dlgExport
             // 
-            this.saveFile.Filter = "ZIP file|*.zip";
-            this.saveFile.RestoreDirectory = true;
-            this.saveFile.SupportMultiDottedExtensions = true;
+            this.dlgExport.Filter = "ZIP file|*.zip";
+            this.dlgExport.RestoreDirectory = true;
+            this.dlgExport.SupportMultiDottedExtensions = true;
             // 
-            // label1
+            // dlgImport
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point( 3, 0 );
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size( 35, 13 );
-            this.label1.TabIndex = 1;
-            this.label1.Text = "label1";
-            this.label1.Visible = false;
+            this.dlgImport.Filter = "All supported types|critters.lst;CritterTypes.cfg|Fallout2 settings|critters.lst|" +
+                "FOnline settings|CritterTypes.cfg";
+            this.dlgImport.ReadOnlyChecked = true;
             // 
             // frmMain
             // 
@@ -922,9 +939,9 @@
 
         #endregion
 
-        private System.Windows.Forms.FolderBrowserDialog openDirectory;
+        private System.Windows.Forms.FolderBrowserDialog dlgDirectory;
         private System.Windows.Forms.MenuStrip menu;
-        private System.Windows.Forms.OpenFileDialog openFile;
+        private System.Windows.Forms.OpenFileDialog dlgDatafile;
         private System.Windows.Forms.ToolStripMenuItem menuAbout;
         private System.Windows.Forms.TabControl tabGame;
         private System.Windows.Forms.TabPage tabFallout;
@@ -987,12 +1004,14 @@
         private System.Windows.Forms.PictureBox animPreview;
         private System.Windows.Forms.ToolStripMenuItem menuFileExport;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.SaveFileDialog saveFile;
+        private System.Windows.Forms.SaveFileDialog dlgExport;
         private System.Windows.Forms.ToolStripMenuItem menuTests;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label1;
         protected internal System.Windows.Forms.Panel animations;
+        private System.Windows.Forms.ToolStripMenuItem menuFileImport;
+        private System.Windows.Forms.OpenFileDialog dlgImport;
     }
 }
 

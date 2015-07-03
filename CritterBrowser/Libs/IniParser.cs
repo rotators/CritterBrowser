@@ -1,6 +1,7 @@
 ﻿#define INIPARSER_CONTROLS
 
 using System;
+using System.Data;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -156,6 +157,10 @@ public class IniParser
         }
     }
 
+    public IniParser()
+    {
+    }
+
     /// <summary>
     /// Opens the INI file at the given path and enumerates the values in the IniParser.
     /// </summary>
@@ -276,6 +281,33 @@ public class IniParser
         return ret;
     }
 
+    public Byte GetSettingByte( String sectionName, String settingName )
+    {
+        Byte result = 0;
+        String resultStr = GetSetting( sectionName, settingName );
+        Byte.TryParse( resultStr, out result );
+
+        return (result);
+    }
+
+    public Int32 GetSettingInt32( String sectionName, String settingName )
+    {
+        Int32 result = 0;
+        String resultStr = GetSetting( sectionName, settingName );
+        Int32.TryParse( resultStr, out result );
+
+        return (result);
+    }
+
+    public UInt16 GetSettingUInt16( String sectionName, String settingName )
+    {
+        UInt16 result = 0;
+        String resultStr = GetSetting( sectionName, settingName );
+        UInt16.TryParse( resultStr, out result );
+
+        return (result);
+    }
+
     /// <summary>
     /// Returns the value of the given section, key pair.
     /// </summary>
@@ -290,6 +322,21 @@ public class IniParser
         return (false);
     }
 
+    public String[] EnumSections()
+    {
+        ArrayList sections = new ArrayList();
+
+        foreach( SectionPair sectionPair in keyPairs.Keys )
+        {
+            if( sectionPair.Section == RootSection )
+                continue;
+            else if( !sections.Contains( sectionPair.Section ) )
+                sections.Add( sectionPair.Section );
+        }
+
+        return ((String[])sections.ToArray( typeof( String ) ));
+    }
+
     /// <summary>
     /// Enumerates all lines for given section.
     /// </summary>
@@ -302,6 +349,23 @@ public class IniParser
         {
             if( pair.Section == sectionName )
                 tmpArray.Add( pair.Key + VarSeparator + keyPairs[pair] );
+        }
+
+        return (String[])tmpArray.ToArray( typeof( String ) );
+    }
+
+    /// <summary>
+    /// Enumerates all keys for given section.
+    /// </summary>
+    /// <param name="sectionName">Section to enum.</param>
+    public String[] EnumSectionKeys( String sectionName )
+    {
+        ArrayList tmpArray = new ArrayList();
+
+        foreach( SectionPair pair in keyPairs.Keys )
+        {
+            if( pair.Section == sectionName )
+                tmpArray.Add( pair.Key );
         }
 
         return (String[])tmpArray.ToArray( typeof( String ) );
@@ -389,6 +453,11 @@ public class IniParser
     public void AddNewSetting( String sectionName, String settingName, Boolean settingValue )
     {
         AddNewSetting( sectionName, settingName, settingValue ? TrueString : FalseString );
+    }
+
+    public void AddNewSetting( String sectionName, String settingName, UInt16 settingValue )
+    {
+        AddNewSetting( sectionName, settingName, settingValue.ToString() );
     }
 
     public void DeleteSection( String sectionName )

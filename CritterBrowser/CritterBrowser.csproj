@@ -136,6 +136,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="..\README.md">
+      <Link>Properties\README.md</Link>
+    </None>
     <None Include="Libs\DATLib\README.md" />
     <None Include="Libs\FOCommon\README.md" />
     <None Include="Libs\ZipStorer\README.md" />
@@ -153,7 +156,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(SolutionDir)$(TargetFileName)"
-if exist "$(SolutionDir)frost2fodev.bat" call "$(SolutionDir)frost2fodev.bat" "$(TargetPath)"</PostBuildEvent>
+if exist "$(SolutionDir)frost2fodev.bat" "$(SolutionDir)frost2fodev.bat"
+</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
